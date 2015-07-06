@@ -6,7 +6,7 @@
   Util = {
 
     // Format an integer with commas
-    format_integer: function(number) {
+    formatInt: function(number) {
       var int = parseInt("0" + number, 10);
       return String(int).replace(/\B(?=(\d{3})+(?!\d))/g, ',');
     },
@@ -1069,7 +1069,7 @@
       this.thickness = opts.thickness || Math.round(this.radius / 7);
 
       this.value = opts.value;
-      this.value_text = typeof(opts.value_text) === "undefined" ? Util.format_integer(this.value) : opts.value_text;
+      this.value_text = typeof(opts.value_text) === "undefined" ? Util.formatInt(this.value) : opts.value_text;
       this.value_color = opts.value_color;
 
       this.label = opts.label;
@@ -1274,13 +1274,13 @@
       for (i = 0; i < series.length; i++) {
         var item = this.el.append('div').classed('donut-stack-graph-item', true);
 
-        var subtext = Util.format_integer(series[i].value);
+        var subtext = Util.formatInt(series[i].value);
         if (this.label_subtext) { subtext += ' ' + this.label_subtext; }
 
         var donut = new DonutGraph(item.node(), [], {
           total: total,
           value: series[i].value,
-          value_text: Util.format_integer(Math.round(100 * series[i].value / total)) + '%',
+          value_text: Util.formatInt(Math.round(100 * series[i].value / total)) + '%',
           value_color: series[i].color,
           label: series[i].label,
           label_position: 'right',
