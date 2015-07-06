@@ -1,0 +1,28 @@
+{
+  "name": "sharts",
+  "version": "1.0.0",
+  "description": "D3 charting library made by UserVoice",
+  "author": { "name": "John W. Long", "url": "http://twitter.com/johnwlong" },
+
+  "contributors": [
+    { "name": "Mark Martin", "url": "http://twitter.com/snorecone" }
+  ],
+
+  "license": "MIT",
+
+  "private": true, // Not ready to publish this on NPM yet
+  
+  "repository" : {
+    "type": "git",
+    "url": "https://github.com/uservoice/sharts"
+  },
+
+  "keywords" : ["d3", "chart", "graph"],
+
+  "devDependencies": {
+    "gulp": "^3.9.0",
+    "gulp-concat": "^2.6.0",
+    "gulp-shell": "^0.4.2",
+    "gulp-uglify": "^1.2.0"
+  }
+}
