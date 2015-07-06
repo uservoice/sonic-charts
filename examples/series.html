@@ -1,0 +1,74 @@
+<!DOCTYPE html>
+<html>
+<head>
+  <title>Series graphs</title>
+  <link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.5/css/bootstrap.min.css">
+  <link rel="stylesheet" href="./example.css">
+</head>
+<body>
+
+<div class="container">
+  <h1>Series graphs</h1>
+
+  <p>Sharts currently supports 3 different types of series graphs: <code>line</code>, <code>area</code>, and
+    <code>column</code>. Be sure to set a height for the graph. Otherwise, it won&#8217;t render well.</p>
+
+  <figure class="well"><div id="line-graph" style="height: 180px"></div></figure>
+
+  <figure class="well"><div id="area-graph" style="height: 180px"></div></figure>
+
+  <figure class="well"><div id="column-graph" style="height: 180px"></div></figure>
+</div>
+
+<script src="http://d3js.org/d3.v3.min.js"></script>
+<script src="../dist/sharts.js"></script>
+<script>
+Shart.Series('#line-graph', [{
+  label: "Overall",
+  sequence: [765,280,344,930,989,852,814,734,330,305,893,826,808,820,727,305,286,913,868,758,833,577,253,266,724,752,698,727,648,292],
+  segments: [
+    {label: "Overall", color: "#6ea6df", sequence: [765,280,344,930,989,852,814,734,330,305,893,826,808,820,727,305,286,913,868,758,833,577,253,266,724,752,698,727,648,292], hide_tooltip: true},
+    {label: "Mobile SDKs", color: "#fecb78", sequence: [4,6,4,16,9,3,17,13,20,10,8,9,6,15,10,12,3,6,4,10,3,8,5,8,22,8,6,11,30,7], dasharray: '5 5'},
+    {label: "Web Portal", color: "#84c26d", sequence: [370,140,193,427,532,440,404,356,162,175,395,416,395,447,398,156,141,399,441,433,481,356,162,167,345,438,414,456,394,151], dasharray: '5 5'},
+    {label: "Widget", color: "#e17a69", sequence: [422,147,166,528,506,452,430,410,156,138,545,454,454,397,350,147,154,552,456,376,391,245,96,99,392,326,324,286,259,150], dasharray: '5 5'}
+  ],
+  type: "line",
+  color:"#6ea6df"
+}], {
+  startTime: "21 Feb 2014",
+  endTime: "22 Mar 2014",
+  dateAxis: "daily",
+  yAxis: { ticks: 4 }
+});
+
+Shart.Series('#area-graph', [
+  {
+    label: "Unique visitors",
+    sequence: [765,280,344,930,989,852,814,734,330,305,893,826,808,820,727,305,286,913,868,758,833,577,253,266,724,752,698,727,648,292],
+    type: "area",
+    color: "#9a9bc9"
+  }
+], {
+  startTime: "21 Feb 2014",
+  endTime: "22 Mar 2014",
+  dateAxis: "daily",
+  yAxis: { ticks: 4 }
+});
+
+Shart.Series('#column-graph', [
+  {
+    label: "Unique visitors",
+    sequence: [765,280,344,930,989,852,814,734,330,305,893,826,808,820,727,305,286,913,868,758,833,577,253,266,724,752,698,727,648,292],
+    type: "column",
+    color: "#6ea6df"
+  }
+], {
+  startTime: "21 Feb 2014",
+  endTime: "22 Mar 2014",
+  dateAxis: "daily",
+  yAxis: { ticks: 4 }
+});
+</script>
+
+</body>
+</html>

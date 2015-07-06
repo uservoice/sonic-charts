@@ -1,0 +1,48 @@
+<!DOCTYPE html>
+<html>
+<head>
+  <title>Donut graphs</title>
+  <link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.5/css/bootstrap.min.css">
+  <link rel="stylesheet" href="./example.css">
+</head>
+<body>
+
+<div class="container">
+  <h1>Donut graphs</h1>
+
+  <p>Much like a pie graph, donut graphs allow you to easily display percentage breakdowns, but they add the
+    ability to display a total in the center of the graph.</p>
+
+  <figure class="well"><div id="large-donut-graph"></div></figure>
+
+  <figure class="well"><div id="small-donut-graph"></div></figure>
+</div>
+
+<script src="http://d3js.org/d3.v3.min.js"></script>
+<script src="../dist/sharts.js"></script>
+<script>
+Shart.Donut('#large-donut-graph', [
+  {name: 'Detractors', value: 759,  color: '#e25825' },
+  {name: 'Passives',   value: 1289, color: '#f5e14d' },
+  {name: 'Promoters',  value: 1514, color: '#9fc03f' }
+], {
+  class_name: "large",
+  label: "Satisfaction score",
+  value: 21,
+  size: 172
+});
+
+Shart.Donut('#small-donut-graph', [
+  {name: 'Detractors', value: 759,  color: '#e25825' },
+  {name: 'Passives',   value: 1289, color: '#f5e14d' },
+  {name: 'Promoters',  value: 1514, color: '#9fc03f' }
+], {
+  value: 21,
+  label: 'visitors',
+  label_position: 'right',
+  size: 32
+});
+</script>
+
+</body>
+</html>
