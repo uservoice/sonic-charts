@@ -2,6 +2,9 @@ var gulp = require('gulp')
 ,   shell = require('gulp-shell')
 ,   uglify = require('gulp-uglify')
 ,   concat = require('gulp-concat')
+,   jshint = require('gulp-jshint')
+,   jstylish = require('jshint-stylish')
+,   runSequence = require('run-sequence')
 ,   webserver = require('gulp-webserver')
 ;
 
@@ -10,6 +13,14 @@ gulp.task('clean', function(done) {
     .pipe(shell('rm -Rf ./dist/*'))
   ;
   done();
+});
+
+gulp.task('lint', function() {
+  return gulp.src('./src/*.js')
+    .pipe(jshint())
+    .pipe(jshint.reporter(jstylish))
+    .pipe(jshint.reporter('fail'))
+  ;
 });
 
 gulp.task('scripts', function () {
@@ -22,7 +33,9 @@ gulp.task('scripts', function () {
   ;
 });
 
-gulp.task('build', ['clean', 'scripts']);
+gulp.task('build', function() {
+   runSequence('clean', 'lint', 'scripts');
+});
 
 gulp.task('watch', ['build'], function() {
   gulp.watch('./src/*.js', ['scripts']);

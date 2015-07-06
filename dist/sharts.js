@@ -22,7 +22,8 @@
         do {
           left += obj.offsetLeft;
           top += obj.offsetTop;
-        } while (obj = obj.offsetParent);
+          obj = obj.offsetParent;
+        } while (obj);
       }
       return { left: left, top: top };
     },
@@ -311,7 +312,7 @@
       this.colors = c.colors || exports.colors;
       this.formatter = data.formatter || c.formatter;
 
-      this.lineSegments.forEach(function(segment, i){
+      this.lineSegments.forEach(function(segment){
         if (segment.sequence[segment.sequence.length - 1] === 0 && data.extrapolate_last) {
           segment.sequence.pop();
           segment.sequence.push(predictNextValue(segment.sequence));
@@ -346,7 +347,7 @@
         return d3.max(this.lineSegments.map(function(segment){ return d3.max(segment.sequence); }));
       },
 
-      draw: function(chart, i) {
+      draw: function(chart) {
         var self = this;
 
         this.lineSegments.forEach(function(segment, i){
@@ -446,17 +447,21 @@
           }
         }, this);
 
-        this.segments ? this.segments.map(function(area, ai) {
-          area.sequence.map(function(a, i) {
+        if (this.segements) {
+          this.segments.map(function(area, ai) {
+            area.sequence.map(function(a, i) {
+              if (zeros.indexOf(i) !== -1) {
+                this.segments[ai].sequence[i] = predictNextValue(this.segments[ai].sequence.slice(0, i));
+              }
+            }, this);
+          }, this);
+        } else {
+          this.sequence.map(function(a, i) {
             if (zeros.indexOf(i) !== -1) {
-              this.segments[ai].sequence[i] = predictNextValue(this.segments[ai].sequence.slice(0, i));
+              this.sequence[i] = predictNextValue(this.sequence.slice(0, i));
             }
           }, this);
-        }, this) : this.sequence.map(function(a, i) {
-          if (zeros.indexOf(i) !== -1) {
-            this.sequence[i] = predictNextValue(this.sequence.slice(0, i));
-          }
-        }, this);
+        }
       }
     };
 
@@ -512,7 +517,7 @@
           }
         });
 
-        sequence.forEach(function(seq, i) {
+        sequence.forEach(function(seq) {
           chart.svg.append('svg:path')
             .attr('d', area(seq))
             .attr('fill', seq[0].color)
@@ -558,9 +563,7 @@
 
           return area.sequence.map(function(a, i) {
             return { x: i, y: a, value: a, label: area.label, color: cooler};
-          }).sort(function(a, b){
-
-          });
+          }).sort(function(){});
         }) : [this.sequence.map(function(a, i) {
           return { x: i, y: a, value: a, label: this.label, color: (this.color || exports.colors(i).toString()) };
         }, this)];
@@ -611,7 +614,7 @@
           ratio = chart_height / max;
         }
 
-        var drawData = function(d, i) {
+        var drawData = function(d) {
           // Don't draw data points if this column has a total of 0
           if(seq_totals[d.x] === 0) { return; }
 
@@ -633,7 +636,7 @@
             .attr('fill', d.color);
         };
 
-        sequence.forEach(function(seg, seg_id){
+        sequence.forEach(function(seg){
           seg.forEach(drawData, this);
         });
       }
@@ -773,7 +776,7 @@
           }
         }, 50));
 
-        this.el.on('mouseleave', Util.debounce(function(e) {
+        this.el.on('mouseleave', Util.debounce(function() {
           exports.hideTooltip({
             target: chart.scrubber.node()
           });
@@ -920,9 +923,7 @@
             if (d === null) { return }
 
             var ypos
-            ,   pathstring
             ,   tick
-            ,   text
             ,   tickFormatter = d3.format(this.tickFormat)
             ,   formatted
             ;
@@ -958,11 +959,11 @@
           }, this);
         }
 
-        this.bands.forEach(function(bands_s, bands_i) {
+        this.bands.forEach(function(bands_s) {
           bands_s.draw(this);
         }, this);
 
-        this.series.forEach(function(series_s, series_i) {
+        this.series.forEach(function(series_s) {
           series_s.draw(this);
         }, this);
 
@@ -1015,7 +1016,7 @@
     };
 
     PieGraph.prototype.sequenceData = function() {
-      var data = d3.layout.pie().value(function(d, i) { return d.value })(this.series);
+      var data = d3.layout.pie().value(function(d) { return d.value })(this.series);
 
       this.sequenceData = function() { return data };
       return data;
@@ -1057,7 +1058,7 @@
     //
 
     DonutGraph = function(el, series, opts) {
-      opts || (opts = {});
+      opts = (opts || {});
 
       this.id = chartId();
 
@@ -1128,21 +1129,20 @@
         .attr('width', this.size)
         .attr('height', this.size);
 
-      var background = svg.append('svg:path')
+      svg.append('svg:path')
         .classed('donut-graph-background', true)
         .attr('fill', '#e5e5e5')
         .attr('transform', 'translate(' + this.radius + ',' + this.radius + ')')
         .attr('d', arc().startAngle(0).endAngle(2*Math.PI)());
 
-      var arcs = svg
-        .append('svg:g')
+      svg.append('svg:g')
         .selectAll('.donut-graph-arc')
         .data(pie(this.series))
         .enter()
           .append('svg:path')
             .classed('donut-graph-arc', true)
             .attr('transform', 'translate(' + this.radius + ',' + this.radius + ')')
-            .attr('fill', function(d, i) { return d.data.color; })
+            .attr('fill', function(d) { return d.data.color; })
             .attr('d', arc());
 
       if (this.label && this.label_position === 'center') {
@@ -1201,7 +1201,7 @@
           if (this.label_subtext) {
             label.node().appendChild(document.createTextNode(" "));
 
-            var subtext = label.append('span')
+            label.append('span')
               .classed("donut-graph-label-subtext", true)
               .text(this.label_subtext);
           }
@@ -1240,7 +1240,7 @@
     //
 
     DonutStackGraph = function(el, series, opts) {
-      opts || (opts = {});
+      opts = (opts || {});
 
       this.id = chartId();
 
@@ -1303,7 +1303,7 @@
     //
 
     HorizontalBarGraph = function(el, series, opts) {
-      opts || (opts = {});
+      opts = (opts || {});
 
       this.id = chartId();
 
@@ -1340,16 +1340,15 @@
         label
           .text(function(d) {
             var percent_label = Math.round(percentage(d.value || 0));
-            if (total === 0) { percent_label = UV._('nil_data_placeholder'); }
-
-            return percent_label + "% " + d.label
+            if (total === 0) { percent_label = '--'; }
+            return percent_label + "% " + d.label;
           });
       } else {
         label
           .text(function(d) { return d.label });
       }
 
-      var subtext = label
+      label
         .append("span").classed("horizontal-bar-graph-label-subtext", true)
           .text(function(d) { return d.label_subtext });
 
@@ -1368,7 +1367,7 @@
     //
 
     PipelineGraph = function(el, series, opts) {
-      opts || (opts = {});
+      opts = (opts || {});
 
       this.id = chartId();
 
@@ -1456,25 +1455,25 @@
           .data(this.series)
         ;
 
-        var exit = item.exit()
+        item.exit()
           .remove()
         ;
 
         var enter = item.enter()
           .append('g')
            .attr('class', 'shart-pipeline-graph-item')
-           .attr('transform', function(d, i) { return 'translate(' + d.x + ',0)' })
+           .attr('transform', function(d) { return 'translate(' + d.x + ',0)' })
            .attr('clip-path', function(d, i) { return 'url(#clip-' + chart.id + '-' + i + ')' })
         ;
 
         if (this.labels) {
-          var label = enter.append('text')
+          enter.append('text')
             .attr('class', 'shart-pipeline-graph-item-label')
             .attr('x', 2)
             .attr('y', baselines.label)
             .text(function(d) {
               var percentage_label = formatPercentage(d.percentage);
-              if(isEmpty){ percentage_label = UV._('nil_data_placeholder') + '%'; }
+              if(isEmpty){ percentage_label = '--' + '%'; }
 
               return percentage_label + ' ' + d.label;
             })
@@ -1484,7 +1483,7 @@
         }
 
         if (this.label_subtext) {
-          var subtext = enter.append('text')
+          enter.append('text')
             .attr('class', 'shart-pipeline-graph-item-label-subtext')
             .attr('x', 2)
             .attr('y', baselines.label + baselines.label_subtext)
@@ -1497,7 +1496,7 @@
         this.height = height = baselines.label + baselines.label_subtext + baselines.bar;
         svg.attr("height", height);
 
-        var bar = enter.append('rect')
+        enter.append('rect')
           .attr('class', 'shart-pipeline-graph-item-bar')
           .attr('fill', function(d) { return d.color })
           .attr('y', baselines.label + baselines.label_subtext + baselines.bar - barHeight)
@@ -1712,15 +1711,15 @@
         .append("div")
           .classed("shart-legend-item", true);
 
-      var swatch = enter.filter(function(d) { return !!d.color }).append("span")
+      enter.filter(function(d) { return !!d.color }).append("span")
           .classed("shart-swatch shart-legend-item-swatch", true)
           .style("background-color", function(d) { return d.color });
 
-      var label = enter.append("span")
+      enter.append("span")
         .classed("shart-legend-item-label", true)
         .text(function(d) { return d.label });
 
-      var value = enter.append("span")
+      enter.append("span")
         .classed("shart-legend-item-value", true)
         .text(function(d) { return d.formatted_value || d.value });
 
@@ -1759,7 +1758,7 @@
 
     var d3_number_formatter = d3.format(',');
     exports.formatter = function(value) {
-      if(!(value || value === 0)){ return UV._('nil_data_placeholder'); }
+      if(!(value || value === 0)){ return '--'; }
       return d3_number_formatter(value);
     };
 
