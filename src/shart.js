@@ -89,8 +89,55 @@
         }
       });
       return obj;
-    }
+    },
 
+    predictNextValue: function(values_y) {
+      var sum_x = 0;
+      var sum_y = 0;
+      var sum_xy = 0;
+      var sum_xx = 0;
+      var count = 0;
+      var v;
+      var values_length = values_y.length;
+
+      if (!values_length) {
+        return null;
+      }
+
+      /*
+      * We'll use those variables for faster read/write access.
+      */
+      var x = 0;
+      var y = 0;
+
+      var values_x = [];
+      for (v = 0; v < values_length; v++) {
+        values_x.push(v);
+      }
+
+      /*
+      * Calculate the sum for each of the parts necessary.
+      */
+      for (v = 0; v < values_length; v++) {
+        x = values_x[v];
+        y = values_y[v];
+        sum_x += x;
+        sum_y += y;
+        sum_xx += x*x;
+        sum_xy += x*y;
+        count++;
+      }
+
+      /*
+      * Calculate m and b for the formular:
+      * y = x * m + b
+      */
+      var m = (count*sum_xy - sum_x*sum_y) / (count*sum_xx - sum_x*sum_x);
+      var b = (sum_y/count) - (m*sum_x)/count;
+      var ret = Math.round(values_length * m + b);
+
+      return ret >= 0 ? ret : 0;
+    }
   };
 
   Shart = (function() {
@@ -315,7 +362,7 @@
       this.lineSegments.forEach(function(segment){
         if (segment.sequence[segment.sequence.length - 1] === 0 && data.extrapolate_last) {
           segment.sequence.pop();
-          segment.sequence.push(predictNextValue(segment.sequence));
+          segment.sequence.push(Util.predictNextValue(segment.sequence));
         }
 
         segment.label = segment.label;
@@ -326,7 +373,7 @@
         if (self.interpolate) {
           segment.sequence.map(function(d, i) {
             if (d === 0) {
-              segment.sequence[i] = predictNextValue(segment.sequence.slice(0, i));
+              segment.sequence[i] = Util.predictNextValue(segment.sequence.slice(0, i));
             }
           }, segment);
         }
@@ -451,14 +498,14 @@
           this.segments.map(function(area, ai) {
             area.sequence.map(function(a, i) {
               if (zeros.indexOf(i) !== -1) {
-                this.segments[ai].sequence[i] = predictNextValue(this.segments[ai].sequence.slice(0, i));
+                this.segments[ai].sequence[i] = Util.predictNextValue(this.segments[ai].sequence.slice(0, i));
               }
             }, this);
           }, this);
         } else {
           this.sequence.map(function(a, i) {
             if (zeros.indexOf(i) !== -1) {
-              this.sequence[i] = predictNextValue(this.sequence.slice(0, i));
+              this.sequence[i] = Util.predictNextValue(this.sequence.slice(0, i));
             }
           }, this);
         }
@@ -1863,57 +1910,6 @@
 
     return exports;
   })();
-
-
-  // helpers yay
-  // Mark put this shit somwehre
-  function predictNextValue(values_y) {
-    var sum_x = 0;
-    var sum_y = 0;
-    var sum_xy = 0;
-    var sum_xx = 0;
-    var count = 0;
-    var v;
-    var values_length = values_y.length;
-
-    if (!values_length) {
-      return null;
-    }
-
-    /*
-    * We'll use those variables for faster read/write access.
-    */
-    var x = 0;
-    var y = 0;
-
-    var values_x = [];
-    for (v = 0; v < values_length; v++) {
-      values_x.push(v);
-    }
-
-    /*
-    * Calculate the sum for each of the parts necessary.
-    */
-    for (v = 0; v < values_length; v++) {
-      x = values_x[v];
-      y = values_y[v];
-      sum_x += x;
-      sum_y += y;
-      sum_xx += x*x;
-      sum_xy += x*y;
-      count++;
-    }
-
-    /*
-    * Calculate m and b for the formular:
-    * y = x * m + b
-    */
-    var m = (count*sum_xy - sum_x*sum_y) / (count*sum_xx - sum_x*sum_x);
-    var b = (sum_y/count) - (m*sum_x)/count;
-    var ret = Math.round(values_length * m + b);
-
-    return ret >= 0 ? ret : 0;
-  }
 
   window.Shart = Shart;
 }(d3, window));
