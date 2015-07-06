@@ -25,9 +25,9 @@ gulp.task('lint', function() {
 
 gulp.task('scripts', function () {
   return gulp.src('./src/*.js')
-    .pipe(concat('sharts.js'))
+    .pipe(concat('shart.js'))
       .pipe(gulp.dest('./dist'))
-    .pipe(concat('sharts.min.js'))
+    .pipe(concat('shart.min.js'))
       .pipe(uglify())
       .pipe(gulp.dest('./dist'))
   ;

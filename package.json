@@ -1,5 +1,5 @@
 {
-  "name": "sharts",
+  "name": "shart",
   "version": "1.0.0",
   "description": "D3 charting library made by UserVoice",
   "author": {
@@ -16,7 +16,7 @@
   "private": true,
   "repository": {
     "type": "git",
-    "url": "https://github.com/uservoice/sharts"
+    "url": "https://github.com/uservoice/shart"
   },
   "keywords": [
     "d3",

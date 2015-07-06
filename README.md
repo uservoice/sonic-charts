@@ -1,4 +1,4 @@
-# Sharts
+# Shart
 
 D3 charting library by UserVoice
 
