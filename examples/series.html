@@ -4,6 +4,7 @@
   <title>Series graphs</title>
   <link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.5/css/bootstrap.min.css">
   <link rel="stylesheet" href="./example.css">
+  <link rel="stylesheet" href="//cdnjs.cloudflare.com/ajax/libs/qtip2/2.2.1/jquery.qtip.min.css">
 </head>
 <body>
 
@@ -21,8 +22,38 @@
 </div>
 
 <script src="http://d3js.org/d3.v3.min.js"></script>
+<script src="//code.jquery.com/jquery-2.1.4.min.js"></script>
+<script src="//cdnjs.cloudflare.com/ajax/libs/qtip2/2.2.1/jquery.qtip.min.js"></script>
 <script src="../dist/shart.js"></script>
 <script>
+Shart.configure(function(opts) {
+  opts.showTooltip = function(tip) {
+    $(tip.target).qtip({
+      style: 'qtip-light qtip-shadow qtip-rounded',
+      show: {
+        event: true,
+        solo: true,
+        ready: true
+      },
+      hide: {
+        event: false
+      },
+      content: {
+        text: $(tip.body)
+      },
+      position: {
+        my: 'top center',
+        at: 'bottom center',
+        adjust: { y: 3 }
+      }
+    });
+  };
+  opts.hideTooltip = function(tip) {
+    var api = $(tip.target).qtip('api');
+    if (api) { api.hide(); }
+  };
+});
+
 Shart.Series('#line-graph', [{
   label: "Overall",
   sequence: [765,280,344,930,989,852,814,734,330,305,893,826,808,820,727,305,286,913,868,758,833,577,253,266,724,752,698,727,648,292],

@@ -6,6 +6,78 @@
  */
 
 
+/* Scrubber */
+
+.shart-scrubber {
+  visibility: hidden;
+  position: absolute;
+  height: 50px;
+  width: 1px;
+  background: rgba(0, 0, 0, 0.25);
+  z-index: 9000;
+  left: -9999px;
+  box-shadow: 1px 0 0 rgba(255, 255, 255, 0.25);
+}
+
+/* Tips */
+
+.shart-tip { }
+
+.shart-tip-placard {
+  text-align: center;
+  padding: 3px 5px;
+}
+.shart-tip-placard-value {
+  font-weight: 100;
+  font-size: 30px;
+  font-weight: 100;
+  line-height: 1;
+  white-space: nowrap;
+}
+.shart-tip-placard-description {
+  font-size: 12px;
+  line-height: 1.1;
+}
+
+.shart-tip-date {
+  font-weight: 200;
+  text-align: center;
+  font-size: 10px;
+}
+
+
+/* Swatches */
+
+.shart-swatch {
+  background: #444;
+  display: inline-block;
+  width: 11px;
+  height: 11px;
+  vertical-align: -8%;
+  overflow: hidden;
+}
+
+/* Legend */
+
+.shart-legend { }
+
+.shart-legend-item {
+  margin: 0.5em 0;
+}
+
+.shart-legend-item-swatch {
+  margin-right: 4px;
+}
+
+.shart-legend-item-label:after {
+  content: ': ';
+}
+
+.shart-legend-item-value {
+  font-weight: bold;
+}
+
+
 /* Donuts */
 
 .donut { }
@@ -23,7 +95,6 @@
 .donut-graph {
   display: block;
   position: relative;
-  .text-center & { margin-right: auto; margin-left: auto; }
 }
 
 .donut-graph-value {
@@ -31,7 +102,6 @@
 }
 
 .donut-graph-label {
-  font-weight: bold;
   font-size: 14px;
 }
 
