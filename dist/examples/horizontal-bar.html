@@ -1,0 +1,75 @@
+
+<!DOCTYPE html>
+<html>
+<head>
+
+<title>Horizontal bar graphs</title>
+<link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.5/css/bootstrap.min.css">
+<link rel="stylesheet" href="./example.css">
+<link rel="stylesheet" href="//cdnjs.cloudflare.com/ajax/libs/qtip2/2.2.1/jquery.qtip.min.css">
+
+</head>
+<body>
+
+<script src="http://d3js.org/d3.v3.min.js"></script>
+<script src="//code.jquery.com/jquery-2.1.4.min.js"></script>
+<script src="//cdnjs.cloudflare.com/ajax/libs/qtip2/2.2.1/jquery.qtip.min.js"></script>
+<script src="../shart.js"></script>
+
+<script>
+Shart.configure(function(opts) {
+
+  opts.showTooltip = function(tip) {
+    $(tip.target).qtip({
+      style: 'qtip-light qtip-shadow qtip-rounded',
+      show: {
+        event: true,
+        solo: true,
+        ready: true
+      },
+      hide: {
+        event: false
+      },
+      content: {
+        text: $(tip.body)
+      },
+      position: {
+        my: 'top center',
+        at: 'bottom center',
+        adjust: { y: 3 }
+      }
+    });
+  };
+  opts.hideTooltip = function(tip) {
+    var api = $(tip.target).qtip('api');
+    if (api) { api.hide(); }
+  };
+
+});
+</script>
+
+<div class="container">
+
+<div class="page-header">
+  <a href="./index.html">Back to index</a> 
+  <h1>Horizontal bar graphs</h1>
+</div>
+
+
+<p>Like the pie and donut graphs, the horizontal bar graph is another way to visualize percentage breakdowns.</p>
+
+<figure class="well"><div id="horizontal-bar-graph" class="horizontal-bar-graph"></div></figure>
+
+<script>
+Shart.HorizontalBar('#horizontal-bar-graph', [
+  {label: "Desktop", label_subtext: "1,167 visits", value: 1167, color: "#6ea6df" },
+  {label: "Mobile",  label_subtext: "543 visits",   value: 543,  color: "#84c26d" },
+  {label: "Tablet",  label_subtext: "224 visits",   value: 224,  color: "#e17a69" }
+]);
+</script>
+
+
+</div>
+
+</body>
+</html>

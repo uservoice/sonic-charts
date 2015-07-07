@@ -1,0 +1,212 @@
+/*
+ * example.css
+ *
+ * Basic styles for Shart
+ *
+ */
+
+
+/* Scrubber */
+
+.shart-scrubber {
+  visibility: hidden;
+  position: absolute;
+  height: 50px;
+  width: 1px;
+  background: rgba(0, 0, 0, 0.25);
+  z-index: 9000;
+  left: -9999px;
+  box-shadow: 1px 0 0 rgba(255, 255, 255, 0.25);
+}
+
+/* Tips */
+
+.shart-tip { }
+
+.shart-tip-placard {
+  text-align: center;
+  padding: 3px 5px;
+}
+.shart-tip-placard-value {
+  font-weight: 100;
+  font-size: 30px;
+  font-weight: 100;
+  line-height: 1;
+  white-space: nowrap;
+}
+.shart-tip-placard-description {
+  font-size: 12px;
+  line-height: 1.1;
+}
+
+.shart-tip-date {
+  font-weight: 200;
+  text-align: center;
+  font-size: 10px;
+}
+
+
+/* Swatches */
+
+.shart-swatch {
+  background: #444;
+  display: inline-block;
+  width: 11px;
+  height: 11px;
+  vertical-align: -8%;
+  overflow: hidden;
+}
+
+/* Legend */
+
+.shart-legend { }
+
+.shart-legend-item {
+  margin: 0.5em 0;
+}
+
+.shart-legend-item-swatch {
+  margin-right: 4px;
+}
+
+.shart-legend-item-label:after {
+  content: ': ';
+}
+
+.shart-legend-item-value {
+  font-weight: bold;
+}
+
+
+/* Donuts */
+
+.donut { }
+
+.donut-title {
+  font-weight: bold;
+  margin-bottom: 4px;
+}
+
+.donut-description {
+  margin-bottom: 15px;
+  font-size: 12px;
+}
+
+.donut-graph {
+  display: block;
+  position: relative;
+}
+
+.donut-graph-value {
+  font-size: 14px;
+}
+
+.donut-graph-label {
+  font-size: 14px;
+}
+
+.donut-graph-label-subtext {
+  font-weight: normal;
+  font-size: 12px;
+}
+
+.donut-graph.large .donut-graph-value {
+  font-size: 32px;
+  font-weight: 300;
+  line-height: 1.3;
+}
+.donut-graph.large .donut-graph-label {
+  font-size: 10px;
+  line-height: 1.3;
+  text-transform: uppercase;
+}
+
+
+/* Donut stacks */
+
+.donut-stack-graph { }
+
+.donut-stack-graph-item + .donut-stack-graph-item {
+  margin-top: 10px;
+}
+
+
+/* Horizontal bar graphs */
+
+.horizontal-bar-graph {
+  display: table;
+  width: 100%;
+  margin: 0 auto;
+}
+
+.horizontal-bar-graph-segment {
+  display: table-row;
+}
+
+.horizontal-bar-graph-label {
+  font-size: 14px;
+  font-weight: bold;
+  display: table-cell;
+  border-right: 1px solid rgba(187, 187, 204, 0.5);
+  text-align: right;
+  padding: 4px 10px 4px 0;
+  vertical-align: middle;
+  white-space: nowrap;
+  line-height: 1.2;
+}
+
+.horizontal-bar-graph-label-subtext {
+  display: block;
+  font-weight: normal;
+  font-size: 12px;
+}
+
+.horizontal-bar-graph-value {
+  display: table-cell;
+  padding: 3px 8px 3px 0;
+  vertical-align: middle;
+  width: 100%;
+  position: relative;
+  left: -1px;
+}
+
+.horizontal-bar-graph-value-bar {
+  background: silver;
+  display: inline-block;
+  height: 2.1em;
+  text-align: right;
+  color: white;
+  overflow: visible;
+  vertical-align: middle;
+}
+
+.horizontal-bar-graph-segment:first-child {
+  .horizontal-bar-graph-label { padding-top: 12px; }
+  .horizontal-bar-graph-value { padding-top: 11px; }
+}
+.horizontal-bar-graph-segment:last-child {
+  .horizontal-bar-graph-label { padding-bottom: 12px; }
+  .horizontal-bar-graph-value { padding-bottom: 11px; }
+}
+
+
+/* Pipelines */
+
+.shart-pipeline-graph {
+  display: block;
+}
+
+.shart-pipeline-graph-item-label {
+  font-weight: bold;
+  font-size: 14px;
+  line-height: 1;
+  margin: 1px;
+  padding: 2px 0;
+  line-height: 1.4;
+}
+
+.shart-pipeline-graph-item-label-subtext {
+  font-size: 12px;
+  line-height: 1.4;
+}
+

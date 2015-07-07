@@ -1,0 +1,16 @@
+---
+title: "Pipeline graphs"
+---
+
+<p>A pipeline graph provides a way to visualize percentage breakdowns in a horizontal fashion.</p>
+
+<figure class="well"><div id="pipeline-graph" class="shart-pipeline-graph"></div></figure>
+
+<script>
+Shart.Pipeline('#pipeline-graph', [
+  {label: "Fast (A)", label_subtext: "Within an hour", value: 1167, color: "#74b50d", tip_label: "Messages" },
+  {label: "Good (B)", label_subtext: "1-4 hours",      value: 843,  color: "#a6d15d", tip_label: "Messages" },
+  {label: "Okay (C)", label_subtext: "4-24 hours",     value: 104,  color: "#f5e14d", tip_label: "Messages" },
+  {label: "Slow (D)", label_subtext: "24+ hours",      value: 905,  color: "#e56244", tip_label: "Messages" }
+]);
+</script>

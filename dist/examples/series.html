@@ -1,32 +1,24 @@
+
 <!DOCTYPE html>
 <html>
 <head>
-  <title>Series graphs</title>
-  <link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.5/css/bootstrap.min.css">
-  <link rel="stylesheet" href="./example.css">
-  <link rel="stylesheet" href="//cdnjs.cloudflare.com/ajax/libs/qtip2/2.2.1/jquery.qtip.min.css">
+
+<title>Series graphs</title>
+<link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.5/css/bootstrap.min.css">
+<link rel="stylesheet" href="./example.css">
+<link rel="stylesheet" href="//cdnjs.cloudflare.com/ajax/libs/qtip2/2.2.1/jquery.qtip.min.css">
+
 </head>
 <body>
-
-<div class="container">
-  <h1>Series graphs</h1>
-
-  <p>Shart currently supports 3 different types of series graphs: <code>line</code>, <code>area</code>, and
-    <code>column</code>. Be sure to set a height for the graph. Otherwise, it won&#8217;t render well.</p>
-
-  <figure class="well"><div id="line-graph" style="height: 180px"></div></figure>
-
-  <figure class="well"><div id="area-graph" style="height: 180px"></div></figure>
-
-  <figure class="well"><div id="column-graph" style="height: 180px"></div></figure>
-</div>
 
 <script src="http://d3js.org/d3.v3.min.js"></script>
 <script src="//code.jquery.com/jquery-2.1.4.min.js"></script>
 <script src="//cdnjs.cloudflare.com/ajax/libs/qtip2/2.2.1/jquery.qtip.min.js"></script>
-<script src="../dist/shart.js"></script>
+<script src="../shart.js"></script>
+
 <script>
 Shart.configure(function(opts) {
+
   opts.showTooltip = function(tip) {
     $(tip.target).qtip({
       style: 'qtip-light qtip-shadow qtip-rounded',
@@ -52,8 +44,28 @@ Shart.configure(function(opts) {
     var api = $(tip.target).qtip('api');
     if (api) { api.hide(); }
   };
-});
 
+});
+</script>
+
+<div class="container">
+
+<div class="page-header">
+  <a href="./index.html">Back to index</a> 
+  <h1>Series graphs</h1>
+</div>
+
+
+<p>Shart currently supports 3 different types of series graphs: <code>line</code>, <code>area</code>, and
+  <code>column</code>. Be sure to set a height for the graph. Otherwise, it won&#8217;t render well.</p>
+
+<figure class="well"><div id="line-graph" style="height: 180px"></div></figure>
+
+<figure class="well"><div id="area-graph" style="height: 180px"></div></figure>
+
+<figure class="well"><div id="column-graph" style="height: 180px"></div></figure>
+
+<script>
 Shart.Series('#line-graph', [{
   label: "Overall",
   sequence: [765,280,344,930,989,852,814,734,330,305,893,826,808,820,727,305,286,913,868,758,833,577,253,266,724,752,698,727,648,292],
@@ -100,6 +112,9 @@ Shart.Series('#column-graph', [
   yAxis: { ticks: 4 }
 });
 </script>
+
+
+</div>
 
 </body>
 </html>

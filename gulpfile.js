@@ -4,6 +4,11 @@ var gulp = require('gulp')
 ,   concat = require('gulp-concat')
 ,   jshint = require('gulp-jshint')
 ,   jstylish = require('jshint-stylish')
+,   data = require('gulp-data')
+,   frontmatter = require('front-matter')
+,   path = require('path')
+,   fs = require('fs')
+,   handlebars = require('gulp-compile-handlebars')
 ,   runSequence = require('run-sequence')
 ,   webserver = require('gulp-webserver')
 ;
@@ -15,7 +20,7 @@ gulp.task('clean', function(done) {
   done();
 });
 
-gulp.task('lint', function() {
+gulp.task('scripts:lint', function() {
   return gulp.src('./src/*.js')
     .pipe(jshint())
     .pipe(jshint.reporter(jstylish))
@@ -24,7 +29,7 @@ gulp.task('lint', function() {
 });
 
 gulp.task('scripts', function () {
-  return gulp.src('./src/*.js')
+  return gulp.src('./src/scripts/*.js')
     .pipe(concat('shart.js'))
       .pipe(gulp.dest('./dist'))
     .pipe(concat('shart.min.js'))
@@ -33,16 +38,42 @@ gulp.task('scripts', function () {
   ;
 });
 
+gulp.task('examples:html', function() {
+  var meta = { title: 'Examples' };
+  return gulp.src('src/examples/*.html')
+    .pipe(data(function(file) {
+      var content = frontmatter(String(file.contents))
+      ,   filename = path.join(__dirname, 'src', 'layouts', (content.layout || 'example') + '.handlebars')
+      ,   layout = fs.readFileSync(filename)
+      ;
+      content.attributes['contents'] = content.body;
+      file.contents = new Buffer(layout);
+      return content.attributes;
+    }))
+    .pipe(handlebars(meta))
+    .pipe(gulp.dest('./dist/examples'))
+  ;
+});
+gulp.task('examples:styles', function() {
+  return gulp.src('src/styles/example.css')
+    .pipe(gulp.dest('./dist/examples'))
+  ;
+});
+gulp.task('examples', ['examples:html', 'examples:styles']);
+
 gulp.task('build', function() {
-   runSequence('clean', 'lint', 'scripts');
+   runSequence('clean', 'scripts:lint', 'scripts', 'examples');
 });
 
 gulp.task('watch', ['build'], function() {
-  gulp.watch('./src/*.js', ['scripts']);
+  gulp.watch('./src/scripts/*', ['scripts']);
+  gulp.watch('./src/styles/*', ['examples:styles']);
+  gulp.watch('./src/examples/*', ['examples:html']);
+  gulp.watch('./src/layouts/*', ['examples:html']);
 });
 
 gulp.task('server', ['watch'], function() {
-  return gulp.src('./')
+  return gulp.src('./dist/')
     .pipe(webserver({
       livereload: true,
       directoryListing: true,
