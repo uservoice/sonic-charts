@@ -7,6 +7,7 @@
 <link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.5/css/bootstrap.min.css">
 <link rel="stylesheet" href="./example.css">
 <link rel="stylesheet" href="//cdnjs.cloudflare.com/ajax/libs/qtip2/2.2.1/jquery.qtip.min.css">
+<link rel="stylesheet" href="//cdnjs.cloudflare.com/ajax/libs/highlight.js/8.6/styles/default.min.css">
 
 </head>
 <body>
@@ -14,6 +15,7 @@
 <script src="http://d3js.org/d3.v3.min.js"></script>
 <script src="//code.jquery.com/jquery-2.1.4.min.js"></script>
 <script src="//cdnjs.cloudflare.com/ajax/libs/qtip2/2.2.1/jquery.qtip.min.js"></script>
+<script src="//cdn.jsdelivr.net/highlight.js/8.6/highlight.min.js"></script>
 <script src="../shart.js"></script>
 
 <script>
@@ -44,7 +46,6 @@ Shart.configure(function(opts) {
     var api = $(tip.target).qtip('api');
     if (api) { api.hide(); }
   };
-
 });
 </script>
 
@@ -58,19 +59,27 @@ Shart.configure(function(opts) {
 
 <p>A pipeline graph provides a way to visualize percentage breakdowns in a horizontal fashion.</p>
 
-<figure class="well"><div id="pipeline-graph" class="shart-pipeline-graph"></div></figure>
-
-<script>
-Shart.Pipeline('#pipeline-graph', [
+<figure class="well shart-well"><div id="pipeline-graph" class="shart-pipeline-graph"></div></figure>
+<script class="code-block">Shart.Pipeline('#pipeline-graph', [
   {label: "Fast (A)", label_subtext: "Within an hour", value: 1167, color: "#74b50d", tip_label: "Messages" },
   {label: "Good (B)", label_subtext: "1-4 hours",      value: 843,  color: "#a6d15d", tip_label: "Messages" },
   {label: "Okay (C)", label_subtext: "4-24 hours",     value: 104,  color: "#f5e14d", tip_label: "Messages" },
   {label: "Slow (D)", label_subtext: "24+ hours",      value: 905,  color: "#e56244", tip_label: "Messages" }
-]);
-</script>
+]);</script>
 
 
 </div>
+
+<script>
+$(".code-block").each(function() {
+  var el = $(this)
+  ,   pre = $('<pre class="code-block">').html(el.html())
+  ;
+  el.removeClass('code-block');
+  el.after(pre);
+  hljs.highlightBlock(pre.get(0));
+});
+</script>
 
 </body>
 </html>

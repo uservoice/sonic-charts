@@ -7,6 +7,7 @@
 <link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.5/css/bootstrap.min.css">
 <link rel="stylesheet" href="./example.css">
 <link rel="stylesheet" href="//cdnjs.cloudflare.com/ajax/libs/qtip2/2.2.1/jquery.qtip.min.css">
+<link rel="stylesheet" href="//cdnjs.cloudflare.com/ajax/libs/highlight.js/8.6/styles/default.min.css">
 
 </head>
 <body>
@@ -14,6 +15,7 @@
 <script src="http://d3js.org/d3.v3.min.js"></script>
 <script src="//code.jquery.com/jquery-2.1.4.min.js"></script>
 <script src="//cdnjs.cloudflare.com/ajax/libs/qtip2/2.2.1/jquery.qtip.min.js"></script>
+<script src="//cdn.jsdelivr.net/highlight.js/8.6/highlight.min.js"></script>
 <script src="../shart.js"></script>
 
 <script>
@@ -44,7 +46,6 @@ Shart.configure(function(opts) {
     var api = $(tip.target).qtip('api');
     if (api) { api.hide(); }
   };
-
 });
 </script>
 
@@ -59,10 +60,9 @@ Shart.configure(function(opts) {
 <p>A donut stack graph allows you to display even more information
   and accurately represent overlaping percentage breakdowns.</p>
 
-<figure class="well"><div id="donut-stack-graph"></div></figure>
+<figure class="well shart-well"><div id="donut-stack-graph"></div></figure>
 
-<script>
-Shart.DonutStack('#donut-stack-graph', [
+<script class="code-block">Shart.DonutStack('#donut-stack-graph', [
   {label: "Widget",     value: 1167, color: "#6ea6df" },
   {label: "Web Portal", value: 543,  color: "#84c26d" },
   {label: "Mobile",     value: 224,  color: "#e17a69" },
@@ -71,11 +71,21 @@ Shart.DonutStack('#donut-stack-graph', [
   total: 2131,
   label_subtext: 'people',
   thickness: 4
-});
-</script>
+});</script>
 
 
 </div>
+
+<script>
+$(".code-block").each(function() {
+  var el = $(this)
+  ,   pre = $('<pre class="code-block">').html(el.html())
+  ;
+  el.removeClass('code-block');
+  el.after(pre);
+  hljs.highlightBlock(pre.get(0));
+});
+</script>
 
 </body>
 </html>

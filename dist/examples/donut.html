@@ -7,6 +7,7 @@
 <link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.5/css/bootstrap.min.css">
 <link rel="stylesheet" href="./example.css">
 <link rel="stylesheet" href="//cdnjs.cloudflare.com/ajax/libs/qtip2/2.2.1/jquery.qtip.min.css">
+<link rel="stylesheet" href="//cdnjs.cloudflare.com/ajax/libs/highlight.js/8.6/styles/default.min.css">
 
 </head>
 <body>
@@ -14,6 +15,7 @@
 <script src="http://d3js.org/d3.v3.min.js"></script>
 <script src="//code.jquery.com/jquery-2.1.4.min.js"></script>
 <script src="//cdnjs.cloudflare.com/ajax/libs/qtip2/2.2.1/jquery.qtip.min.js"></script>
+<script src="//cdn.jsdelivr.net/highlight.js/8.6/highlight.min.js"></script>
 <script src="../shart.js"></script>
 
 <script>
@@ -44,7 +46,6 @@ Shart.configure(function(opts) {
     var api = $(tip.target).qtip('api');
     if (api) { api.hide(); }
   };
-
 });
 </script>
 
@@ -59,12 +60,8 @@ Shart.configure(function(opts) {
 <p>Much like a pie graph, donut graphs allow you to easily display percentage breakdowns, but they add the
   ability to display a total in the center of the graph.</p>
 
-<figure class="well"><div id="large-donut-graph"></div></figure>
-
-<figure class="well"><div id="small-donut-graph"></div></figure>
-
-<script>
-Shart.Donut('#large-donut-graph', [
+<figure class="well shart-well"><div id="large-donut-graph"></div></figure>
+<script class="code-block">Shart.Donut('#large-donut-graph', [
   {name: 'Detractors', value: 759,  color: '#e25825' },
   {name: 'Passives',   value: 1289, color: '#f5e14d' },
   {name: 'Promoters',  value: 1514, color: '#9fc03f' }
@@ -73,9 +70,10 @@ Shart.Donut('#large-donut-graph', [
   label: "Satisfaction score",
   value: 21,
   size: 172
-});
+});</script>
 
-Shart.Donut('#small-donut-graph', [
+<figure class="well shart-well"><div id="small-donut-graph"></div></figure>
+<script class="code-block">Shart.Donut('#small-donut-graph', [
   {name: 'Detractors', value: 759,  color: '#e25825' },
   {name: 'Passives',   value: 1289, color: '#f5e14d' },
   {name: 'Promoters',  value: 1514, color: '#9fc03f' }
@@ -84,11 +82,21 @@ Shart.Donut('#small-donut-graph', [
   label: 'visitors',
   label_position: 'right',
   size: 32
-});
-</script>
+});</script>
 
 
 </div>
+
+<script>
+$(".code-block").each(function() {
+  var el = $(this)
+  ,   pre = $('<pre class="code-block">').html(el.html())
+  ;
+  el.removeClass('code-block');
+  el.after(pre);
+  hljs.highlightBlock(pre.get(0));
+});
+</script>
 
 </body>
 </html>
