@@ -1,6 +1,6 @@
 # Todo
 
-- [ ] Add tooltips to examples
+- [x] Add tooltips to examples
 - [ ] Build Angular API
 - [ ] Add Angular examples
 - [ ] Refactor HTML class names to include "shart"
