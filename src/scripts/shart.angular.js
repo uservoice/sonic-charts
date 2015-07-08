@@ -60,9 +60,9 @@ angular.module('shart', [])
 
     link: function($scope, $element) {
       Shart.DonutStack($element[0], $scope.data, {
-        total: $scope.label,
-        label_subtext: $scope.labelPosition,
-        thickness: $scope.value
+        total: $scope.total,
+        label_subtext: $scope.labelSubtext,
+        thickness: $scope.thickness
       });
     }
   };
