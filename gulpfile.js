@@ -28,8 +28,8 @@ gulp.task('scripts:lint', function() {
   ;
 });
 
-gulp.task('scripts', function () {
-  return gulp.src('./src/scripts/*.js')
+gulp.task('scripts:core', function () {
+  return gulp.src('./src/scripts/shart.js')
     .pipe(concat('shart.js'))
       .pipe(gulp.dest('./dist'))
     .pipe(concat('shart.min.js'))
@@ -38,12 +38,24 @@ gulp.task('scripts', function () {
   ;
 });
 
+gulp.task('scripts:angular', function () {
+  return gulp.src('./src/scripts/*.js')
+    .pipe(concat('shart.angular.js'))
+      .pipe(gulp.dest('./dist'))
+    .pipe(concat('shart.angular.min.js'))
+      .pipe(uglify())
+      .pipe(gulp.dest('./dist'))
+  ;
+});
+
+gulp.task('scripts', ['scripts:core', 'scripts:angular']);
+
 gulp.task('examples:html', function() {
   var meta = { title: 'Examples' };
-  return gulp.src('src/examples/*.html')
+  return gulp.src('src/examples/**/*.html')
     .pipe(data(function(file) {
       var content = frontmatter(String(file.contents))
-      ,   filename = path.join(__dirname, 'src', 'layouts', (content.layout || 'example') + '.handlebars')
+      ,   filename = path.join(__dirname, 'src', 'layouts', (content.attributes['layout'] || 'example') + '.handlebars')
       ,   layout = fs.readFileSync(filename)
       ;
       content.attributes['contents'] = content.body;
@@ -68,7 +80,7 @@ gulp.task('build', function() {
 gulp.task('watch', ['build'], function() {
   gulp.watch('./src/scripts/*', ['scripts']);
   gulp.watch('./src/styles/*', ['examples:styles']);
-  gulp.watch('./src/examples/*', ['examples:html']);
+  gulp.watch('./src/examples/**/*', ['examples:html']);
   gulp.watch('./src/layouts/*', ['examples:html']);
 });
 

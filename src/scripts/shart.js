@@ -1056,9 +1056,10 @@
       this.id = chartId();
 
       this.el = d3.select(el);
-      this.width = parseInt(this.el.style('width'), 10);
-      this.height = parseInt(this.el.style('height'), 10);
-      this.ratio = this.height / this.width;
+
+      this.width = opts.width || 50;
+      this.height = opts.height || 50;
+
       this.series = series;
     };
 
@@ -1072,12 +1073,13 @@
     PieGraph.prototype.draw = function() {
       // need to clear out existing drawn shit
       this.el.html('');
-
-      this.width = parseInt(this.el.style('width'), 10);
-      this.height = this.width * this.ratio;
+      
+      this.el.style('width', this.width + 'px');
       this.el.style('height', this.height + 'px');
 
-      this.svg = this.el.append('svg:svg');
+      this.svg = this.el.append('svg:svg')
+        .attr('width', this.width)
+        .attr('height', this.height);
 
       var radius  = (Math.min(this.width, this.height) / 2) - 1
       ,   arc     = d3.svg.arc().outerRadius(radius)
