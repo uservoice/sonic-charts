@@ -59,14 +59,16 @@ Shart.configure(function(opts) {
 <p>One of the simplest graphs to create, the pie graph is a great way to illustrate percentage breakdowns.</p>
 
 <figure class="well shart-well"><div id="pie-graph"></div></figure>
-<script class="code-block">Shart.Pie('#pie-graph', [
+<script class="code-block">
+Shart.Pie('#pie-graph', [
   {value: 1167, color: "#6ea6df" },
   {value: 543,  color: "#84c26d" },
   {value: 224,  color: "#e17a69" }
 ], {
   width: 100,
   height: 100
-});</script>
+});
+</script>
 
 
 </div>
@@ -74,7 +76,7 @@ Shart.configure(function(opts) {
 <script>
 $(".code-block").each(function() {
   var el = $(this)
-  ,   pre = $('<pre class="code-block">').html(el.html())
+  ,   pre = $('<pre class="code-block">').text(el.html().trim())
   ;
   el.removeClass('code-block');
   el.after(pre);

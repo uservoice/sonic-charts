@@ -85,7 +85,7 @@ gulp.task('watch', ['build'], function() {
 });
 
 gulp.task('server', ['watch'], function() {
-  return gulp.src('./dist/')
+  return gulp.src('./dist')
     .pipe(webserver({
       livereload: true,
       directoryListing: true,

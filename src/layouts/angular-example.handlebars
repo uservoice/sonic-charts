@@ -4,9 +4,11 @@
 
 <title>{{ title }}</title>
 <link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.5/css/bootstrap.min.css">
+<link rel="stylesheet" href="//cdnjs.cloudflare.com/ajax/libs/highlight.js/8.6/styles/default.min.css">
 <link rel="stylesheet" href="../example.css">
 
 <script src="http://d3js.org/d3.v3.min.js"></script>
+<script src="//cdn.jsdelivr.net/highlight.js/8.6/highlight.min.js"></script>
 <script src="//ajax.googleapis.com/ajax/libs/angularjs/1.3.15/angular.min.js"></script>
 <script src="../../shart.angular.js"></script>
 <script>
@@ -27,5 +29,16 @@ angular.module('app', ['shart']);
 
 </div>
 
+<script>
+var blocks = document.getElementsByClassName("code-block");
+for (var i = 0; i < blocks.length; i++) {
+  var el = angular.element(blocks[i])
+  ,   pre = angular.element('<pre class="code-block">').text(el.html().trim())
+  ;
+  el.removeClass('code-block');
+  el.after(pre);
+  hljs.highlightBlock(pre[0]);
+}
+</script>
 </body>
 </html>

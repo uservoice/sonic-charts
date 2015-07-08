@@ -61,7 +61,8 @@ Shart.configure(function(opts) {
 
 <figure class="well shart-well"><div id="donut-stack-graph"></div></figure>
 
-<script class="code-block">Shart.DonutStack('#donut-stack-graph', [
+<script class="code-block">
+Shart.DonutStack('#donut-stack-graph', [
   {label: "Widget",     value: 1167, color: "#6ea6df" },
   {label: "Web Portal", value: 543,  color: "#84c26d" },
   {label: "Mobile",     value: 224,  color: "#e17a69" },
@@ -70,7 +71,8 @@ Shart.configure(function(opts) {
   total: 2131,
   label_subtext: 'people',
   thickness: 4
-});</script>
+});
+</script>
 
 
 </div>
@@ -78,7 +80,7 @@ Shart.configure(function(opts) {
 <script>
 $(".code-block").each(function() {
   var el = $(this)
-  ,   pre = $('<pre class="code-block">').html(el.html())
+  ,   pre = $('<pre class="code-block">').text(el.html().trim())
   ;
   el.removeClass('code-block');
   el.after(pre);

@@ -59,11 +59,13 @@ Shart.configure(function(opts) {
 <p>Like the pie and donut graphs, the horizontal bar graph is another way to visualize percentage breakdowns.</p>
 
 <figure class="well shart-well"><div id="horizontal-bar-graph" class="horizontal-bar-graph"></div></figure>
-<script class="code-block">Shart.HorizontalBar('#horizontal-bar-graph', [
+<script class="code-block">
+Shart.HorizontalBar('#horizontal-bar-graph', [
   {label: "Desktop", label_subtext: "1,167 visits", value: 1167, color: "#6ea6df" },
   {label: "Mobile",  label_subtext: "543 visits",   value: 543,  color: "#84c26d" },
   {label: "Tablet",  label_subtext: "224 visits",   value: 224,  color: "#e17a69" }
-]);</script>
+]);
+</script>
 
 
 </div>
@@ -71,7 +73,7 @@ Shart.configure(function(opts) {
 <script>
 $(".code-block").each(function() {
   var el = $(this)
-  ,   pre = $('<pre class="code-block">').html(el.html())
+  ,   pre = $('<pre class="code-block">').text(el.html().trim())
   ;
   el.removeClass('code-block');
   el.after(pre);

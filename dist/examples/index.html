@@ -69,13 +69,16 @@ Shart.configure(function(opts) {
   <li><a href="./pipeline.html">Pipeline</a></li>
 </ul>
 
+<p>Interested in using Shart with Angular? No problem. Shart also includes
+  <a href="./angular/index.html">easy integration with Angular</a>.</p>
+
 
 </div>
 
 <script>
 $(".code-block").each(function() {
   var el = $(this)
-  ,   pre = $('<pre class="code-block">').html(el.html())
+  ,   pre = $('<pre class="code-block">').text(el.html().trim())
   ;
   el.removeClass('code-block');
   el.after(pre);
