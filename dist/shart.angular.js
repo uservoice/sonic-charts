@@ -85,6 +85,21 @@ angular.module('shart', [])
   };
 })
 
+.directive('shartPipeline', function() {
+  return {
+    restrict: 'E',
+
+    scope: {
+      data: '='
+    },
+
+    link: function($scope, $element) {
+      // TODO: opts { colors, tooltip, formatter }
+      Shart.Pipeline($element[0], $scope.data, {});
+    }
+  };
+})
+
 ;
 
 })(window);

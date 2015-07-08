@@ -2,7 +2,7 @@
 <html>
 <head>
 
-<title>Shart Angular examples</title>
+<title>Pipeline graphs</title>
 <link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.5/css/bootstrap.min.css">
 <link rel="stylesheet" href="//cdnjs.cloudflare.com/ajax/libs/highlight.js/8.6/styles/default.min.css">
 <link rel="stylesheet" href="../example.css">
@@ -21,22 +21,20 @@ angular.module('app', ['shart']);
 <div class="container">
 
 <div class="page-header">
-   
-  <h1>Shart Angular examples</h1>
+  <a href="./index.html">Back to index</a> 
+  <h1>Pipeline graphs</h1>
 </div>
 
 
-<p>The <tt>shart.angular.js</tt> package includes everything in <tt>shart.js</tt> plus a handful of directives
-  for easy integration in an Angular application.</p>
-
-<ul>
-  <!-- <li><a href="./series.html">Series</a></li> -->
-  <li><a href="./pie.html">Pie</a></li>
-  <li><a href="./donut.html">Donut</a></li>
-  <li><a href="./donut-stack.html">Donut stack</a></li>
-  <li><a href="./horizontal-bar.html">Horizontal bar</a></li>
-  <li><a href="./pipeline.html">Pipeline</a></li>
-</ul>
+<figure class="well shart-well" ng-include="'shart-pipeline-1.html'"></figure>
+<script class="code-block html" type="text/ng-template" id="shart-pipeline-1.html">
+<shart-pipeline data="[
+  {label: 'Fast (A)', label_subtext: 'Within an hour', value: 1167, color: '#74b50d', tip_label: 'Messages'},
+  {label: 'Good (B)', label_subtext: '1-4 hours',      value: 843,  color: '#a6d15d', tip_label: 'Messages'},
+  {label: 'Okay (C)', label_subtext: '4-24 hours',     value: 104,  color: '#f5e14d', tip_label: 'Messages'},
+  {label: 'Slow (D)', label_subtext: '24+ hours',      value: 905,  color: '#e56244', tip_label: 'Messages'}
+]"></shart-pipeline>
+</script>
 
 
 </div>
