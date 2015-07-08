@@ -21,7 +21,7 @@ gulp.task('clean', function(done) {
 });
 
 gulp.task('scripts:lint', function() {
-  return gulp.src('./src/*.js')
+  return gulp.src('src/*.js')
     .pipe(jshint())
     .pipe(jshint.reporter(jstylish))
     .pipe(jshint.reporter('fail'))
@@ -29,22 +29,22 @@ gulp.task('scripts:lint', function() {
 });
 
 gulp.task('scripts:core', function () {
-  return gulp.src('./src/scripts/shart.js')
+  return gulp.src('src/scripts/shart.js')
     .pipe(concat('shart.js'))
-      .pipe(gulp.dest('./dist'))
+      .pipe(gulp.dest('dist'))
     .pipe(concat('shart.min.js'))
       .pipe(uglify())
-      .pipe(gulp.dest('./dist'))
+      .pipe(gulp.dest('dist'))
   ;
 });
 
 gulp.task('scripts:angular', function () {
-  return gulp.src('./src/scripts/*.js')
+  return gulp.src('src/scripts/*.js')
     .pipe(concat('shart.angular.js'))
-      .pipe(gulp.dest('./dist'))
+      .pipe(gulp.dest('dist'))
     .pipe(concat('shart.angular.min.js'))
       .pipe(uglify())
-      .pipe(gulp.dest('./dist'))
+      .pipe(gulp.dest('dist'))
   ;
 });
 
@@ -63,12 +63,12 @@ gulp.task('examples:html', function() {
       return content.attributes;
     }))
     .pipe(handlebars(meta))
-    .pipe(gulp.dest('./dist/examples'))
+    .pipe(gulp.dest('dist/examples'))
   ;
 });
 gulp.task('examples:styles', function() {
   return gulp.src('src/styles/example.css')
-    .pipe(gulp.dest('./dist/examples'))
+    .pipe(gulp.dest('dist/examples'))
   ;
 });
 gulp.task('examples', ['examples:html', 'examples:styles']);
@@ -78,14 +78,13 @@ gulp.task('build', function() {
 });
 
 gulp.task('watch', ['build'], function() {
-  gulp.watch('./src/scripts/*', ['scripts']);
-  gulp.watch('./src/styles/*', ['examples:styles']);
-  gulp.watch('./src/examples/**/*', ['examples:html']);
-  gulp.watch('./src/layouts/*', ['examples:html']);
+  gulp.watch('src/scripts/*', ['scripts']);
+  gulp.watch('src/styles/*', ['examples:styles']);
+  gulp.watch(['src/examples/**/*', 'src/layouts/*'], ['examples:html']);
 });
 
 gulp.task('server', ['watch'], function() {
-  return gulp.src('./dist')
+  return gulp.src('dist')
     .pipe(webserver({
       livereload: true,
       directoryListing: true,

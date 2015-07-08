@@ -23,6 +23,31 @@ angular.module('shart', [])
   };
 })
 
+.directive('shartDonut', function() {
+  return {
+    restrict: 'E',
+
+    scope: {
+      data: '=',
+      label: '@',
+      labelPosition: '@',
+      value: '=',
+      size: '=',
+      type: '@'
+    },
+
+    link: function($scope, $element) {
+      Shart.Donut($element[0], $scope.data, {
+        class_name: $scope.type || false,
+        label: $scope.label,
+        label_position: $scope.labelPosition,
+        value: $scope.value,
+        size: $scope.size
+      });
+    }
+  };
+})
+
 ;
 
 })(window);
