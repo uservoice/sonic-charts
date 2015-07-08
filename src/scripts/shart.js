@@ -1877,7 +1877,6 @@
 
     exports.Pie = function(el, series, opts) {
       var shart = new PieGraph(el, series, opts);
-      autosize(shart);
       shart.draw();
       return shart;
     };
