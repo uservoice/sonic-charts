@@ -47,6 +47,27 @@ angular.module('shart', [])
   };
 })
 
+.directive('shartDonutStack', function() {
+  return {
+    restrict: 'E',
+
+    scope: {
+      data: '=',
+      total: '=',
+      labelSubtext: '@',
+      thickness: '=',
+    },
+
+    link: function($scope, $element) {
+      Shart.DonutStack($element[0], $scope.data, {
+        total: $scope.label,
+        label_subtext: $scope.labelPosition,
+        thickness: $scope.value
+      });
+    }
+  };
+})
+
 .directive('shartHorizontalBar', function() {
   return {
     restrict: 'E',

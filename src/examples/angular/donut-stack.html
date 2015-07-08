@@ -1,0 +1,18 @@
+---
+title: "Donut stack graphs"
+layout: "angular-example"
+---
+
+<figure class="well shart-well" ng-include="'shart-donut-stack-1.html'"></figure>
+<script class="code-block" type="text/ng-template" id="shart-donut-stack-1.html">
+<shart-donut-stack
+  total="2131",
+  label-subtext="people"
+  thickness="4"
+  data="[
+    {label: 'Widget',     value: 1167, color: '#6ea6df' },
+    {label: 'Web Portal', value: 543,  color: '#84c26d' },
+    {label: 'Mobile',     value: 224,  color: '#e17a69' },
+    {label: 'Email',      value: 404,  color: '#eeab68' }
+  ]"></shart-donut-stack>
+</script>

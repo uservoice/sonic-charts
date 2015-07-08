@@ -2,73 +2,58 @@
 <html>
 <head>
 
-<title>Examples</title>
+<title>Donut stack graphs</title>
 <link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.5/css/bootstrap.min.css">
-<link rel="stylesheet" href="./example.css">
-<link rel="stylesheet" href="//cdnjs.cloudflare.com/ajax/libs/qtip2/2.2.1/jquery.qtip.min.css">
 <link rel="stylesheet" href="//cdnjs.cloudflare.com/ajax/libs/highlight.js/8.6/styles/default.min.css">
-
-</head>
-<body>
+<link rel="stylesheet" href="../example.css">
 
 <script src="http://d3js.org/d3.v3.min.js"></script>
-<script src="//code.jquery.com/jquery-2.1.4.min.js"></script>
-<script src="//cdnjs.cloudflare.com/ajax/libs/qtip2/2.2.1/jquery.qtip.min.js"></script>
 <script src="//cdn.jsdelivr.net/highlight.js/8.6/highlight.min.js"></script>
-<script src="../shart.js"></script>
-
+<script src="//ajax.googleapis.com/ajax/libs/angularjs/1.3.15/angular.min.js"></script>
+<script src="../../shart.angular.js"></script>
 <script>
-Shart.configure(function(opts) {
-
-  opts.showTooltip = function(tip) {
-    $(tip.target).qtip({
-      style: 'qtip-light qtip-shadow qtip-rounded',
-      show: {
-        event: true,
-        solo: true,
-        ready: true
-      },
-      hide: {
-        event: false
-      },
-      content: {
-        text: $(tip.body)
-      },
-      position: {
-        my: 'top center',
-        at: 'bottom center',
-        adjust: { y: 3 }
-      }
-    });
-  };
-  opts.hideTooltip = function(tip) {
-    var api = $(tip.target).qtip('api');
-    if (api) { api.hide(); }
-  };
-});
+angular.module('app', ['shart']);
 </script>
+
+</head>
+<body ng-app="app">
 
 <div class="container">
 
 <div class="page-header">
   <a href="./index.html">Back to index</a> 
-  <h1>Examples</h1>
+  <h1>Donut stack graphs</h1>
 </div>
 
+
+<figure class="well shart-well" ng-include="'shart-donut-stack-1.html'"></figure>
+<script class="code-block" type="text/ng-template" id="shart-donut-stack-1.html">
+<shart-donut-stack
+  total="2131",
+  label-subtext="people"
+  thickness="4"
+  data="[
+    {label: 'Widget',     value: 1167, color: '#6ea6df' },
+    {label: 'Web Portal', value: 543,  color: '#84c26d' },
+    {label: 'Mobile',     value: 224,  color: '#e17a69' },
+    {label: 'Email',      value: 404,  color: '#eeab68' }
+  ]"></shart-donut-stack>
+</script>
 
 
 </div>
 
 <script>
-$(".code-block").each(function() {
-  var el = $(this)
-  ,   pre = $('<pre class="code-block">').text(el.html().trim())
+var blocks = document.getElementsByClassName("code-block");
+for (var i = 0; i < blocks.length; i++) {
+  var el = angular.element(blocks[i])
+  ,   pre = angular.element('<pre>').text(el.html().trim())
   ;
-  el.removeClass('code-block');
+  pre.attr('class', el.attr('class'));
+  el.attr('class', '');
   el.after(pre);
-  hljs.highlightBlock(pre.get(0));
-});
+  hljs.highlightBlock(pre[0]);
+}
 </script>
-
 </body>
 </html>
