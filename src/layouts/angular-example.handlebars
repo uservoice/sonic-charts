@@ -33,9 +33,10 @@ angular.module('app', ['shart']);
 var blocks = document.getElementsByClassName("code-block");
 for (var i = 0; i < blocks.length; i++) {
   var el = angular.element(blocks[i])
-  ,   pre = angular.element('<pre class="code-block">').text(el.html().trim())
+  ,   pre = angular.element('<pre>').text(el.html().trim())
   ;
-  el.removeClass('code-block');
+  pre.attr('class', el.attr('class'));
+  el.attr('class', '');
   el.after(pre);
   hljs.highlightBlock(pre[0]);
 }

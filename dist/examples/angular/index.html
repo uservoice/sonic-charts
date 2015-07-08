@@ -34,7 +34,7 @@ angular.module('app', ['shart']);
   <li><a href="./pie.html">Pie</a></li>
   <li><a href="./donut.html">Donut</a></li>
   <!-- <li><a href="./donut-stack.html">Donut stack</a></li> -->
-  <!-- <li><a href="./horizontal-bar.html">Horizontal bar</a></li> -->
+  <li><a href="./horizontal-bar.html">Horizontal bar</a></li>
   <!-- <li><a href="./pipeline.html">Pipeline</a></li> -->
 </ul>
 
@@ -45,9 +45,10 @@ angular.module('app', ['shart']);
 var blocks = document.getElementsByClassName("code-block");
 for (var i = 0; i < blocks.length; i++) {
   var el = angular.element(blocks[i])
-  ,   pre = angular.element('<pre class="code-block">').text(el.html().trim())
+  ,   pre = angular.element('<pre>').text(el.html().trim())
   ;
-  el.removeClass('code-block');
+  pre.attr('class', el.attr('class'));
+  el.attr('class', '');
   el.after(pre);
   hljs.highlightBlock(pre[0]);
 }

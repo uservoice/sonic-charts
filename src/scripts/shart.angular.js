@@ -14,11 +14,10 @@ angular.module('shart', [])
     },
 
     link: function($scope, $element) {
-      Shart.Pie(
-        $element[0],
-        $scope.data,
-        { width: $scope.width, height: $scope.height }
-      );
+      Shart.Pie($element[0], $scope.data, {
+        width: $scope.width,
+        height: $scope.height
+      });
     }
   };
 })
@@ -43,6 +42,23 @@ angular.module('shart', [])
         label_position: $scope.labelPosition,
         value: $scope.value,
         size: $scope.size
+      });
+    }
+  };
+})
+
+.directive('shartHorizontalBar', function() {
+  return {
+    restrict: 'E',
+
+    scope: {
+      data: '=',
+      percentages: '='
+    },
+
+    link: function($scope, $element) {
+      Shart.HorizontalBar($element[0], $scope.data, {
+        percentages: $scope.percentages
       });
     }
   };

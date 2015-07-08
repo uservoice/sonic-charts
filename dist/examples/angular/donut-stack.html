@@ -2,7 +2,7 @@
 <html>
 <head>
 
-<title>Horizontal bar graphs</title>
+<title>Examples</title>
 <link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.5/css/bootstrap.min.css">
 <link rel="stylesheet" href="./example.css">
 <link rel="stylesheet" href="//cdnjs.cloudflare.com/ajax/libs/qtip2/2.2.1/jquery.qtip.min.css">
@@ -52,34 +52,9 @@ Shart.configure(function(opts) {
 
 <div class="page-header">
   <a href="./index.html">Back to index</a> 
-  <h1>Horizontal bar graphs</h1>
+  <h1>Examples</h1>
 </div>
 
-
-<p>Like the pie and donut graphs, the horizontal bar graph is another way to visualize percentage breakdowns.</p>
-
-<figure class="well shart-well"><div id="horizontal-bar-graph-1" class="horizontal-bar-graph"></div></figure>
-<script class="code-block">
-Shart.HorizontalBar('#horizontal-bar-graph-1', [
-  {label: 'Desktop',  label_subtext: '1,167 visits',  value: 1167,  color: '#6ea6df' },
-  {label: 'Mobile',   label_subtext: '543 visits',    value: 543,   color: '#84c26d' },
-  {label: 'Tablet',   label_subtext: '224 visits',    value: 224,   color: '#e17a69' }
-]);
-</script>
-
-<p>You can also include percentage breakdowns on the labels with the <code>percentage</code> option.</p>
-
-<figure class="well shart-well"><div id="horizontal-bar-graph-2" class="horizontal-bar-graph"></div></figure>
-<script class="code-block">
-Shart.HorizontalBar('#horizontal-bar-graph-2', [
-  {label: 'Fast',  label_subtext: 'Within an hour',  value: 1167,  color: '#74b50d' },
-  {label: 'Good',  label_subtext: '1-4 hours',       value: 543,   color: '#a6d15d' },
-  {label: 'Okay',  label_subtext: '4-24 hours',      value: 324,   color: '#f5e14d' },
-  {label: 'Slow',  label_subtext: 'Over 24 hours',   value: 240,   color: '#e26148' }
-], {
-  percentages: true
-});
-</script>
 
 
 </div>
