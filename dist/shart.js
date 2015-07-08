@@ -853,8 +853,8 @@
           .html('') // need to clear out existing stuff
           .classed('shart shart-series-graph', true);
 
-        this.width = width = parseInt(this.el.style('width'), 10);
-        this.height = height = parseInt(this.el.style('height'), 10);
+        this.width = width = parseInt(this.el.style('width'), 10) || 600;
+        this.height = height = parseInt(this.el.style('height'), 10) || 180;
 
         if (this.dateAxis || this.xAxis) {
           this.el.classed('x-axis', true);

@@ -3,6 +3,30 @@
 
 angular.module('shart', [])
 
+.directive('shartSeries', function() {
+  return {
+    restrict: 'E',
+
+    scope: {
+      data: '=',
+      startTime: '@',
+      endTime: '@',
+      dateAxis: '@',
+      yAxisTicks: '='
+    },
+
+    link: function($scope, $element) {
+      // TODO: More options!
+      Shart.Series($element[0], $scope.data, {
+        startTime: $scope.startTime,
+        endTime: $scope.endTime,
+        dateAxis: $scope.dateAxis || 'none',
+        yAxis: { ticks: $scope.yAxisTicks }
+      });
+    }
+  };
+})
+
 .directive('shartPie', function() {
   return {
     restrict: 'E',
