@@ -851,7 +851,10 @@
 
         this.el
           .html('') // need to clear out existing stuff
-          .classed('shart shart-series-graph', true);
+          .classed('shart shart-series-graph', true)
+          .style('width', '')
+          .style('height', '')
+        ;
 
         this.width = width = parseInt(this.el.style('width'), 10) || 600;
         this.height = height = parseInt(this.el.style('height'), 10) || 180;

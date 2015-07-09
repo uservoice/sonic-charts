@@ -91,6 +91,11 @@
   font-weight: bold;
 }
 
+/* Series */
+
+.shart-series-graph {
+  display: block;
+}
 
 /* Donuts */
 
