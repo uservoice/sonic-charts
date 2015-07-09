@@ -13,12 +13,7 @@ var gulp = require('gulp')
 ,   webserver = require('gulp-webserver')
 ;
 
-gulp.task('clean', function(done) {
-  gulp.src('')
-    .pipe(shell('rm -Rf ./dist/*'))
-  ;
-  done();
-});
+gulp.task('clean', shell.task('rm -Rf ./dist/*'));
 
 gulp.task('scripts:lint', function() {
   return gulp.src('src/*.js')
@@ -73,8 +68,8 @@ gulp.task('examples:styles', function() {
 });
 gulp.task('examples', ['examples:html', 'examples:styles']);
 
-gulp.task('build', function() {
-   runSequence('clean', 'scripts:lint', 'scripts', 'examples');
+gulp.task('build', function(done) {
+  runSequence('clean', 'scripts:lint', 'scripts', 'examples', done);
 });
 
 gulp.task('watch', ['build'], function() {
@@ -94,15 +89,13 @@ gulp.task('server', ['watch'], function() {
   ;
 });
 
-gulp.task('deploy:divshot', function(done) {
-  gulp.src('')
-    .pipe(shell('divshot push && divshot promote development production'))
-  ;
-  done();
-});
+gulp.task('deploy:divshot', shell.task([
+  'divshot push',
+  'divshot promote development production'
+]));
 
-gulp.task('deploy', function() {
-  runSequence('build', 'deploy:divshot');
+gulp.task('deploy', function(done) {
+  runSequence('build', 'deploy:divshot', done);
 });
 
 gulp.task('default', ['build']);
