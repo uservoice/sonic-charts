@@ -1066,7 +1066,7 @@
       this.yGuides = opts.y_guides || [];
       if (opts.y_guide) { this.yGuides.push(opts.y_guide) }
       
-      this.strokeColor = opts.color || 'blue';
+      this.strokeColor = opts.stroke_color || opts.color || 'blue';
       this.strokeWidth = opts.stroke_width || 1;
 
       this.series = series || [];

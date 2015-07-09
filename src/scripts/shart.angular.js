@@ -27,6 +27,35 @@ angular.module('shart', [])
   };
 })
 
+.directive('shartSparkline', function() {
+  return {
+    restrict: 'E',
+
+    scope: {
+      data: '=',
+      width: '=',
+      height: '=',
+      color: '@',
+      strokeColor: '@',
+      strokeWidth: '=',
+      yGuide: '=',
+      yGuides: '='
+    },
+
+    link: function($scope, $element) {
+      Shart.Sparkline($element[0], $scope.data, {
+        width: $scope.width,
+        height: $scope.height,
+        color: $scope.color,
+        stroke_color: $scope.strokeColor,
+        stroke_width: $scope.strokeWidth,
+        y_guide: $scope.yGuide,
+        y_guides: $scope.yGuides
+      });
+    }
+  };
+})
+
 .directive('shartPie', function() {
   return {
     restrict: 'E',

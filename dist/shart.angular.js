@@ -27,6 +27,35 @@ angular.module('shart', [])
   };
 })
 
+.directive('shartSparkline', function() {
+  return {
+    restrict: 'E',
+
+    scope: {
+      data: '=',
+      width: '=',
+      height: '=',
+      color: '@',
+      strokeColor: '@',
+      strokeWidth: '=',
+      yGuide: '=',
+      yGuides: '='
+    },
+
+    link: function($scope, $element) {
+      Shart.Sparkline($element[0], $scope.data, {
+        width: $scope.width,
+        height: $scope.height,
+        color: $scope.color,
+        stroke_color: $scope.strokeColor,
+        stroke_width: $scope.strokeWidth,
+        y_guide: $scope.yGuide,
+        y_guides: $scope.yGuides
+      });
+    }
+  };
+})
+
 .directive('shartPie', function() {
   return {
     restrict: 'E',
@@ -1196,7 +1225,7 @@ angular.module('shart', [])
       this.yGuides = opts.y_guides || [];
       if (opts.y_guide) { this.yGuides.push(opts.y_guide) }
       
-      this.strokeColor = opts.color || 'blue';
+      this.strokeColor = opts.stroke_color || opts.color || 'blue';
       this.strokeWidth = opts.stroke_width || 1;
 
       this.series = series || [];
