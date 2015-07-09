@@ -2049,7 +2049,6 @@ angular.module('shart', [])
         exit
           .remove();
       }
-
     };
 
 
