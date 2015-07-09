@@ -69,7 +69,11 @@ gulp.task('examples:styles', function() {
 gulp.task('examples', ['examples:html', 'examples:styles']);
 
 gulp.task('build', function(done) {
-  runSequence('clean', 'scripts:lint', 'scripts', 'examples', done);
+  runSequence(
+    'clean',
+    ['scripts:lint', 'scripts', 'examples'],
+    done
+  );
 });
 
 gulp.task('watch', ['build'], function() {
