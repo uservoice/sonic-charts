@@ -2,7 +2,7 @@
 <html>
 <head>
 
-<title>Shart Angular examples</title>
+<title>Legends</title>
 <link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.5/css/bootstrap.min.css">
 <link rel="stylesheet" href="//cdnjs.cloudflare.com/ajax/libs/highlight.js/8.6/styles/default.min.css">
 <link rel="stylesheet" href="../example.css">
@@ -21,24 +21,20 @@ angular.module('app', ['shart']);
 <div class="container">
 
 <div class="page-header">
-   
-  <h1>Shart Angular examples</h1>
+  <a href="./index.html">Back to index</a> 
+  <h1>Legends</h1>
 </div>
 
 
-<p>The <tt>shart.angular.js</tt> package includes everything in <tt>shart.js</tt> plus a handful of directives
-  for easy integration in an Angular application.</p>
-
-<ul>
-  <li><a href="./series.html">Series</a></li>
-  <li><a href="./sparkline.html">Sparkline</a></li>
-  <li><a href="./pie.html">Pie</a></li>
-  <li><a href="./donut.html">Donut</a></li>
-  <li><a href="./donut-stack.html">Donut stack</a></li>
-  <li><a href="./horizontal-bar.html">Horizontal bar</a></li>
-  <li><a href="./pipeline.html">Pipeline</a></li>
-  <li><a href="./legend.html">Legend</a></li>
-</ul>
+<figure class="well shart-well" ng-include="'shart-legend-1.html'"></figure>
+<script class="code-block html" type="text/ng-template" id="shart-legend-1.html">
+<shart-legend
+  data="[
+    {label: 'Mobile',  value: 1167, color: '#6ea6df' },
+    {label: 'Web',     value: 224,  color: '#e17a69' },
+    {label: 'Desktop', value: 543,  color: '#84c26d' }
+  ]"></shart-legend>
+</script>
 
 
 </div>

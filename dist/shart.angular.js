@@ -3,6 +3,20 @@
 
 angular.module('shart', [])
 
+.directive('shartLegend', function() {
+  return {
+    restrict: 'E',
+
+    scope: {
+      data: '=',
+    },
+
+    link: function($scope, $element) {
+      Shart.Legend($element[0], $scope.data, {});
+    }
+  };
+})
+
 .directive('shartSeries', function() {
   return {
     restrict: 'E',
