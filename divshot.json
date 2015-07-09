@@ -1,0 +1,8 @@
+{
+  "name": "shart",
+  "root": "dist",
+  "clean_urls": true,
+  "redirects": {
+    "/": "/examples/index.html"
+  }
+}

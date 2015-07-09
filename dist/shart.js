@@ -852,7 +852,7 @@
 
         this.el
           .html('') // need to clear out existing stuff
-          .classed('shart shart-series-graph', true)
+          .classed('shart-series-graph', true)
           .style('width', '')
           .style('height', '')
         ;
@@ -1089,7 +1089,7 @@
       ;
       
       var chart = this.el
-        .classed('shart-sparkline', true)
+        .classed('shart-sparkline-graph', true)
         .html('')
       ;
       
@@ -1108,10 +1108,10 @@
       ;
       
       svg
-        .selectAll('.shart-sparkline-y-guide')
+        .selectAll('.shart-sparkline-graph-y-guide')
           .data(yGuides)
           .enter()
-            .append('line').classed('shart-sparkline-y-guide', true)
+            .append('line').classed('shart-sparkline-graph-y-guide', true)
               .attr('clip-path', 'url(#clip)')
               .attr('x1', x(0))
               .attr('y1', function(d) { return Math.floor(y(d)) + 0.5; })
@@ -1123,7 +1123,7 @@
               .attr('stroke-linecap', 'butt')
       ;
       
-      svg.append('path').classed('shart-sparkline-stroke', true)
+      svg.append('path').classed('shart-sparkline-graph-stroke', true)
         .attr('clip-path', 'url(#clip)')
         .attr('d', line(data))
         .attr('fill', 'none')
@@ -1166,7 +1166,7 @@
       ;
 
       var chart = this.el
-        .classed('shart-pie', true)
+        .classed('shart-pie-graph', true)
         .style({
           'position': 'relative',
           'width': this.width + 'px',
@@ -1264,7 +1264,7 @@
 
       this.el
         .html("")
-        .classed('donut-graph', true)
+        .classed('shart-donut-graph', true)
         .style('width', this.size + 'px')
         .style('height', this.size + 'px');
 
@@ -1281,17 +1281,17 @@
         .attr('height', this.size);
 
       svg.append('svg:path')
-        .classed('donut-graph-background', true)
+        .classed('shart-donut-graph-background', true)
         .attr('fill', '#e5e5e5')
         .attr('transform', 'translate(' + this.radius + ',' + this.radius + ')')
         .attr('d', arc().startAngle(0).endAngle(2*Math.PI)());
 
       svg.append('svg:g')
-        .selectAll('.donut-graph-arc')
+        .selectAll('.shart-donut-graph-arc')
         .data(pie(this.series))
         .enter()
           .append('svg:path')
-            .classed('donut-graph-arc', true)
+            .classed('shart-donut-graph-arc', true)
             .attr('transform', 'translate(' + this.radius + ',' + this.radius + ')')
             .attr('fill', function(d) { return d.data.color; })
             .attr('d', arc());
@@ -1312,18 +1312,18 @@
           .style("vertical-align", "middle");
 
         value = label_group_inner.append("div")
-          .classed('donut-graph-value', true)
+          .classed('shart-donut-graph-value', true)
           .text(this.value_text);
 
         label = label_group_inner.append("div")
-          .classed("donut-graph-label", true)
+          .classed("shart-donut-graph-label", true)
           .style("text-align", "center")
           .text(this.label);
 
       } else {
 
         value = graph.append('div')
-          .classed("donut-graph-value", true)
+          .classed("shart-donut-graph-value", true)
           .style("white-space", "nowrap")
           .style("overflow", "visible")
           .style("display", "inline-block")
@@ -1343,7 +1343,7 @@
           var width = this.size;
 
           label = graph.append('div')
-            .classed("donut-graph-label", true)
+            .classed("shart-donut-graph-label", true)
             .style("white-space", "nowrap")
             .style("overflow", "visible")
             .style("display", "inline-block")
@@ -1353,7 +1353,7 @@
             label.node().appendChild(document.createTextNode(" "));
 
             label.append('span')
-              .classed("donut-graph-label-subtext", true)
+              .classed("shart-donut-graph-label-subtext", true)
               .text(this.label_subtext);
           }
 
@@ -1420,10 +1420,10 @@
 
       this.el.html(''); // Clear out contents
 
-      this.el.classed('donut-stack-graph', true);
+      this.el.classed('shart-donut-stack-graph', true);
 
       for (i = 0; i < series.length; i++) {
-        var item = this.el.append('div').classed('donut-stack-graph-item', true);
+        var item = this.el.append('div').classed('shart-donut-stack-graph-item', true);
 
         var subtext = Util.formatInt(series[i].value);
         if (this.label_subtext) { subtext += ' ' + this.label_subtext; }
@@ -1442,7 +1442,7 @@
         });
 
         donut.el
-          .classed('donut-stack-graph-item-donut-graph');
+          .classed('shart-donut-stack-graph-item-donut-graph');
 
         donut.draw();
       }
@@ -1476,16 +1476,16 @@
         .range([0, 100]);
 
       this.el
-        .classed("horizontal-bar-graph", true);
+        .classed("shart-horizontal-bar-graph", true);
 
       var segment = this.el
-        .selectAll(".horizontal-bar-graph-segment")
+        .selectAll(".shart-horizontal-bar-graph-segment")
           .data(this.series)
         .enter()
-          .append("div").classed("horizontal-bar-graph-segment", true);
+          .append("div").classed("shart-horizontal-bar-graph-segment", true);
 
       var label = segment
-        .append("div").classed("horizontal-bar-graph-label", true);
+        .append("div").classed("shart-horizontal-bar-graph-label", true);
 
       if (this.percentages) {
         label
@@ -1500,12 +1500,12 @@
       }
 
       label
-        .append("span").classed("horizontal-bar-graph-label-subtext", true)
+        .append("span").classed("shart-horizontal-bar-graph-label-subtext", true)
           .text(function(d) { return d.label_subtext });
 
       segment
-        .append("div").classed("horizontal-bar-graph-value", true)
-          .append("div").classed("horizontal-bar-graph-value-bar", true)
+        .append("div").classed("shart-horizontal-bar-graph-value", true)
+          .append("div").classed("shart-horizontal-bar-graph-value-bar", true)
             .style("background-color", function(d) { return d.color })
             .style("width", function(d) { return x(d.value || 0) + "%" })
             .style("min-width", "1px");
@@ -1612,14 +1612,14 @@
 
         var enter = item.enter()
           .append('g')
-           .attr('class', 'shart-pipeline-graph-item')
+           .attr('class', 'shart-pipeline-item')
            .attr('transform', function(d) { return 'translate(' + d.x + ',0)' })
            .attr('clip-path', function(d, i) { return 'url(#clip-' + chart.id + '-' + i + ')' })
         ;
 
         if (this.labels) {
           enter.append('text')
-            .attr('class', 'shart-pipeline-graph-item-label')
+            .attr('class', 'shart-pipeline-item-label')
             .attr('x', 2)
             .attr('y', baselines.label)
             .text(function(d) {
@@ -1635,7 +1635,7 @@
 
         if (this.label_subtext) {
           enter.append('text')
-            .attr('class', 'shart-pipeline-graph-item-label-subtext')
+            .attr('class', 'shart-pipeline-item-label-subtext')
             .attr('x', 2)
             .attr('y', baselines.label + baselines.label_subtext)
             .text(function(d) { return d.label_subtext })
@@ -1648,7 +1648,7 @@
         svg.attr("height", height);
 
         enter.append('rect')
-          .attr('class', 'shart-pipeline-graph-item-bar')
+          .attr('class', 'shart-pipeline-item-bar')
           .attr('fill', function(d) { return d.color })
           .attr('y', baselines.label + baselines.label_subtext + baselines.bar - barHeight)
           .attr('width', function(d) { return d.width })
