@@ -286,6 +286,7 @@ angular.module('shart', [])
 
     // Graphs
     ,   SeriesGraph
+    ,   SparklineGraph
     ,   PieGraph
     ,   DonutGraph
     ,   DonutStackGraph
@@ -1180,6 +1181,90 @@ angular.module('shart', [])
 
 
     //
+    // Sparkline Graph
+    //
+    SparklineGraph = function(el, series, opts) {
+      opts = (opts || {});
+
+      this.id = chartId();
+
+      this.el = d3.select(el);
+
+      this.width = opts.width || 120;
+      this.height = opts.height || 40;
+      
+      this.yGuides = opts.y_guides || [];
+      if (opts.y_guide) { this.yGuides.push(opts.y_guide) }
+      
+      this.strokeColor = opts.stroke_color || 'blue';
+      this.strokeWidth = opts.stroke_width || 1;
+
+      this.series = series || [];
+    };
+
+    SparklineGraph.prototype.draw = function() {
+      var padding = {left: 0, top: 2, right: 0, bottom: 2}
+      ,   width = this.width
+      ,   height = this.height
+      ,   yGuides = this.yGuides
+      ,   data = this.series
+      ,   strokeColor = this.strokeColor
+      ,   strokeWidth = this.strokeWidth
+      ,   max = d3.max(data)
+      ,   min = d3.min([0].concat(data))
+      ,   length = data.length
+      ,   x = d3.scale.linear().domain([0, length - 1]).range([padding.left, width - padding.left - padding.right])
+      ,   y = d3.scale.linear().domain([min, max]).range([height - padding.top - padding.bottom, padding.top])
+      ,   line = d3.svg.line().x(function(d,i) { return x(i) }).y(function(d) { return y(d) })
+      ;
+      
+      var chart = this.el
+        .classed('shart-sparkline', true)
+        .html('')
+      ;
+      
+      var svg = chart.append('svg')
+        .attr('width', width) 
+        .attr('height', height)
+      ;
+      
+      svg.append('clipPath')
+        .attr('id', 'clip')
+        .append('rect')
+          .attr('x', 0)
+          .attr('y', 0)
+          .attr('width', width)
+          .attr('height', height)
+      ;
+      
+      svg
+        .selectAll('.shart-sparkline-y-guide')
+          .data(yGuides)
+          .enter()
+            .append('line').classed('shart-sparkline-y-guide', true)
+              .attr('clip-path', 'url(#clip)')
+              .attr('x1', x(0))
+              .attr('y1', function(d) { return Math.floor(y(d)) + 0.5; })
+              .attr('x2', x(length - 1))
+              .attr('y2', function(d) { return Math.floor(y(d)) + 0.5; })
+              .attr('fill', 'none')
+              .attr('stroke', '#ddd')
+              .attr('stroke-width', 1)
+              .attr('stroke-linecap', 'butt')
+      ;
+      
+      svg.append('path').classed('shart-sparkline-stroke', true)
+        .attr('clip-path', 'url(#clip)')
+        .attr('d', line(data))
+        .attr('fill', 'none')
+        .attr('stroke', strokeColor)
+        .attr('stroke-width', strokeWidth)
+        .attr('stroke-linecap', 'butt')
+      ;
+    };
+
+
+    //
     // Pie Graph
     //
 
@@ -1204,7 +1289,6 @@ angular.module('shart', [])
     };
 
     PieGraph.prototype.draw = function() {
-      // need to clear out existing drawn shit
       this.el.html('');
       
       this.el.style('width', this.width + 'px');
@@ -2004,6 +2088,12 @@ angular.module('shart', [])
     exports.Series = function(el, series, opts) {
       var shart = new SeriesGraph(el, series, opts);
       autosize(shart);
+      shart.draw();
+      return shart;
+    };
+
+    exports.Sparkline = function(el, series, opts) {
+      var shart = new SparklineGraph(el, series, opts);
       shart.draw();
       return shart;
     };

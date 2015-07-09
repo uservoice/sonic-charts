@@ -2,7 +2,7 @@
 <html>
 <head>
 
-<title>Shart examples</title>
+<title>Sparkline graphs</title>
 <link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.5/css/bootstrap.min.css">
 <link rel="stylesheet" href="./example.css">
 <link rel="stylesheet" href="//cdnjs.cloudflare.com/ajax/libs/qtip2/2.2.1/jquery.qtip.min.css">
@@ -51,27 +51,48 @@ Shart.configure(function(opts) {
 <div class="container">
 
 <div class="page-header">
-   
-  <h1>Shart examples</h1>
+  <a href="./index.html">Back to index</a> 
+  <h1>Sparkline graphs</h1>
 </div>
 
 
-<p>Shart allows you to create a number of types of graphs, from area and line graphs,
-  to horizontal bar charts, to donut and pie graphs. Shart made is made with
-  <a href="http://d3js.org/">d3.js</a> so it should be easy to extend and modify.</p>
+<p>Sparkline graphs are minature graphs ideal for displaying a single sequence.</p>
 
-<ul>
-  <li><a href="./series.html">Series</a></li>
-  <li><a href="./sparkline.html">Sparkline</a></li>
-  <li><a href="./pie.html">Pie</a></li>
-  <li><a href="./donut.html">Donut</a></li>
-  <li><a href="./donut-stack.html">Donut stack</a></li>
-  <li><a href="./horizontal-bar.html">Horizontal bar</a></li>
-  <li><a href="./pipeline.html">Pipeline</a></li>
-</ul>
+<figure class="well shart-well"><div id="sparkline-1"></div></figure>
+<script class="code-block">
+Shart.Sparkline('#sparkline-1', [1,2,3,8,2,3,9,1,1,0,4,5,30,4], {
+  width: 60,
+  height: 20,
+  stroke_color: '#e74c3c',
+  stroke_width: 2
+});
+</script>
 
-<p>Interested in using Shart with Angular? No problem. Shart also includes
-  <a href="./angular/index.html">easy integration with Angular</a>.</p>
+<hr>
+<p>With a guide:</p>
+
+<figure class="well shart-well"><div id="sparkline-2"></div></figure>
+<script class="code-block">
+Shart.Sparkline('#sparkline-2', [1,14,2,8,5,20,4], {
+  width: 60,
+  height: 20,
+  stroke_color: '#3498db',
+  stroke_width: 2,
+  y_guide: 10
+});
+</script>
+
+<hr>
+<p>With a multiple guides:</p>
+
+<figure class="well shart-well"><div id="sparkline-3"></div></figure>
+<script class="code-block">
+Shart.Sparkline('#sparkline-3', [1,2,4,14,2,3,15,1,1,null,null,5,30,4], {
+  stroke_color: '#2ecc71',
+  stroke_width: 2,
+  y_guides: [0,10,20,30]
+});
+</script>
 
 
 </div>

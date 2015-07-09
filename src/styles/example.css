@@ -91,10 +91,18 @@
   font-weight: bold;
 }
 
+
 /* Series */
 
 .shart-series-graph {
   display: block;
+}
+
+
+/* Sparklines */
+
+.shart-sparkline {
+  display: inline-block;
 }
 
 /* Donuts */
