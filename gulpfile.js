@@ -94,4 +94,15 @@ gulp.task('server', ['watch'], function() {
   ;
 });
 
+gulp.task('deploy:divshot', function(done) {
+  gulp.src('')
+    .pipe(shell('divshot push && divshot promote development production'))
+  ;
+  done();
+});
+
+gulp.task('deploy', function() {
+  runSequence('build', 'deploy:divshot');
+});
+
 gulp.task('default', ['build']);
