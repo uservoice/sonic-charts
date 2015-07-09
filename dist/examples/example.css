@@ -105,6 +105,13 @@
   display: inline-block;
 }
 
+
+/* Pie */
+.shart-pie {
+  display: inline-block;
+}
+
+
 /* Donuts */
 
 .donut { }

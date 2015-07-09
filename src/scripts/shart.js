@@ -1159,27 +1159,42 @@
     };
 
     PieGraph.prototype.draw = function() {
-      this.el.html('');
-      
-      this.el.style('width', this.width + 'px');
-      this.el.style('height', this.height + 'px');
-
-      this.svg = this.el.append('svg:svg')
-        .attr('width', this.width)
-        .attr('height', this.height);
-
-      var radius  = (Math.min(this.width, this.height) / 2) - 1
+      var diameter = Math.min(this.width, this.height)
+      ,   radius  = (diameter / 2) - 1
       ,   arc     = d3.svg.arc().outerRadius(radius)
       ,   data    = this.sequenceData()
       ;
 
+      var chart = this.el
+        .classed('shart-pie', true)
+        .style({
+          'position': 'relative',
+          'width': this.width + 'px',
+          'height': 0,
+          'padding-bottom': this.height + 'px'
+        })
+        .html('')
+      ;
+      
+      var svg = chart.append('svg:svg')
+        .attr('width', this.width)
+        .attr('height', this.height)
+        .attr('viewBox', [0, 0, diameter, diameter].join(' '))
+        .style({
+          'position': 'absolute',
+          'left': 0,
+          'top': 0
+        })
+      ;
+
+
       data.forEach(function(slice, i) {
         // Don't draw anything if the value is 0
-        if(slice.value === 0){ return; }
+        if (slice.value === 0) { return; }
 
         var cooler = this.series[i].color || exports.colors(i).toString();
 
-        this.svg.append('svg:path')
+        svg.append('svg:path')
           .attr('d', arc(slice))
           .attr('transform', 'translate(' + (radius + 1) + ',' + (radius + 1) + ')')
           .attr('fill', cooler)
