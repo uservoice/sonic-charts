@@ -1637,14 +1637,14 @@
 
         var enter = item.enter()
           .append('g')
-           .attr('class', 'shart-pipeline-item')
+           .attr('class', 'shart-pipeline-graph-item')
            .attr('transform', function(d) { return 'translate(' + d.x + ',0)' })
            .attr('clip-path', function(d, i) { return 'url(#clip-' + chart.id + '-' + i + ')' })
         ;
 
         if (this.labels) {
           enter.append('text')
-            .attr('class', 'shart-pipeline-item-label')
+            .attr('class', 'shart-pipeline-graph-item-label')
             .attr('x', 2)
             .attr('y', baselines.label)
             .text(function(d) {
@@ -1659,7 +1659,7 @@
 
         if (this.label_subtext) {
           enter.append('text')
-            .attr('class', 'shart-pipeline-item-label-subtext')
+            .attr('class', 'shart-pipeline-graph-item-label-subtext')
             .attr('x', 2)
             .attr('y', baselines.label + baselines.label_subtext)
             .text(function(d) { return d.label_subtext })
@@ -1672,7 +1672,7 @@
         svg.attr("height", height);
 
         enter.append('rect')
-          .attr('class', 'shart-pipeline-item-bar')
+          .attr('class', 'shart-pipeline-graph-item-bar')
           .attr('fill', function(d) { return d.color })
           .attr('y', baselines.label + baselines.label_subtext + baselines.bar - barHeight)
           .attr('width', function(d) { return d.width })

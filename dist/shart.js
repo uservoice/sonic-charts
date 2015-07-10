@@ -1562,14 +1562,14 @@ function _classCallCheck(instance, Constructor) { if (!(instance instanceof Cons
 
           item.exit().remove();
 
-          var enter = item.enter().append('g').attr('class', 'shart-pipeline-item').attr('transform', function (d) {
+          var enter = item.enter().append('g').attr('class', 'shart-pipeline-graph-item').attr('transform', function (d) {
             return 'translate(' + d.x + ',0)';
           }).attr('clip-path', function (d, i) {
             return 'url(#clip-' + chart.id + '-' + i + ')';
           });
 
           if (this.labels) {
-            enter.append('text').attr('class', 'shart-pipeline-item-label').attr('x', 2).attr('y', baselines.label).text(function (d) {
+            enter.append('text').attr('class', 'shart-pipeline-graph-item-label').attr('x', 2).attr('y', baselines.label).text(function (d) {
               var percentage_label = formatPercentage(d.percentage);
               if (isEmpty) {
                 percentage_label = '--' + '%';
@@ -1581,7 +1581,7 @@ function _classCallCheck(instance, Constructor) { if (!(instance instanceof Cons
           }
 
           if (this.label_subtext) {
-            enter.append('text').attr('class', 'shart-pipeline-item-label-subtext').attr('x', 2).attr('y', baselines.label + baselines.label_subtext).text(function (d) {
+            enter.append('text').attr('class', 'shart-pipeline-graph-item-label-subtext').attr('x', 2).attr('y', baselines.label + baselines.label_subtext).text(function (d) {
               return d.label_subtext;
             });
           } else {
@@ -1591,7 +1591,7 @@ function _classCallCheck(instance, Constructor) { if (!(instance instanceof Cons
           this.height = height = baselines.label + baselines.label_subtext + baselines.bar;
           svg.attr('height', height);
 
-          enter.append('rect').attr('class', 'shart-pipeline-item-bar').attr('fill', function (d) {
+          enter.append('rect').attr('class', 'shart-pipeline-graph-item-bar').attr('fill', function (d) {
             return d.color;
           }).attr('y', baselines.label + baselines.label_subtext + baselines.bar - barHeight).attr('width', function (d) {
             return d.width;
