@@ -1,6 +1,10 @@
 'use strict';
 
+var _get = function get(_x, _x2, _x3) { var _again = true; _function: while (_again) { var object = _x, property = _x2, receiver = _x3; desc = parent = getter = undefined; _again = false; if (object === null) object = Function.prototype; var desc = Object.getOwnPropertyDescriptor(object, property); if (desc === undefined) { var parent = Object.getPrototypeOf(object); if (parent === null) { return undefined; } else { _x = parent; _x2 = property; _x3 = receiver; _again = true; continue _function; } } else if ('value' in desc) { return desc.value; } else { var getter = desc.get; if (getter === undefined) { return undefined; } return getter.call(receiver); } } };
+
 var _createClass = (function () { function defineProperties(target, props) { for (var i = 0; i < props.length; i++) { var descriptor = props[i]; descriptor.enumerable = descriptor.enumerable || false; descriptor.configurable = true; if ('value' in descriptor) descriptor.writable = true; Object.defineProperty(target, descriptor.key, descriptor); } } return function (Constructor, protoProps, staticProps) { if (protoProps) defineProperties(Constructor.prototype, protoProps); if (staticProps) defineProperties(Constructor, staticProps); return Constructor; }; })();
+
+function _inherits(subClass, superClass) { if (typeof superClass !== 'function' && superClass !== null) { throw new TypeError('Super expression must either be null or a function, not ' + typeof superClass); } subClass.prototype = Object.create(superClass && superClass.prototype, { constructor: { value: subClass, enumerable: false, writable: true, configurable: true } }); if (superClass) subClass.__proto__ = superClass; }
 
 function _classCallCheck(instance, Constructor) { if (!(instance instanceof Constructor)) { throw new TypeError('Cannot call a class as a function'); } }
 
@@ -363,12 +367,6 @@ function _classCallCheck(instance, Constructor) { if (!(instance instanceof Cons
       }
     };
 
-    // Calculate unique IDs for charts
-    uniqueChartId = 0;
-    function chartId() {
-      return uniqueChartId++;
-    }
-
     // Given a series, extract the individual segements.
     function flattenSeries(data) {
       var results = [];
@@ -452,6 +450,43 @@ function _classCallCheck(instance, Constructor) { if (!(instance instanceof Cons
 
       return data;
     }
+
+    //
+    // Graph - abstract base class from which all graphs inherit
+    //
+
+    var Graph = (function () {
+      function Graph(el, series, options) {
+        _classCallCheck(this, Graph);
+
+        this.id = Graph.uniqueId();
+        this.el = d3.select(el);
+        this.series = series || [];
+        this.options = options || {};
+      }
+
+      _createClass(Graph, [{
+        key: 'draw',
+        value: function draw() {}
+      }, {
+        key: 'update',
+        value: function update(series, animate) {
+          this.series = series;
+          // abstract: update the chart
+        }
+      }, {
+        key: 'destroy',
+        value: function destroy() {}
+      }]);
+
+      return Graph;
+    })();
+
+    // Calculate unique IDs for charts
+    Graph.lastUniqueId = 0;
+    Graph.uniqueId = function () {
+      return Graph.lastUniqueId++;
+    };
 
     //
     // Band
@@ -873,16 +908,15 @@ function _classCallCheck(instance, Constructor) { if (!(instance instanceof Cons
     // Series Graph
     //
 
-    var SeriesGraph = (function () {
-      function SeriesGraph(el, series, opts) {
+    var SeriesGraph = (function (_Graph) {
+      function SeriesGraph(el, series, options) {
         _classCallCheck(this, SeriesGraph);
 
-        var yMax,
-            chart = this;
+        _get(Object.getPrototypeOf(SeriesGraph.prototype), 'constructor', this).call(this, el, series, options);
 
-        opts = opts || {};
-
-        this.id = chartId();
+        var opts = this.options,
+            chart = this,
+            yMax;
 
         this.dateAxis = opts.dateAxis || 'daily';
         this.dateAxisTicks = opts.dateAxisTicks;
@@ -891,7 +925,7 @@ function _classCallCheck(instance, Constructor) { if (!(instance instanceof Cons
 
         this.colors = opts.colors || exports.colors;
 
-        this.el = d3.select(el).style('position', 'relative');
+        this.el.style('position', 'relative');
 
         if (this.dateAxis !== 'none') {
           this.startTime = new Date(opts.startTime);
@@ -923,7 +957,7 @@ function _classCallCheck(instance, Constructor) { if (!(instance instanceof Cons
         this.formatter = opts.formatter || exports.formatter;
 
         // turn our series into proper functions
-        this.series = series.map(function (series_s, index_s) {
+        this.series = this.series.map(function (series_s, index_s) {
           return new seriesType[series_s.type](series_s, index_s, chart);
         });
 
@@ -1004,6 +1038,8 @@ function _classCallCheck(instance, Constructor) { if (!(instance instanceof Cons
           }, 100));
         }
       }
+
+      _inherits(SeriesGraph, _Graph);
 
       _createClass(SeriesGraph, [{
         key: 'draw',
@@ -1195,21 +1231,18 @@ function _classCallCheck(instance, Constructor) { if (!(instance instanceof Cons
       }]);
 
       return SeriesGraph;
-    })();
+    })(Graph);
 
     //
     // Sparkline Graph
     //
 
-    var SparklineGraph = (function () {
-      function SparklineGraph(el, series, opts) {
+    var SparklineGraph = (function (_Graph2) {
+      function SparklineGraph(el, series, options) {
         _classCallCheck(this, SparklineGraph);
 
-        opts = opts || {};
-
-        this.id = chartId();
-
-        this.el = d3.select(el);
+        _get(Object.getPrototypeOf(SparklineGraph.prototype), 'constructor', this).call(this, el, series, options);
+        var opts = this.options;
 
         this.width = opts.width || 120;
         this.height = opts.height || 40;
@@ -1221,9 +1254,9 @@ function _classCallCheck(instance, Constructor) { if (!(instance instanceof Cons
 
         this.strokeColor = opts.stroke_color || opts.color || 'blue';
         this.strokeWidth = opts.stroke_width || 1;
-
-        this.series = series || [];
       }
+
+      _inherits(SparklineGraph, _Graph2);
 
       _createClass(SparklineGraph, [{
         key: 'draw',
@@ -1263,22 +1296,22 @@ function _classCallCheck(instance, Constructor) { if (!(instance instanceof Cons
       }]);
 
       return SparklineGraph;
-    })();
+    })(Graph);
 
     //
     // Pie Graph
     //
 
-    var PieGraph = (function () {
-      function PieGraph(el, series, opts) {
+    var PieGraph = (function (_Graph3) {
+      function PieGraph(el, series, options) {
         _classCallCheck(this, PieGraph);
 
-        opts = opts || {};
-        this.id = chartId();
-        this.el = d3.select(el);
+        _get(Object.getPrototypeOf(PieGraph.prototype), 'constructor', this).call(this, el, series, options);
+        var opts = this.options;
         this.size = opts.size || 50;
-        this.series = series;
       }
+
+      _inherits(PieGraph, _Graph3);
 
       _createClass(PieGraph, [{
         key: 'sequenceData',
@@ -1327,21 +1360,18 @@ function _classCallCheck(instance, Constructor) { if (!(instance instanceof Cons
       }]);
 
       return PieGraph;
-    })();
+    })(Graph);
 
     //
     // Donut Graph
     //
 
-    var DonutGraph = (function () {
-      function DonutGraph(el, series, opts) {
+    var DonutGraph = (function (_Graph4) {
+      function DonutGraph(el, series, options) {
         _classCallCheck(this, DonutGraph);
 
-        opts = opts || {};
-
-        this.id = chartId();
-
-        this.el = d3.select(el);
+        _get(Object.getPrototypeOf(DonutGraph.prototype), 'constructor', this).call(this, el, series, options);
+        var opts = options;
 
         this.size = opts.size || parseInt(this.el.style('width'), 10);
         this.radius = this.size / 2;
@@ -1359,14 +1389,15 @@ function _classCallCheck(instance, Constructor) { if (!(instance instanceof Cons
 
         this.color = opts.color || 'gray';
         this.total = opts.total;
-        this.series = series;
 
-        if (!this.series || !(this.series && this.series.length)) {
+        if (!this.series.length) {
           this.series = [{ value: this.value, color: this.color }];
         }
 
         this.type = opts.type || 'small';
       }
+
+      _inherits(DonutGraph, _Graph4);
 
       _createClass(DonutGraph, [{
         key: 'draw',
@@ -1467,29 +1498,26 @@ function _classCallCheck(instance, Constructor) { if (!(instance instanceof Cons
       }]);
 
       return DonutGraph;
-    })();
+    })(Graph);
 
     //
     // Donut Stack Graph
     //
 
-    var DonutStackGraph = (function () {
-      function DonutStackGraph(el, series, opts) {
+    var DonutStackGraph = (function (_Graph5) {
+      function DonutStackGraph(el, series, options) {
         _classCallCheck(this, DonutStackGraph);
 
-        opts = opts || {};
-
-        this.id = chartId();
-
-        this.el = d3.select(el);
+        _get(Object.getPrototypeOf(DonutStackGraph.prototype), 'constructor', this).call(this, el, series, options);
+        var opts = this.options;
 
         this.size = opts.size || 44;
         this.thickness = opts.thickness;
         this.total = opts.total;
         this.label_subtext = opts.label_subtext || '';
-
-        this.series = series;
       }
+
+      _inherits(DonutStackGraph, _Graph5);
 
       _createClass(DonutStackGraph, [{
         key: 'draw',
@@ -1536,25 +1564,22 @@ function _classCallCheck(instance, Constructor) { if (!(instance instanceof Cons
       }]);
 
       return DonutStackGraph;
-    })();
+    })(Graph);
 
     //
     // Horizontal Bar Graph
     //
 
-    var HorizontalBarGraph = (function () {
-      function HorizontalBarGraph(el, series, opts) {
+    var HorizontalBarGraph = (function (_Graph6) {
+      function HorizontalBarGraph(el, series, options) {
         _classCallCheck(this, HorizontalBarGraph);
 
-        opts = opts || {};
-
-        this.id = chartId();
-
-        this.el = d3.select(el);
-
-        this.series = series;
+        _get(Object.getPrototypeOf(HorizontalBarGraph.prototype), 'constructor', this).call(this, el, series, options);
+        var opts = this.options;
         this.percentages = opts.percentages;
       }
+
+      _inherits(HorizontalBarGraph, _Graph6);
 
       _createClass(HorizontalBarGraph, [{
         key: 'draw',
@@ -1602,23 +1627,18 @@ function _classCallCheck(instance, Constructor) { if (!(instance instanceof Cons
       }]);
 
       return HorizontalBarGraph;
-    })();
+    })(Graph);
 
     //
     // Pipeline Graph
     //
 
-    var PipelineGraph = (function () {
-      function PipelineGraph(el, series, opts) {
+    var PipelineGraph = (function (_Graph7) {
+      function PipelineGraph(el, series, options) {
         _classCallCheck(this, PipelineGraph);
 
-        opts = opts || {};
-
-        this.id = chartId();
-
-        this.el = d3.select(el);
-
-        this.series = series;
+        _get(Object.getPrototypeOf(PipelineGraph.prototype), 'constructor', this).call(this, el, series, options);
+        var opts = this.options;
 
         this.svg = this.el.append('svg');
         this.labels = !!series[0].label;
@@ -1627,6 +1647,8 @@ function _classCallCheck(instance, Constructor) { if (!(instance instanceof Cons
         this.tooltip = opts.tooltip || exports.tooltip;
         this.formatter = opts.formatter || exports.formatter;
       }
+
+      _inherits(PipelineGraph, _Graph7);
 
       _createClass(PipelineGraph, [{
         key: 'draw',
@@ -1881,19 +1903,20 @@ function _classCallCheck(instance, Constructor) { if (!(instance instanceof Cons
       }]);
 
       return PipelineGraph;
-    })();
+    })(Graph);
 
     //
     // Legend
     //
 
-    var Legend = (function () {
-      function Legend(el, series) {
+    var Legend = (function (_Graph8) {
+      function Legend() {
         _classCallCheck(this, Legend);
 
-        this.el = d3.select(el);
-        this.series = series;
+        _get(Object.getPrototypeOf(Legend.prototype), 'constructor', this).apply(this, arguments);
       }
+
+      _inherits(Legend, _Graph8);
 
       _createClass(Legend, [{
         key: 'draw',
@@ -1938,7 +1961,7 @@ function _classCallCheck(instance, Constructor) { if (!(instance instanceof Cons
       }]);
 
       return Legend;
-    })();
+    })(Graph);
 
     //
     // Exports
@@ -2061,6 +2084,10 @@ function _classCallCheck(instance, Constructor) { if (!(instance instanceof Cons
 
   window.Shart = Shart;
 })(d3, window);
+
+// abstract: draw the chart
+
+// abstract: remove events and internal DOM
 
 // Invisible chart elements do not draw themselves on the chart. Instead,
 // they can be used to display additional stats in the Tooltip.

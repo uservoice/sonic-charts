@@ -198,12 +198,6 @@
       }
     };
 
-    // Calculate unique IDs for charts
-    uniqueChartId = 0;
-    function chartId() {
-      return uniqueChartId++;
-    }
-
     // Given a series, extract the individual segements.
     function flattenSeries(data) {
       var results = [];
@@ -286,6 +280,36 @@
     }
 
     
+    //
+    // Graph - abstract base class from which all graphs inherit
+    //
+    
+    class Graph {
+      constructor(el, series, options) {
+        this.id = Graph.uniqueId();
+        this.el = d3.select(el);
+        this.series = series || [];
+        this.options = options || {};
+      }
+      draw() {
+        // abstract: draw the chart
+      }
+      update(series, animate) {
+        this.series = series;
+        // abstract: update the chart
+      }
+      destroy() {
+        // abstract: remove events and internal DOM
+      }
+    }
+
+    // Calculate unique IDs for charts
+    Graph.lastUniqueId = 0;
+    Graph.uniqueId = function() {
+      return Graph.lastUniqueId++;
+    };
+
+
     //
     // Band
     //
@@ -697,15 +721,14 @@
     // Series Graph
     //
 
-    class SeriesGraph {
-      constructor(el, series, opts) {
-        var yMax
+    class SeriesGraph extends Graph {
+      constructor(el, series, options) {
+        super(el, series, options);
+
+        var opts = this.options
         ,   chart = this
+        ,   yMax
         ;
-
-        opts = (opts || {});
-
-        this.id = chartId();
 
         this.dateAxis = opts.dateAxis || 'daily';
         this.dateAxisTicks = opts.dateAxisTicks;
@@ -714,9 +737,7 @@
 
         this.colors = opts.colors || exports.colors;
 
-        this.el = d3.select(el)
-          .style('position', 'relative')
-        ;
+        this.el.style('position', 'relative');
 
         if (this.dateAxis !== 'none') {
           this.startTime = new Date(opts.startTime);
@@ -748,7 +769,7 @@
         this.formatter = opts.formatter || exports.formatter;
 
         // turn our series into proper functions
-        this.series = series.map(function(series_s, index_s) {
+        this.series = this.series.map(function(series_s, index_s) {
           return new seriesType[series_s.type](series_s, index_s, chart);
         });
 
@@ -1057,13 +1078,10 @@
     //
     // Sparkline Graph
     //
-    class SparklineGraph {
-      constructor(el, series, opts) {
-        opts = (opts || {});
-
-        this.id = chartId();
-
-        this.el = d3.select(el);
+    class SparklineGraph extends Graph {
+      constructor(el, series, options) {
+        super(el, series, options);
+        var opts = this.options;
 
         this.width = opts.width || 120;
         this.height = opts.height || 40;
@@ -1073,8 +1091,6 @@
         
         this.strokeColor = opts.stroke_color || opts.color || 'blue';
         this.strokeWidth = opts.stroke_width || 1;
-
-        this.series = series || [];
       }
 
       draw() {
@@ -1144,13 +1160,11 @@
     // Pie Graph
     //
 
-    class PieGraph {
-      constructor(el, series, opts) {
-        opts = (opts || {});
-        this.id = chartId();
-        this.el = d3.select(el);
+    class PieGraph extends Graph {
+      constructor(el, series, options) {
+        super(el, series, options);
+        var opts = this.options;
         this.size = opts.size || 50;
-        this.series = series;
       }
 
       sequenceData() {
@@ -1211,13 +1225,10 @@
     // Donut Graph
     //
 
-    class DonutGraph {
-      constructor(el, series, opts) {
-        opts = (opts || {});
-
-        this.id = chartId();
-
-        this.el = d3.select(el);
+    class DonutGraph extends Graph {
+      constructor(el, series, options) {
+        super(el, series, options);
+        var opts = options;
 
         this.size = opts.size || parseInt(this.el.style('width'), 10);
         this.radius = this.size / 2;
@@ -1235,9 +1246,8 @@
 
         this.color = opts.color || 'gray';
         this.total = opts.total;
-        this.series = series;
 
-        if (!this.series || !(this.series && this.series.length)) {
+        if (!this.series.length) {
           this.series = [{ value: this.value, color: this.color }];
         }
 
@@ -1405,20 +1415,15 @@
     // Donut Stack Graph
     //
 
-    class DonutStackGraph {
-      constructor(el, series, opts) {
-        opts = (opts || {});
-
-        this.id = chartId();
-
-        this.el = d3.select(el);
+    class DonutStackGraph extends Graph {
+      constructor(el, series, options) {
+        super(el, series, options);
+        var opts = this.options;
 
         this.size = opts.size || 44;
         this.thickness = opts.thickness;
         this.total = opts.total;
         this.label_subtext = opts.label_subtext || '';
-
-        this.series = series;
       }
 
       draw() {
@@ -1473,15 +1478,10 @@
     // Horizontal Bar Graph
     //
 
-    class HorizontalBarGraph {
-      constructor(el, series, opts) {
-        opts = (opts || {});
-
-        this.id = chartId();
-
-        this.el = d3.select(el);
-
-        this.series = series;
+    class HorizontalBarGraph extends Graph {
+      constructor(el, series, options) {
+        super(el, series, options);
+        var opts = this.options;
         this.percentages = opts.percentages;
       }
 
@@ -1547,15 +1547,10 @@
     // Pipeline Graph
     //
 
-    class PipelineGraph {
-      constructor(el, series, opts) {
-        opts = (opts || {});
-
-        this.id = chartId();
-
-        this.el = d3.select(el);
-
-        this.series = series;
+    class PipelineGraph extends Graph {
+      constructor(el, series, options) {
+        super(el, series, options);
+        var opts = this.options;
 
         this.svg = this.el.append('svg');
         this.labels = !!series[0].label;
@@ -1865,15 +1860,11 @@
     // Legend
     //
 
-    class Legend {
-      constructor(el, series) {
-        this.el = d3.select(el);
-        this.series = series;
-      }
-
+    class Legend extends Graph {
       draw() {
         this.el
-          .classed("shart-legend", true);
+          .classed("shart-legend", true)
+        ;
 
         this.update(this.series);
       }
