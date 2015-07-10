@@ -12,6 +12,7 @@
       "url": "http://twitter.com/snorecone"
     }
   ],
+  "homepage": "https://github.com/uservoice/shart",
   "license": "MIT",
   "private": true,
   "repository": {
@@ -30,6 +31,8 @@
     "gulp-compile-handlebars": "^0.5.0",
     "gulp-concat": "^2.6.0",
     "gulp-data": "^1.2.0",
+    "gulp-footer": "^1.0.5",
+    "gulp-header": "^1.2.2",
     "gulp-jshint": "^1.11.2",
     "gulp-shell": "^0.4.2",
     "gulp-uglify": "^1.2.0",

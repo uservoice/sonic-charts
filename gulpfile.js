@@ -1,6 +1,8 @@
 var gulp = require('gulp')
 ,   shell = require('gulp-shell')
 ,   babel = require('gulp-babel')
+,   header = require('gulp-header')
+,   footer = require('gulp-footer')
 ,   uglify = require('gulp-uglify')
 ,   concat = require('gulp-concat')
 ,   jshint = require('gulp-jshint')
@@ -12,15 +14,40 @@ var gulp = require('gulp')
 ,   handlebars = require('gulp-compile-handlebars')
 ,   runSequence = require('run-sequence')
 ,   webserver = require('gulp-webserver')
+,   pkg = require('./package.json')
+,   options = {}
 ;
+
+options.babel = {
+  blacklist: ['strict']
+};
+
+options.preamble = [
+  '/**',
+  ' * <%= pkg.name %> - <%= pkg.description %>',
+  ' * @version v<%= pkg.version %>',
+  ' * @link <%= pkg.homepage %>',
+  ' * @license <%= pkg.license %>',
+  ' */',
+  '!function(undefined) { "use strict"; var Shart = {version: "<%= pkg.version %>"};',
+  '',
+  ''
+].join('\n');
+
+options.postamble = [
+  '',
+  '',
+  'if (typeof define === "function" && define.amd) { define(Shart); }',
+  'else if (typeof module === "object" && module.exports) { module.exports = Shart; }',
+  'else if (window) { window.Shart = Shart; }',
+  '}();'
+].join('\n');
 
 gulp.task('clean', shell.task('rm -Rf ./dist/*'));
 
 gulp.task('scripts:lint', function() {
   return gulp.src([
-      'src/scripts/*.js',
-      '!src/scripts/intro.js',
-      '!src/scripts/outro.js'
+      'src/scripts/*.js'
     ])
     .pipe(jshint())
     .pipe(jshint.reporter(jstylish))
@@ -30,31 +57,31 @@ gulp.task('scripts:lint', function() {
 
 gulp.task('scripts:core', function () {
   return gulp.src([
-      'src/scripts/intro.js',
       'src/scripts/shart.js',
-      'src/scripts/outro.js'
     ])
     .pipe(concat('shart.js'))
-      .pipe(babel())
+      .pipe(babel(options.babel))
+      .pipe(header(options.preamble, {pkg: pkg}))
+      .pipe(footer(options.postamble))
       .pipe(gulp.dest('dist'))
     .pipe(concat('shart.min.js'))
-      .pipe(uglify())
+      .pipe(uglify({preserveComments: 'some'}))
       .pipe(gulp.dest('dist'))
   ;
 });
 
 gulp.task('scripts:angular', function () {
   return gulp.src([
-      'src/scripts/intro.js',
       'src/scripts/shart.js',
       'src/scripts/shart.angular.js',
-      'src/scripts/outro.js'
     ])
     .pipe(concat('shart.angular.js'))
-      .pipe(babel())
+      .pipe(babel(options.babel))
+      .pipe(header(options.preamble, {pkg: pkg}))
+      .pipe(footer(options.postamble))
       .pipe(gulp.dest('dist'))
     .pipe(concat('shart.angular.min.js'))
-      .pipe(uglify())
+      .pipe(uglify({preserveComments: 'some'}))
       .pipe(gulp.dest('dist'))
   ;
 });
