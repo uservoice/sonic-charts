@@ -157,27 +157,10 @@
     ,   weekFormat = d3.time.format('%x')
     ,   monthFormat = d3.time.format('%m/%y')
 
-    // Graphs
-    ,   SeriesGraph
-    ,   SparklineGraph
-    ,   PieGraph
-    ,   DonutGraph
-    ,   DonutStackGraph
-    ,   HorizontalBarGraph
-    ,   PipelineGraph
-
-    // Legend
-    ,   Legend
-
     // Series Graph chart types
     ,   seriesType
-    ,   Invisible
-    ,   Line
-    ,   Column
-    ,   Area
 
     // Misc
-    ,   Band
     ,   timeScales
     ,   uniqueChartId
 
@@ -302,105 +285,105 @@
       return data;
     }
 
-
+    
     //
     // Band
     //
 
-    Band = function(data) {
-      this.data = data;
-    };
+    class Band {
+      constructor(data) {
+        this.data = data;
+      }
+      draw(chart) {
+        var data = this.data;
 
-    Band.prototype.draw = function(chart) {
-      var data = this.data;
-
-      chart.svg.append('svg:rect')
-        .attr('x', chart.x(data.x))
-        .attr('y', chart.y(data.y))
-        .attr('width', chart.x(data.w - 1) - xPadding)
-        .attr('height', chart.y(0) - chart.y(data.h))
-        .attr('stroke', data.color)
-        .attr('fill', data.color)
-      ;
-    };
+        chart.svg.append('svg:rect')
+          .attr('x', chart.x(data.x))
+          .attr('y', chart.y(data.y))
+          .attr('width', chart.x(data.w - 1) - xPadding)
+          .attr('height', chart.y(0) - chart.y(data.h))
+          .attr('stroke', data.color)
+          .attr('fill', data.color)
+        ;
+      }
+    }
 
 
     //
     // Invisible
     //
 
-    Invisible = function(data, i, c) {
-      this.key = data.key;
-      this.label = data.label;
-      this.color = data.color;
-      this.sequence = data.sequence;
-      this.segments = data.segments;
-      this.invisible = true;
-      this.formatter = data.formatter || c.formatter;
-    };
-
-    Invisible.prototype = {
-      draw: function() {
+    class Invisible {
+      constructor(data, i, c) {
+        this.key = data.key;
+        this.label = data.label;
+        this.color = data.color;
+        this.sequence = data.sequence;
+        this.segments = data.segments;
+        this.invisible = true;
+        this.formatter = data.formatter || c.formatter;
+      }
+      draw() {
         // Invisible chart elements do not draw themselves on the chart. Instead,
         // they can be used to display additional stats in the Tooltip.
       }
-    };
+    }
 
 
     //
     // Line
     //
 
-    Line = function(data, i, c) {
-      var self = this;
+    class Line {
+      constructor(data, i, c) {
+        var self = this;
 
-      this.key = data.key;
-      this.label = data.label;
-      this.color = data.color;
-      this.sequence = data.sequence;
-      this.segments = data.segments;
+        this.key = data.key;
+        this.label = data.label;
+        this.color = data.color;
+        this.sequence = data.sequence;
+        this.segments = data.segments;
 
-      this.lineSegments = this.segments || [data];
+        this.lineSegments = this.segments || [data];
 
-      this.colors = c.colors || exports.colors;
-      this.formatter = data.formatter || c.formatter;
+        this.colors = c.colors || exports.colors;
+        this.formatter = data.formatter || c.formatter;
 
-      this.lineSegments.forEach(function(segment){
-        if (segment.sequence[segment.sequence.length - 1] === 0 && data.extrapolate_last) {
-          segment.sequence.pop();
-          segment.sequence.push(predictNextValue(segment.sequence));
+        this.lineSegments.forEach(function(segment){
+          if (segment.sequence[segment.sequence.length - 1] === 0 && data.extrapolate_last) {
+            segment.sequence.pop();
+            segment.sequence.push(predictNextValue(segment.sequence));
+          }
+
+          segment.label = segment.label;
+          segment.dasharray = segment.dasharray || data.dasharray;
+          segment.strokewidth = segment.strokewidth || data.strokewidth || 2;
+          segment.interpolate = segment.interpolate || data.interpolate;
+
+          if (self.interpolate) {
+            segment.sequence.map(function(d, i) {
+              if (d === 0) {
+                segment.sequence[i] = predictNextValue(segment.sequence.slice(0, i));
+              }
+            }, segment);
+          }
+
+          segment.cardinality = data.sequence.length;
+          self.cardinality = d3.max([self.cardinality || 0, segment.cardinality]);
+        });
+
+        if (this.lineSegments) {
+          this.topSegments = this.lineSegments.slice(0).sort(function(a, b) {
+            return d3.descending(d3.sum(a.sequence), d3.sum(b.sequence));
+          }).slice(0, 10);
         }
-
-        segment.label = segment.label;
-        segment.dasharray = segment.dasharray || data.dasharray;
-        segment.strokewidth = segment.strokewidth || data.strokewidth || 2;
-        segment.interpolate = segment.interpolate || data.interpolate;
-
-        if (self.interpolate) {
-          segment.sequence.map(function(d, i) {
-            if (d === 0) {
-              segment.sequence[i] = predictNextValue(segment.sequence.slice(0, i));
-            }
-          }, segment);
-        }
-
-        segment.cardinality = data.sequence.length;
-        self.cardinality = d3.max([self.cardinality || 0, segment.cardinality]);
-      });
-
-      if (this.lineSegments) {
-        this.topSegments = this.lineSegments.slice(0).sort(function(a, b) {
-          return d3.descending(d3.sum(a.sequence), d3.sum(b.sequence));
-        }).slice(0, 10);
       }
-    };
 
-    Line.prototype = {
-      max: function() {
+      max() {
         return d3.max(this.lineSegments.map(function(segment){ return d3.max(segment.sequence); }));
-      },
+      }
 
-      draw: function(chart) {
+      draw(chart) {
         var self = this;
 
         this.lineSegments.forEach(function(segment, i){
@@ -464,68 +447,67 @@
           }
         });
       }
-
-    };
+    }
 
 
     //
     // Area
     //
 
-    Area = function(data, i, c) {
-      this.key = data.key;
+    class Area {
+      constructor(data, i, c) {
+        this.key = data.key;
 
-      this.label = data.label;
-      this.color = data.color;
-      this.sequence = data.sequence;
-      this.cardinality = data.sequence.length;
-      this.percent = data.percent;
-      this.interpolate = data.interpolate;
+        this.label = data.label;
+        this.color = data.color;
+        this.sequence = data.sequence;
+        this.cardinality = data.sequence.length;
+        this.percent = data.percent;
+        this.interpolate = data.interpolate;
 
-      this.segments = data.segments;
+        this.segments = data.segments;
 
-      this.formatter = data.formatter || c.formatter;
+        this.formatter = data.formatter || c.formatter;
 
-      if (this.segments) {
-        this.topSegments = this.segments.slice(0).sort(function(a, b) {
-          return d3.descending(d3.sum(a.sequence), d3.sum(b.sequence));
-        }).slice(0, 10);
-      }
+        if (this.segments) {
+          this.topSegments = this.segments.slice(0).sort(function(a, b) {
+            return d3.descending(d3.sum(a.sequence), d3.sum(b.sequence));
+          }).slice(0, 10);
+        }
 
-      if (this.interpolate) {
-        // find the zero values and store their indices
-        var zeros = [];
+        if (this.interpolate) {
+          // find the zero values and store their indices
+          var zeros = [];
 
-        var columns = this.segments ? d3.zip.apply(null, this.segments.map(function(area) {
-          return area.sequence;
-        })) : d3.zip(this.sequence);
+          var columns = this.segments ? d3.zip.apply(null, this.segments.map(function(area) {
+            return area.sequence;
+          })) : d3.zip(this.sequence);
 
-        columns.forEach(function(a, i) {
-          if (d3.sum(a) === 0) {
-            zeros.push(i);
-          }
-        }, this);
-
-        if (this.segements) {
-          this.segments.map(function(area, ai) {
-            area.sequence.map(function(a, i) {
-              if (zeros.indexOf(i) !== -1) {
-                this.segments[ai].sequence[i] = predictNextValue(this.segments[ai].sequence.slice(0, i));
-              }
-            }, this);
-          }, this);
-        } else {
-          this.sequence.map(function(a, i) {
-            if (zeros.indexOf(i) !== -1) {
-              this.sequence[i] = predictNextValue(this.sequence.slice(0, i));
+          columns.forEach(function(a, i) {
+            if (d3.sum(a) === 0) {
+              zeros.push(i);
             }
           }, this);
+
+          if (this.segements) {
+            this.segments.map(function(area, ai) {
+              area.sequence.map(function(a, i) {
+                if (zeros.indexOf(i) !== -1) {
+                  this.segments[ai].sequence[i] = predictNextValue(this.segments[ai].sequence.slice(0, i));
+                }
+              }, this);
+            }, this);
+          } else {
+            this.sequence.map(function(a, i) {
+              if (zeros.indexOf(i) !== -1) {
+                this.sequence[i] = predictNextValue(this.sequence.slice(0, i));
+              }
+            }, this);
+          }
         }
       }
-    };
 
-    Area.prototype = {
-      max: function() {
+      max() {
         if (this.percent) { return 100; }
 
         var columns = this.segments ? d3.zip.apply(null, this.segments.map(function(area) {
@@ -533,9 +515,9 @@
         })) : d3.zip(this.sequence);
 
         return d3.max(columns.map(function(col) { return d3.sum(col) }));
-      },
+      }
 
-      sequenceData: function() {
+      sequenceData() {
         var data = this.segments ? this.segments.map(function(area, seg_i) {
           var cooler = (area.color || exports.colors(seg_i).toString());
 
@@ -550,9 +532,9 @@
 
         this.sequenceData = function() { return data };
         return data;
-      },
+      }
 
-      draw: function(chart) {
+      draw(chart) {
         var sequence = this.sequenceData()
         ,   area
         ,   instance = this
@@ -585,38 +567,41 @@
           ;
         });
       }
-
-    };
+    }
 
 
     //
     // Column
     //
 
-    Column = function(data, i, c) {
-      this.key = data.key;
+    class Column {
+      constructor(data, i, c) {
+        this.key = data.key;
 
-      this.label = data.label;
-      this.sequence = data.sequence;
-      this.percent = data.percent;
-      this.color = data.color || exports.colors(i).toString();
-      this.cardinality = data.sequence.length;
-      this.spacing = data.spacing || 8;
-      this.col_width = data.col_width;
+        this.label = data.label;
+        this.sequence = data.sequence;
+        this.percent = data.percent;
+        this.color = data.color || exports.colors(i).toString();
+        this.cardinality = data.sequence.length;
+        this.spacing = data.spacing || 8;
+        this.col_width = data.col_width;
 
-      this.segments = data.segments;
+        this.segments = data.segments;
 
-      this.formatter = data.formatter || c.formatter;
+        this.formatter = data.formatter || c.formatter;
 
-      if (this.segments) {
-        this.topSegments = this.segments.slice(0).sort(function(a, b) {
-          return d3.descending(d3.sum(a.sequence), d3.sum(b.sequence));
-        }).slice(0, 10);
+        if (this.segments) {
+          this.topSegments = this.segments.slice(0).sort(function(a, b) {
+            return d3.descending(d3.sum(a.sequence), d3.sum(b.sequence));
+          }).slice(0, 10);
+        }
       }
-    };
 
-    Column.prototype = {
-      sequenceData: function() {
+      max() {
+        return Area.prototype.max.apply(this, arguments);
+      }
+
+      sequenceData() {
         var data = this.segments ? this.segments.map(function(area, seg_i) {
           var cooler = (area.color || exports.colors(seg_i).toString());
 
@@ -632,11 +617,9 @@
         // memoize it
         this.sequenceData = function() { return data };
         return data;
-      },
+      }
 
-      max: Area.prototype.max,
-
-      draw: function(chart) {
+      draw(chart) {
         var sequence = this.sequenceData()
         ,   cw //Math.max((chart.x.range()[1] / sequence.length) - this.spacing, 2) - 15
         ,   ch
@@ -700,8 +683,7 @@
           seg.forEach(drawData, this);
         });
       }
-
-    };
+    }
 
     // allow for fetching (evaling) the types of series.
     seriesType = {
@@ -715,139 +697,140 @@
     // Series Graph
     //
 
-    SeriesGraph = function(el, series, opts) {
-      var yMax
-      ,   chart = this
-      ;
+    class SeriesGraph {
+      constructor(el, series, opts) {
+        var yMax
+        ,   chart = this
+        ;
 
-      opts = (opts || {});
+        opts = (opts || {});
 
-      this.id = chartId();
+        this.id = chartId();
 
-      this.dateAxis = opts.dateAxis || 'daily';
-      this.dateAxisTicks = opts.dateAxisTicks;
-      this.yAxis = opts.yAxis;
-      this.xAxis = opts.xAxis;
+        this.dateAxis = opts.dateAxis || 'daily';
+        this.dateAxisTicks = opts.dateAxisTicks;
+        this.yAxis = opts.yAxis;
+        this.xAxis = opts.xAxis;
 
-      this.colors = opts.colors || exports.colors;
+        this.colors = opts.colors || exports.colors;
 
-      this.el = d3.select(el)
-        .style('position', 'relative');
+        this.el = d3.select(el)
+          .style('position', 'relative')
+        ;
 
-      if (this.dateAxis !== 'none') {
-        this.startTime = new Date(opts.startTime);
-        this.endTime = new Date(opts.endTime);
-      } else if (this.xAxis) {
-        this.startTime = 1;
-        this.endTime = this.xAxis.length;
+        if (this.dateAxis !== 'none') {
+          this.startTime = new Date(opts.startTime);
+          this.endTime = new Date(opts.endTime);
+        } else if (this.xAxis) {
+          this.startTime = 1;
+          this.endTime = this.xAxis.length;
 
-        this.ticks = { x: this.xAxis.length };
-      } else {
-        this.startTime = opts.startTime;
-        this.endTime = opts.endTime;
-      }
+          this.ticks = { x: this.xAxis.length };
+        } else {
+          this.startTime = opts.startTime;
+          this.endTime = opts.endTime;
+        }
 
-      if(this.dateAxisTicks) {
-        this.ticks = { x: this.dateAxisTicks };
-      }
+        if(this.dateAxisTicks) {
+          this.ticks = { x: this.dateAxisTicks };
+        }
 
-      this.ticks = this.ticks || {
-        x: timeScales[opts.dateAxis].ticks
-      };
+        this.ticks = this.ticks || {
+          x: timeScales[opts.dateAxis].ticks
+        };
 
-      this.ruleTicks = {
-        x: opts.ruleTicks || timeScales[opts.dateAxis].ruleTicks
-      };
+        this.ruleTicks = {
+          x: opts.ruleTicks || timeScales[opts.dateAxis].ruleTicks
+        };
 
-      this.dateFormatter = timeScales[opts.dateAxis].formatter;
+        this.dateFormatter = timeScales[opts.dateAxis].formatter;
 
-      this.formatter = opts.formatter || exports.formatter;
+        this.formatter = opts.formatter || exports.formatter;
 
-      // turn our series into proper functions
-      this.series = series.map(function(series_s, index_s) {
-        return new seriesType[series_s.type](series_s, index_s, chart);
-      });
+        // turn our series into proper functions
+        this.series = series.map(function(series_s, index_s) {
+          return new seriesType[series_s.type](series_s, index_s, chart);
+        });
 
-      // same with bands
-      this.bands = (opts.bands || []).map(function(bands_s) {
-        return new Band(bands_s);
-      });
+        // same with bands
+        this.bands = (opts.bands || []).map(function(bands_s) {
+          return new Band(bands_s);
+        });
 
-      // Figure out our yMax. We need to find the largest value across all series
-      // (including grouped 'stack' series but not 'invisible' series).
-      yMax = d3.max(this.series.map(function(series_s) {
-        return series_s.invisible ? 0 : series_s.max();
-      })) || 1;
+        // Figure out our yMax. We need to find the largest value across all series
+        // (including grouped 'stack' series but not 'invisible' series).
+        yMax = d3.max(this.series.map(function(series_s) {
+          return series_s.invisible ? 0 : series_s.max();
+        })) || 1;
 
-      this.tickFormat = opts.tickFormat || ',';
+        this.tickFormat = opts.tickFormat || ',';
 
-      // figure out the yRange, which is opts.yBase || 0 ... yMax
-      this.yRange = opts.yRange || [opts.yBase || 0, yMax];
+        // figure out the yRange, which is opts.yBase || 0 ... yMax
+        this.yRange = opts.yRange || [opts.yBase || 0, yMax];
 
-      this.xTickPadding = opts.xTickPadding || 0;
+        this.xTickPadding = opts.xTickPadding || 0;
 
-      this.tooltip = opts.tooltip || exports.tooltip;
+        this.tooltip = opts.tooltip || exports.tooltip;
 
-      if (this.tooltip) {
-        this.el.on('mousemove', throttle(function() {
-          if (!chart.x) { return }
+        if (this.tooltip) {
+          this.el.on('mousemove', throttle(function() {
+            if (!chart.x) { return }
 
-          var el      = this
-          ,   offset  = getOffset(el)
-          ,   series_i
-          ,   x_pos
-          ,   data
-          ,   body
-          ;
+            var el = this
+            ,   offset = getOffset(el)
+            ,   series_i
+            ,   x_pos
+            ,   data
+            ,   body
+            ;
 
-          // This retrieves our index value for the mouse position
-          series_i = Math.round(chart.x.invert(d3.event.pageX - offset.left));
+            // This retrieves our index value for the mouse position
+            series_i = Math.round(chart.x.invert(d3.event.pageX - offset.left));
 
-          // Add lower/upper bounds to series index
-          var max_i = chart.timeScaleTicks && (chart.timeScaleTicks.length - 1);
-          if(max_i){
-            series_i = Math.min(Math.max(series_i, 0), max_i);
-          }
+            // Add lower/upper bounds to series index
+            var max_i = chart.timeScaleTicks && (chart.timeScaleTicks.length - 1);
+            if(max_i){
+              series_i = Math.min(Math.max(series_i, 0), max_i);
+            }
 
-          // Find snapping point
-          x_pos = chart.x(series_i);
+            // Find snapping point
+            x_pos = chart.x(series_i);
 
-          // Get the data for the tooltip
-          data = chart.tooltipData(series_i);
+            // Get the data for the tooltip
+            data = chart.tooltipData(series_i);
 
-          if (data.series) {
-            // Format the tip body
-            body = chart.tooltip(chart, data);
-          }
+            if (data.series) {
+              // Format the tip body
+              body = chart.tooltip(chart, data);
+            }
 
-          if (body) {
-            chart.scrubber.style({
-              height: (chart.y.range()[0] - chart.y.range()[1]) + 'px',
-              visibility: 'visible',
-              left: x_pos  + 'px',
-              top: chart.y.range()[1] + 'px'
+            if (body) {
+              chart.scrubber.style({
+                height: (chart.y.range()[0] - chart.y.range()[1]) + 'px',
+                visibility: 'visible',
+                left: x_pos  + 'px',
+                top: chart.y.range()[1] + 'px'
+              });
+
+              exports.showTooltip({
+                body: body,
+                target: chart.scrubber.node(),
+                chart: chart.el.node()
+              });
+            }
+          }, 50));
+
+          this.el.on('mouseleave', debounce(function() {
+            exports.hideTooltip({
+              target: chart.scrubber.node()
             });
+            chart.scrubber.style('visibility', 'hidden');
+          }, 100));
+        }
 
-            exports.showTooltip({
-              body: body,
-              target: chart.scrubber.node(),
-              chart: chart.el.node()
-            });
-          }
-        }, 50));
-
-        this.el.on('mouseleave', debounce(function() {
-          exports.hideTooltip({
-            target: chart.scrubber.node()
-          });
-          chart.scrubber.style('visibility', 'hidden');
-        }, 100));
       }
 
-    };
-
-    SeriesGraph.prototype = {
-      draw: function() {
+      draw() {
         var chart = this
         ,   width
         ,   height
@@ -1043,9 +1026,9 @@
         ;
 
         return chart;
-      },
+      }
 
-      tooltipData: function(i) {
+      tooltipData(i) {
         var data = {}
         ,   series = []
         ,   date
@@ -1067,521 +1050,522 @@
         data.series = series;
 
         return data;
-      },
-
-    };
+      }
+    }
 
 
     //
     // Sparkline Graph
     //
-    SparklineGraph = function(el, series, opts) {
-      opts = (opts || {});
+    class SparklineGraph {
+      constructor(el, series, opts) {
+        opts = (opts || {});
 
-      this.id = chartId();
+        this.id = chartId();
 
-      this.el = d3.select(el);
+        this.el = d3.select(el);
 
-      this.width = opts.width || 120;
-      this.height = opts.height || 40;
-      
-      this.yGuides = opts.y_guides || [];
-      if (opts.y_guide) { this.yGuides.push(opts.y_guide) }
-      
-      this.strokeColor = opts.stroke_color || opts.color || 'blue';
-      this.strokeWidth = opts.stroke_width || 1;
+        this.width = opts.width || 120;
+        this.height = opts.height || 40;
+        
+        this.yGuides = opts.y_guides || [];
+        if (opts.y_guide) { this.yGuides.push(opts.y_guide) }
+        
+        this.strokeColor = opts.stroke_color || opts.color || 'blue';
+        this.strokeWidth = opts.stroke_width || 1;
 
-      this.series = series || [];
-    };
+        this.series = series || [];
+      }
 
-    SparklineGraph.prototype.draw = function() {
-      var padding = {left: 0, top: 2, right: 0, bottom: 2}
-      ,   width = this.width
-      ,   height = this.height
-      ,   yGuides = this.yGuides
-      ,   data = this.series
-      ,   strokeColor = this.strokeColor
-      ,   strokeWidth = this.strokeWidth
-      ,   max = d3.max(data)
-      ,   min = d3.min([0].concat(data))
-      ,   length = data.length
-      ,   x = d3.scale.linear().domain([0, length - 1]).range([padding.left, width - padding.left - padding.right])
-      ,   y = d3.scale.linear().domain([min, max]).range([height - padding.top - padding.bottom, padding.top])
-      ,   line = d3.svg.line().x(function(d,i) { return x(i) }).y(function(d) { return y(d) })
-      ;
-      
-      var chart = this.el
-        .classed('shart-sparkline-graph', true)
-        .html('')
-      ;
-      
-      var svg = chart.append('svg')
-        .attr('width', width) 
-        .attr('height', height)
-      ;
-      
-      svg.append('clipPath')
-        .attr('id', 'clip')
-        .append('rect')
-          .attr('x', 0)
-          .attr('y', 0)
-          .attr('width', width)
+      draw() {
+        var padding = {left: 0, top: 2, right: 0, bottom: 2}
+        ,   width = this.width
+        ,   height = this.height
+        ,   yGuides = this.yGuides
+        ,   data = this.series
+        ,   strokeColor = this.strokeColor
+        ,   strokeWidth = this.strokeWidth
+        ,   max = d3.max(data)
+        ,   min = d3.min([0].concat(data))
+        ,   length = data.length
+        ,   x = d3.scale.linear().domain([0, length - 1]).range([padding.left, width - padding.left - padding.right])
+        ,   y = d3.scale.linear().domain([min, max]).range([height - padding.top - padding.bottom, padding.top])
+        ,   line = d3.svg.line().x(function(d,i) { return x(i) }).y(function(d) { return y(d) })
+        ;
+        
+        var chart = this.el
+          .classed('shart-sparkline-graph', true)
+          .html('')
+        ;
+        
+        var svg = chart.append('svg')
+          .attr('width', width) 
           .attr('height', height)
-      ;
-      
-      svg
-        .selectAll('.shart-sparkline-graph-y-guide')
-          .data(yGuides)
-          .enter()
-            .append('line').classed('shart-sparkline-graph-y-guide', true)
-              .attr('clip-path', 'url(#clip)')
-              .attr('x1', x(0))
-              .attr('y1', function(d) { return Math.floor(y(d)) + 0.5; })
-              .attr('x2', x(length - 1))
-              .attr('y2', function(d) { return Math.floor(y(d)) + 0.5; })
-              .attr('fill', 'none')
-              .attr('stroke', '#ddd')
-              .attr('stroke-width', 1)
-              .attr('stroke-linecap', 'butt')
-      ;
-      
-      svg.append('path').classed('shart-sparkline-graph-stroke', true)
-        .attr('clip-path', 'url(#clip)')
-        .attr('d', line(data))
-        .attr('fill', 'none')
-        .attr('stroke', strokeColor)
-        .attr('stroke-width', strokeWidth)
-        .attr('stroke-linecap', 'butt')
-      ;
-    };
+        ;
+        
+        svg.append('clipPath')
+          .attr('id', 'clip')
+          .append('rect')
+            .attr('x', 0)
+            .attr('y', 0)
+            .attr('width', width)
+            .attr('height', height)
+        ;
+        
+        svg
+          .selectAll('.shart-sparkline-graph-y-guide')
+            .data(yGuides)
+            .enter()
+              .append('line').classed('shart-sparkline-graph-y-guide', true)
+                .attr('clip-path', 'url(#clip)')
+                .attr('x1', x(0))
+                .attr('y1', function(d) { return Math.floor(y(d)) + 0.5; })
+                .attr('x2', x(length - 1))
+                .attr('y2', function(d) { return Math.floor(y(d)) + 0.5; })
+                .attr('fill', 'none')
+                .attr('stroke', '#ddd')
+                .attr('stroke-width', 1)
+                .attr('stroke-linecap', 'butt')
+        ;
+        
+        svg.append('path').classed('shart-sparkline-graph-stroke', true)
+          .attr('clip-path', 'url(#clip)')
+          .attr('d', line(data))
+          .attr('fill', 'none')
+          .attr('stroke', strokeColor)
+          .attr('stroke-width', strokeWidth)
+          .attr('stroke-linecap', 'butt')
+        ;
+      }
+    }
 
 
     //
     // Pie Graph
     //
 
-    PieGraph = function(el, series, opts) {
-      opts = (opts || {});
+    class PieGraph {
+      constructor(el, series, opts) {
+        opts = (opts || {});
+        this.id = chartId();
+        this.el = d3.select(el);
+        this.size = opts.size || 50;
+        this.series = series;
+      }
 
-      this.id = chartId();
+      sequenceData() {
+        var data = d3.layout.pie().value(function(d) { return d.value })(this.series);
 
-      this.el = d3.select(el);
+        this.sequenceData = function() { return data };
+        return data;
+      }
 
-      this.size = opts.size || 50;
-
-      this.series = series;
-    };
-
-    PieGraph.prototype.sequenceData = function() {
-      var data = d3.layout.pie().value(function(d) { return d.value })(this.series);
-
-      this.sequenceData = function() { return data };
-      return data;
-    };
-
-    PieGraph.prototype.draw = function() {
-      var diameter = this.size
-      ,   radius  = (diameter / 2) - 1
-      ,   arc     = d3.svg.arc().outerRadius(radius)
-      ,   data    = this.sequenceData()
-      ;
-
-      var chart = this.el
-        .classed('shart-pie-graph', true)
-        .style({
-          'position': 'relative',
-          'width': this.size + 'px',
-          'height': 0,
-          'padding-bottom': this.size + 'px'
-        })
-        .html('')
-      ;
-      
-      var svg = chart.append('svg:svg')
-        .attr('width', this.size)
-        .attr('height', this.size)
-        .attr('viewBox', [0, 0, diameter, diameter].join(' '))
-        .style({
-          'position': 'absolute',
-          'left': 0,
-          'top': 0
-        })
-      ;
-
-
-      data.forEach(function(slice, i) {
-        // Don't draw anything if the value is 0
-        if (slice.value === 0) { return; }
-
-        var cooler = this.series[i].color || exports.colors(i).toString();
-
-        svg.append('svg:path')
-          .attr('d', arc(slice))
-          .attr('transform', 'translate(' + (radius + 1) + ',' + (radius + 1) + ')')
-          .attr('fill', cooler)
-          .attr('stroke', cooler)
+      draw() {
+        var diameter = this.size
+        ,   radius  = (diameter / 2) - 1
+        ,   arc     = d3.svg.arc().outerRadius(radius)
+        ,   data    = this.sequenceData()
         ;
 
-      }, this);
-    };
+        var chart = this.el
+          .classed('shart-pie-graph', true)
+          .style({
+            'position': 'relative',
+            'width': this.size + 'px',
+            'height': 0,
+            'padding-bottom': this.size + 'px'
+          })
+          .html('')
+        ;
+        
+        var svg = chart.append('svg:svg')
+          .attr('width', this.size)
+          .attr('height', this.size)
+          .attr('viewBox', [0, 0, diameter, diameter].join(' '))
+          .style({
+            'position': 'absolute',
+            'left': 0,
+            'top': 0
+          })
+        ;
+
+        data.forEach(function(slice, i) {
+          // Don't draw anything if the value is 0
+          if (slice.value === 0) { return; }
+
+          var cooler = this.series[i].color || exports.colors(i).toString();
+
+          svg.append('svg:path')
+            .attr('d', arc(slice))
+            .attr('transform', 'translate(' + (radius + 1) + ',' + (radius + 1) + ')')
+            .attr('fill', cooler)
+            .attr('stroke', cooler)
+          ;
+
+        }, this);
+      }
+    }
 
 
     //
     // Donut Graph
     //
 
-    DonutGraph = function(el, series, opts) {
-      opts = (opts || {});
+    class DonutGraph {
+      constructor(el, series, opts) {
+        opts = (opts || {});
 
-      this.id = chartId();
+        this.id = chartId();
 
-      this.el = d3.select(el);
+        this.el = d3.select(el);
 
-      this.size = opts.size || parseInt(this.el.style('width'), 10);
-      this.radius = this.size / 2;
-      this.thickness = opts.thickness || Math.round(this.radius / 7);
+        this.size = opts.size || parseInt(this.el.style('width'), 10);
+        this.radius = this.size / 2;
+        this.thickness = opts.thickness || Math.round(this.radius / 7);
 
-      this.value = opts.value;
-      this.value_text = typeof(opts.value_text) === "undefined" ? formatInt(this.value) : opts.value_text;
-      this.value_color = opts.value_color;
+        this.value = opts.value;
+        this.value_text = typeof(opts.value_text) === "undefined" ? formatInt(this.value) : opts.value_text;
+        this.value_color = opts.value_color;
 
-      this.label = opts.label;
-      this.label_position = opts.label_position || 'center';
-      this.label_color = opts.label_color;
+        this.label = opts.label;
+        this.label_position = opts.label_position || 'center';
+        this.label_color = opts.label_color;
 
-      this.label_subtext = opts.label_subtext;
+        this.label_subtext = opts.label_subtext;
 
-      this.color = opts.color || 'gray';
-      this.total = opts.total;
-      this.series = series;
+        this.color = opts.color || 'gray';
+        this.total = opts.total;
+        this.series = series;
 
-      if (!this.series || !(this.series && this.series.length)) {
-        this.series = [{ value: this.value, color: this.color }];
+        if (!this.series || !(this.series && this.series.length)) {
+          this.series = [{ value: this.value, color: this.color }];
+        }
+
+        this.type = opts.type || 'small';
       }
 
-      this.type = opts.type || 'small';
-    };
-
-    DonutGraph.prototype.draw = function() {
-      var pie = d3.layout.pie().sort(null).startAngle(0).value(function(d){ return d.value; })
-      ,   series = this.series
-      ,   total = this.total
-      ,   innerRadius = this.radius - this.thickness
-      ,   outerRadius = this.radius
-      ,   arc = function() { return d3.svg.arc().innerRadius(innerRadius).outerRadius(outerRadius) }
-      ,   sum = 0
-      ,   value
-      ,   label
-      ;
-
-      for (var i = 0; i < series.length; i++) {
-        sum += series[i].value;
-      }
-
-      if (this.total) {
-        pie.endAngle(2.0 * Math.PI * sum / total);
-      } else {
-        total = sum;
-      }
-
-      this.el
-        .classed('shart-donut-graph', true)
-        .style('width', this.size + 'px')
-        .style('height', this.size + 'px')
-        .html('')
-      ;
-
-      if (this.type) { this.el.classed(this.type, true); }
-
-      var graph = this.el.append('div')
-        .style('position', 'relative')
-        .style('width', this.size + 'px')
-        .style('height', this.size + 'px')
-      ;
-
-      var svg = graph
-        .append('svg:svg')
-        .attr('width', this.size)
-        .attr('height', this.size)
-      ;
-
-      svg.append('svg:path')
-        .classed('shart-donut-graph-background', true)
-        .attr('fill', '#e5e5e5')
-        .attr('transform', 'translate(' + this.radius + ',' + this.radius + ')')
-        .attr('d', arc().startAngle(0).endAngle(2 * Math.PI)())
-      ;
-
-      svg.append('svg:g')
-        .selectAll('.shart-donut-graph-arc')
-        .data(pie(this.series))
-        .enter()
-          .append('svg:path')
-            .classed('shart-donut-graph-arc', true)
-            .attr('transform', 'translate(' + this.radius + ',' + this.radius + ')')
-            .attr('fill', function(d) { return d.data.color; })
-            .attr('d', arc())
-      ;
-
-      if (this.label && this.label_position === 'center') {
-
-        var label_group = graph.append("div")
-          .style("position", "absolute")
-          .style("display", "table")
-          .style("top", this.thickness + "px")
-          .style("left", this.thickness + "px")
-          .style("width", this.size - (this.thickness * 2) + "px")
-          .style("height", this.size - (this.thickness * 2) + "px")
+      draw() {
+        var pie = d3.layout.pie().sort(null).startAngle(0).value(function(d){ return d.value; })
+        ,   series = this.series
+        ,   total = this.total
+        ,   innerRadius = this.radius - this.thickness
+        ,   outerRadius = this.radius
+        ,   arc = function() { return d3.svg.arc().innerRadius(innerRadius).outerRadius(outerRadius) }
+        ,   sum = 0
+        ,   value
+        ,   label
         ;
 
-        var label_group_inner = label_group.append("div")
-          .style("display", "table-cell")
-          .style("text-align", "center")
-          .style("vertical-align", "middle")
+        for (var i = 0; i < series.length; i++) {
+          sum += series[i].value;
+        }
+
+        if (this.total) {
+          pie.endAngle(2.0 * Math.PI * sum / total);
+        } else {
+          total = sum;
+        }
+
+        this.el
+          .classed('shart-donut-graph', true)
+          .style('width', this.size + 'px')
+          .style('height', this.size + 'px')
+          .html('')
         ;
 
-        value = label_group_inner.append("div")
-          .classed('shart-donut-graph-value', true)
-          .text(this.value_text)
+        if (this.type) { this.el.classed(this.type, true); }
+
+        var graph = this.el.append('div')
+          .style('position', 'relative')
+          .style('width', this.size + 'px')
+          .style('height', this.size + 'px')
         ;
 
-        label = label_group_inner.append("div")
-          .classed("shart-donut-graph-label", true)
-          .style("text-align", "center")
-          .text(this.label)
+        var svg = graph
+          .append('svg:svg')
+          .attr('width', this.size)
+          .attr('height', this.size)
         ;
 
-      } else {
-
-        value = graph.append('div')
-          .classed("shart-donut-graph-value", true)
-          .style("white-space", "nowrap")
-          .style("overflow", "visible")
-          .style("display", "inline-block")
-          .text(this.value_text)
+        svg.append('svg:path')
+          .classed('shart-donut-graph-background', true)
+          .attr('fill', '#e5e5e5')
+          .attr('transform', 'translate(' + this.radius + ',' + this.radius + ')')
+          .attr('d', arc().startAngle(0).endAngle(2 * Math.PI)())
         ;
 
-        var value_rect = {
-          width: parseInt(value.style('width'), 10),
-          height: parseInt(value.style('height'), 10)
-        };
+        svg.append('svg:g')
+          .selectAll('.shart-donut-graph-arc')
+          .data(pie(this.series))
+          .enter()
+            .append('svg:path')
+              .classed('shart-donut-graph-arc', true)
+              .attr('transform', 'translate(' + this.radius + ',' + this.radius + ')')
+              .attr('fill', function(d) { return d.data.color; })
+              .attr('d', arc())
+        ;
 
-        value
-          .style('position', 'absolute')
-          .style('left', ((this.size - value_rect.width) / 2) + 'px')
-          .style('top', ((this.size - value_rect.height) / 2) + 'px');
+        if (this.label && this.label_position === 'center') {
 
-        if (this.label) {
-          var width = this.size;
+          var label_group = graph.append("div")
+            .style("position", "absolute")
+            .style("display", "table")
+            .style("top", this.thickness + "px")
+            .style("left", this.thickness + "px")
+            .style("width", this.size - (this.thickness * 2) + "px")
+            .style("height", this.size - (this.thickness * 2) + "px")
+          ;
 
-          label = graph.append('div')
+          var label_group_inner = label_group.append("div")
+            .style("display", "table-cell")
+            .style("text-align", "center")
+            .style("vertical-align", "middle")
+          ;
+
+          value = label_group_inner.append("div")
+            .classed('shart-donut-graph-value', true)
+            .text(this.value_text)
+          ;
+
+          label = label_group_inner.append("div")
             .classed("shart-donut-graph-label", true)
-            .style("white-space", "nowrap")
-            .style("overflow", "visible")
-            .style("display", "inline-block")
+            .style("text-align", "center")
             .text(this.label)
           ;
 
-          if (this.label_subtext) {
-            label.node().appendChild(document.createTextNode(" "));
+        } else {
 
-            label.append('span')
-              .classed("shart-donut-graph-label-subtext", true)
-              .text(this.label_subtext)
+          value = graph.append('div')
+            .classed("shart-donut-graph-value", true)
+            .style("white-space", "nowrap")
+            .style("overflow", "visible")
+            .style("display", "inline-block")
+            .text(this.value_text)
+          ;
+
+          var value_rect = {
+            width: parseInt(value.style('width'), 10),
+            height: parseInt(value.style('height'), 10)
+          };
+
+          value
+            .style('position', 'absolute')
+            .style('left', ((this.size - value_rect.width) / 2) + 'px')
+            .style('top', ((this.size - value_rect.height) / 2) + 'px');
+
+          if (this.label) {
+            var width = this.size;
+
+            label = graph.append('div')
+              .classed("shart-donut-graph-label", true)
+              .style("white-space", "nowrap")
+              .style("overflow", "visible")
+              .style("display", "inline-block")
+              .text(this.label)
             ;
+
+            if (this.label_subtext) {
+              label.node().appendChild(document.createTextNode(" "));
+
+              label.append('span')
+                .classed("shart-donut-graph-label-subtext", true)
+                .text(this.label_subtext)
+              ;
+            }
+
+            var label_rect = {
+              width: parseInt(label.style('width'), 10),
+              height: parseInt(label.style('height'), 10)
+            };
+            var space = (label_rect.height / 2);
+
+            label
+              .style('position', 'absolute')
+              .style('left', this.size + space + 'px')
+              .style('top', ((this.size - label_rect.height) / 2) + 'px');
+
+            width += space + label_rect.width;
+
+            svg.attr('width', width + 'px');
+            this.el.style('width', width + 'px');
           }
 
-          var label_rect = {
-            width: parseInt(label.style('width'), 10),
-            height: parseInt(label.style('height'), 10)
-          };
-          var space = (label_rect.height / 2);
-
-          label
-            .style('position', 'absolute')
-            .style('left', this.size + space + 'px')
-            .style('top', ((this.size - label_rect.height) / 2) + 'px');
-
-          width += space + label_rect.width;
-
-          svg.attr('width', width + 'px');
-          this.el.style('width', width + 'px');
+          if (value && this.value_color) {
+            value.style('color', this.value_color);
+          }
+          if (label && this.label_color) {
+            label.style('color', this.label_color);
+          }
         }
-
-        if (value && this.value_color) {
-          value.style('color', this.value_color);
-        }
-        if (label && this.label_color) {
-          label.style('color', this.label_color);
-        }
-
       }
-
-    };
+    }
 
 
     //
     // Donut Stack Graph
     //
 
-    DonutStackGraph = function(el, series, opts) {
-      opts = (opts || {});
+    class DonutStackGraph {
+      constructor(el, series, opts) {
+        opts = (opts || {});
 
-      this.id = chartId();
+        this.id = chartId();
 
-      this.el = d3.select(el);
+        this.el = d3.select(el);
 
-      this.size = opts.size || 44;
-      this.thickness = opts.thickness;
-      this.total = opts.total;
-      this.label_subtext = opts.label_subtext || '';
+        this.size = opts.size || 44;
+        this.thickness = opts.thickness;
+        this.total = opts.total;
+        this.label_subtext = opts.label_subtext || '';
 
-      this.series = series;
-    };
-
-    DonutStackGraph.prototype.draw = function() {
-      var series = this.series
-      ,   total = this.total
-      ,   i
-      ;
-
-      if (!total) {
-        total = 0;
-        for (i = 0; i < series.length; i++) {
-          total += series[i].value;
-        }
+        this.series = series;
       }
 
-      this.el
-        .classed('shart-donut-stack-graph', true)
-        .html('') // Clear out contents
-      ;
-
-      for (i = 0; i < series.length; i++) {
-        var item = this.el.append('div')
-          .classed('shart-donut-stack-graph-item', true)
+      draw() {
+        var series = this.series
+        ,   total = this.total
+        ,   i
         ;
 
-        var subtext = formatInt(series[i].value);
-        if (this.label_subtext) { subtext += ' ' + this.label_subtext; }
+        if (!total) {
+          total = 0;
+          for (i = 0; i < series.length; i++) {
+            total += series[i].value;
+          }
+        }
 
-        var donut = new DonutGraph(item.node(), [], {
-          total: total,
-          value: series[i].value,
-          value_text: formatInt(Math.round(100 * series[i].value / total)) + '%',
-          value_color: series[i].color,
-          label: series[i].label,
-          label_position: 'right',
-          label_subtext: subtext,
-          color: series[i].color,
-          size: this.size,
-          thickness: this.thickness
-        });
+        this.el
+          .classed('shart-donut-stack-graph', true)
+          .html('') // Clear out contents
+        ;
 
-        donut.el
-          .classed('shart-donut-stack-graph-item-donut-graph');
+        for (i = 0; i < series.length; i++) {
+          var item = this.el.append('div')
+            .classed('shart-donut-stack-graph-item', true)
+          ;
 
-        donut.draw();
+          var subtext = formatInt(series[i].value);
+          if (this.label_subtext) { subtext += ' ' + this.label_subtext; }
+
+          var donut = new DonutGraph(item.node(), [], {
+            total: total,
+            value: series[i].value,
+            value_text: formatInt(Math.round(100 * series[i].value / total)) + '%',
+            value_color: series[i].color,
+            label: series[i].label,
+            label_position: 'right',
+            label_subtext: subtext,
+            color: series[i].color,
+            size: this.size,
+            thickness: this.thickness
+          });
+
+          donut.el
+            .classed('shart-donut-stack-graph-item-donut-graph');
+
+          donut.draw();
+        }
       }
-    };
+    }
 
 
     //
     // Horizontal Bar Graph
     //
 
-    HorizontalBarGraph = function(el, series, opts) {
-      opts = (opts || {});
+    class HorizontalBarGraph {
+      constructor(el, series, opts) {
+        opts = (opts || {});
 
-      this.id = chartId();
+        this.id = chartId();
 
-      this.el = d3.select(el);
+        this.el = d3.select(el);
 
-      this.series = series;
-      this.percentages = opts.percentages;
-    };
-
-    HorizontalBarGraph.prototype.draw = function() {
-      var total = d3.sum(this.series, function(d) { return d.value });
-
-      var x = d3.scale.linear()
-        .domain([0, d3.max(this.series, function(d) { return d.value })])
-        .range([0, 100]);
-
-      var percentage = d3.scale.linear()
-        .domain([0, total])
-        .range([0, 100]);
-
-      this.el
-        .classed("shart-horizontal-bar-graph", true);
-
-      var segment = this.el
-        .selectAll(".shart-horizontal-bar-graph-segment")
-          .data(this.series)
-        .enter()
-          .append("div")
-            .classed("shart-horizontal-bar-graph-segment", true)
-      ;
-
-      var label = segment
-        .append("div")
-          .classed("shart-horizontal-bar-graph-label", true)
-      ;
-
-      if (this.percentages) {
-        label
-          .text(function(d) {
-            var percent_label = Math.round(percentage(d.value || 0));
-            if (total === 0) { percent_label = '--'; }
-            return percent_label + "% " + d.label;
-          });
-      } else {
-        label
-          .text(function(d) { return d.label });
+        this.series = series;
+        this.percentages = opts.percentages;
       }
 
-      label
-        .append("span")
-          .classed("shart-horizontal-bar-graph-label-subtext", true)
-          .text(function(d) { return d.label_subtext })
-      ;
+      draw() {
+        var total = d3.sum(this.series, function(d) { return d.value });
 
-      segment
-        .append("div")
-          .classed("shart-horizontal-bar-graph-value", true)
+        var x = d3.scale.linear()
+          .domain([0, d3.max(this.series, function(d) { return d.value })])
+          .range([0, 100]);
+
+        var percentage = d3.scale.linear()
+          .domain([0, total])
+          .range([0, 100]);
+
+        this.el
+          .classed("shart-horizontal-bar-graph", true);
+
+        var segment = this.el
+          .selectAll(".shart-horizontal-bar-graph-segment")
+            .data(this.series)
+          .enter()
+            .append("div")
+              .classed("shart-horizontal-bar-graph-segment", true)
+        ;
+
+        var label = segment
           .append("div")
-            .classed("shart-horizontal-bar-graph-value-bar", true)
-            .style("background-color", function(d) { return d.color })
-            .style("width", function(d) { return x(d.value || 0) + "%" })
-            .style("min-width", "1px")
-      ;
+            .classed("shart-horizontal-bar-graph-label", true)
+        ;
 
-    };
+        if (this.percentages) {
+          label
+            .text(function(d) {
+              var percent_label = Math.round(percentage(d.value || 0));
+              if (total === 0) { percent_label = '--'; }
+              return percent_label + "% " + d.label;
+            });
+        } else {
+          label
+            .text(function(d) { return d.label });
+        }
+
+        label
+          .append("span")
+            .classed("shart-horizontal-bar-graph-label-subtext", true)
+            .text(function(d) { return d.label_subtext })
+        ;
+
+        segment
+          .append("div")
+            .classed("shart-horizontal-bar-graph-value", true)
+            .append("div")
+              .classed("shart-horizontal-bar-graph-value-bar", true)
+              .style("background-color", function(d) { return d.color })
+              .style("width", function(d) { return x(d.value || 0) + "%" })
+              .style("min-width", "1px")
+        ;
+      }
+    }
 
 
     //
     // Pipeline Graph
     //
 
-    PipelineGraph = function(el, series, opts) {
-      opts = (opts || {});
+    class PipelineGraph {
+      constructor(el, series, opts) {
+        opts = (opts || {});
 
-      this.id = chartId();
+        this.id = chartId();
 
-      this.el = d3.select(el);
+        this.el = d3.select(el);
 
-      this.series = series;
+        this.series = series;
 
-      this.svg = this.el.append('svg');
-      this.labels = !!series[0].label;
-      this.label_subtext = !!series[0].label_subtext;
-      this.colors = opts.colors || exports.colors;
-      this.tooltip = opts.tooltip || exports.tooltip;
-      this.formatter = opts.formatter || exports.formatter;
-    };
+        this.svg = this.el.append('svg');
+        this.labels = !!series[0].label;
+        this.label_subtext = !!series[0].label_subtext;
+        this.colors = opts.colors || exports.colors;
+        this.tooltip = opts.tooltip || exports.tooltip;
+        this.formatter = opts.formatter || exports.formatter;
+      }
 
-    PipelineGraph.prototype = {
-      draw: function() {
+      draw() {
         var chart = this
         ,   svg = chart.svg
         ,   barHeight = 35
@@ -1701,9 +1685,9 @@
         ;
 
         this.attachMouseEvents();
-      },
+      }
 
-      attachMouseEvents: function() {
+      attachMouseEvents() {
         var chart = this
         ,   svg = chart.svg
         ,   hovered = -1
@@ -1755,9 +1739,9 @@
         // Because we are attaching to the main element we only need to attach events
         // once, so zero out the function...
         this.attachMouseEvents = function() {};
-      },
+      }
 
-      mouseenter: function(el, datum, index) {
+      mouseenter(el, datum, index) {
         var chart = this
         ,   svg = this.svg
         ,   color = datum.color
@@ -1833,9 +1817,9 @@
             chart: chart.el.node()
           });
         }
-      },
+      }
 
-      mouseleave: function(el, datum, index) {
+      mouseleave(el, datum, index) {
         var chart = this
         ,   svg = this.svg
         ,   currentWidth = parseInt(svg.select('#clip-' + chart.id + '-' + index).select('rect').attr('width'), 10)
@@ -1874,75 +1858,77 @@
           target: el.select('rect').node()
         });
       }
-    };
+    }
 
 
     //
     // Legend
     //
 
-    Legend = function(el, series) {
-      this.el = d3.select(el);
-      this.series = series;
-    };
+    class Legend {
+      constructor(el, series) {
+        this.el = d3.select(el);
+        this.series = series;
+      }
 
-    Legend.prototype.draw = function() {
-      this.el
-        .classed("shart-legend", true);
+      draw() {
+        this.el
+          .classed("shart-legend", true);
 
-      this.update(this.series);
-    };
+        this.update(this.series);
+      }
 
-    Legend.prototype.update = function(series, animate) {
-      this.series = series;
+      update(series, animate) {
+        this.series = series;
 
-      var item = this.el
-        .selectAll(".shart-legend-item")
-          .data(series);
+        var item = this.el
+          .selectAll(".shart-legend-item")
+            .data(series);
 
-      var exit = item.exit();
+        var exit = item.exit();
 
-      var enter = item.enter()
-        .append("div")
-          .classed("shart-legend-item", true)
-        ;
-
-      enter
-        .filter(function(d) { return !!d.color })
-        .append("span")
-          .classed("shart-swatch shart-legend-item-swatch", true)
-          .style("background-color", function(d) { return d.color })
-      ;
-
-      enter.append("span")
-        .classed("shart-legend-item-label", true)
-        .text(function(d) { return d.label })
-      ;
-
-      enter.append("span")
-        .classed("shart-legend-item-value", true)
-        .text(function(d) { return d.formatted_value || d.value })
-      ;
-
-      if (animate) {
-        exit
-          .transition()
-            .style('opacity', 0)
-            .remove()
-        ;
+        var enter = item.enter()
+          .append("div")
+            .classed("shart-legend-item", true)
+          ;
 
         enter
-          .style('opacity', 0)
-          .transition()
-            .duration(1000)
-            .style('opacity', 1)
+          .filter(function(d) { return !!d.color })
+          .append("span")
+            .classed("shart-swatch shart-legend-item-swatch", true)
+            .style("background-color", function(d) { return d.color })
         ;
 
-      } else {
-        exit
-          .remove();
+        enter.append("span")
+          .classed("shart-legend-item-label", true)
+          .text(function(d) { return d.label })
+        ;
+
+        enter.append("span")
+          .classed("shart-legend-item-value", true)
+          .text(function(d) { return d.formatted_value || d.value })
+        ;
+
+        if (animate) {
+          exit
+            .transition()
+              .style('opacity', 0)
+              .remove()
+          ;
+
+          enter
+            .style('opacity', 0)
+            .transition()
+              .duration(1000)
+              .style('opacity', 1)
+          ;
+
+        } else {
+          exit
+            .remove();
+        }
       }
-    };
+    }
 
 
     //

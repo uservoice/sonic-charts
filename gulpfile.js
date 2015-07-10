@@ -1,5 +1,6 @@
 var gulp = require('gulp')
 ,   shell = require('gulp-shell')
+,   babel = require('gulp-babel')
 ,   uglify = require('gulp-uglify')
 ,   concat = require('gulp-concat')
 ,   jshint = require('gulp-jshint')
@@ -26,6 +27,7 @@ gulp.task('scripts:lint', function() {
 gulp.task('scripts:core', function () {
   return gulp.src('src/scripts/shart.js')
     .pipe(concat('shart.js'))
+      .pipe(babel())
       .pipe(gulp.dest('dist'))
     .pipe(concat('shart.min.js'))
       .pipe(uglify())
@@ -36,6 +38,7 @@ gulp.task('scripts:core', function () {
 gulp.task('scripts:angular', function () {
   return gulp.src('src/scripts/*.js')
     .pipe(concat('shart.angular.js'))
+      .pipe(babel())
       .pipe(gulp.dest('dist'))
     .pipe(concat('shart.angular.min.js'))
       .pipe(uglify())
