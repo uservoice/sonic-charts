@@ -173,145 +173,148 @@ angular.module('shart', [])
 
 /* globals d3 */
 (function(d3, window, undefined) {
-  var Shart, Util;
+  var Shart;
 
+  //
   // Utility functions
-  Util = {
+  //
 
-    // Format an integer with commas
-    formatInt: function(number) {
-      var int = parseInt("0" + number, 10);
-      return String(int).replace(/\B(?=(\d{3})+(?!\d))/g, ',');
-    },
+  // Format an integer with commas.
+  function formatInt(number) {
+    var int = parseInt("0" + number, 10);
+    return String(int).replace(/\B(?=(\d{3})+(?!\d))/g, ',');
+  }
 
-    // Calculate an element's offset. Based on:
-    //   http://www.quirksmode.org/js/findpos.html
-    offset: function(el) {
-      var obj = el
-      ,   left = 0
-      ,   top = 0
-      ;
-      if (obj.offsetParent) {
-        do {
-          left += obj.offsetLeft;
-          top += obj.offsetTop;
-          obj = obj.offsetParent;
-        } while (obj);
-      }
-      return { left: left, top: top };
-    },
-
-    throttle: function(callback, delay) {
-      var lasttime = 0;
-
-      return function() {
-        var elapsed = +new Date() - lasttime
-        ,   self    = this
-        ;
-
-        if (elapsed > delay) {
-          lasttime = +new Date();
-          callback.apply(self, arguments);
-        }
-      };
-    },
-
-    debounce: function(callback, delay) {
-      var timeout;
-
-      return function() {
-        var self = this;
-
-        function exec() {
-          callback.apply(self, arguments);
-          timeout = null;
-        }
-
-        clearTimeout(timeout);
-        timeout = setTimeout(exec, delay);
-      };
-    },
-
-    // Based on: https://github.com/jashkenas/underscore/blob/master/underscore.js#L465
-    uniq: function(array, isSorted, iterator, context) {
-      if (array === null) { return []; }
-      var result = [];
-      var seen = [];
-      for (var i = 0, length = array.length; i < length; i++) {
-        var value = array[i];
-        if (iterator) { value = iterator.call(context, value, i, array); }
-        if (isSorted ? (!i || seen !== value) : seen.indexOf(value) === -1) {
-          if (isSorted) {
-            seen = value;
-          } else {
-            seen.push(value);
-          }
-          result.push(array[i]);
-        }
-      }
-      return result;
-    },
-
-    // Based on: https://github.com/jashkenas/underscore/blob/master/underscore.js#L843
-    extend: function(obj) {
-      Array.prototype.slice.call(arguments, 1).forEach(function(source) {
-        for (var prop in source) {
-          if (source.hasOwnProperty(prop)) {
-            obj[prop] = source[prop];
-          }
-        }
-      });
-      return obj;
-    },
-
-    predictNextValue: function(values_y) {
-      var sum_x = 0;
-      var sum_y = 0;
-      var sum_xy = 0;
-      var sum_xx = 0;
-      var count = 0;
-      var v;
-      var values_length = values_y.length;
-
-      if (!values_length) {
-        return null;
-      }
-
-      /*
-      * We'll use those variables for faster read/write access.
-      */
-      var x = 0;
-      var y = 0;
-
-      var values_x = [];
-      for (v = 0; v < values_length; v++) {
-        values_x.push(v);
-      }
-
-      /*
-      * Calculate the sum for each of the parts necessary.
-      */
-      for (v = 0; v < values_length; v++) {
-        x = values_x[v];
-        y = values_y[v];
-        sum_x += x;
-        sum_y += y;
-        sum_xx += x*x;
-        sum_xy += x*y;
-        count++;
-      }
-
-      /*
-      * Calculate m and b for the formular:
-      * y = x * m + b
-      */
-      var m = (count*sum_xy - sum_x*sum_y) / (count*sum_xx - sum_x*sum_x);
-      var b = (sum_y/count) - (m*sum_x)/count;
-      var ret = Math.round(values_length * m + b);
-
-      return ret >= 0 ? ret : 0;
+  // Calculate an element's offset. Based on: http://www.quirksmode.org/js/findpos.html
+  function getOffset(el) {
+    var obj = el
+    ,   left = 0
+    ,   top = 0
+    ;
+    if (obj.offsetParent) {
+      do {
+        left += obj.offsetLeft;
+        top += obj.offsetTop;
+        obj = obj.offsetParent;
+      } while (obj);
     }
-  };
+    return { left: left, top: top };
+  }
+
+  // Create a throttling function that will fire the callback immediately
+  // but swallow subsequent calls until delay has passed.
+  function throttle(callback, delay) {
+    var lasttime = 0;
+
+    return function() {
+      var elapsed = +new Date() - lasttime
+      ,   self    = this
+      ;
+
+      if (elapsed > delay) {
+        lasttime = +new Date();
+        callback.apply(self, arguments);
+      }
+    };
+  }
+
+  // Create a debounce function that will fire the callback only after
+  // delay has passed with no further calls to the function.
+  function debounce(callback, delay) {
+    var timeout;
+
+    return function() {
+      var self = this;
+
+      function exec() {
+        callback.apply(self, arguments);
+        timeout = null;
+      }
+
+      clearTimeout(timeout);
+      timeout = setTimeout(exec, delay);
+    };
+  }
+
+  // Create a new array that is the set of unique values in array.
+  // Based on: https://github.com/jashkenas/underscore/blob/master/underscore.js#L465
+  function uniq(array, isSorted, iterator, context) {
+    if (array === null) { return []; }
+    var result = [];
+    var seen = [];
+    for (var i = 0, length = array.length; i < length; i++) {
+      var value = array[i];
+      if (iterator) { value = iterator.call(context, value, i, array); }
+      if (isSorted ? (!i || seen !== value) : seen.indexOf(value) === -1) {
+        if (isSorted) {
+          seen = value;
+        } else {
+          seen.push(value);
+        }
+        result.push(array[i]);
+      }
+    }
+    return result;
+  }
+
+  // Extend an object with the properties of another object.
+  // Based on: https://github.com/jashkenas/underscore/blob/master/underscore.js#L843
+  function extend(obj) {
+    Array.prototype.slice.call(arguments, 1).forEach(function(source) {
+      for (var prop in source) {
+        if (source.hasOwnProperty(prop)) {
+          obj[prop] = source[prop];
+        }
+      }
+    });
+    return obj;
+  }
+
+  // Predict the next value in a series.
+  function predictNextValue(values_y) {
+    var sum_x = 0
+    ,   sum_y = 0
+    ,   sum_xy = 0
+    ,   sum_xx = 0
+    ,   count = 0
+    ,   x = 0
+    ,   y = 0
+    ,   values_x = []
+    ,   values_length = values_y.length
+    ,   v, m, b, ret
+    ;
+
+    if (!values_length) {
+      return null;
+    }
+
+    for (v = 0; v < values_length; v++) {
+      values_x.push(v);
+    }
+    
+    // Calculate the sum for each of the parts necessary
+    for (v = 0; v < values_length; v++) {
+      x = values_x[v];
+      y = values_y[v];
+      sum_x += x;
+      sum_y += y;
+      sum_xx += x * x;
+      sum_xy += x * y;
+      count++;
+    }
+
+    // Calculate m and b for the formula: y = x * m + b
+    m = (count * sum_xy - sum_x * sum_y) / (count * sum_xx - sum_x * sum_x);
+    b = (sum_y / count) - (m * sum_x) / count;
+    ret = Math.round(values_length * m + b);
+
+    return ret >= 0 ? ret : 0;
+  }
+
+
+  //
+  // Shart
+  //
 
   Shart = (function() {
 
@@ -391,11 +394,12 @@ angular.module('shart', [])
       return uniqueChartId++;
     }
 
+    // Given a series, extract the individual segements.
     function flattenSeries(data) {
       var results = [];
 
       data.forEach(function(series) {
-        var datum = Util.extend({}, series)
+        var datum = extend({}, series)
         ,   segments = datum.segments
         ;
 
@@ -405,7 +409,7 @@ angular.module('shart', [])
 
         if (segments && segments.length) {
           segments.forEach(function(segment) {
-            results.push(Util.extend({}, segment));
+            results.push(extend({}, segment));
           });
         }
 
@@ -414,6 +418,7 @@ angular.module('shart', [])
       return results;
     }
 
+    // Given a series, extract the cross section of values at a given index (i).
     function extractSeriesData(series, i) {
       var segment_seq_totals
       ,   data = []
@@ -448,7 +453,7 @@ angular.module('shart', [])
             datum = {};
             formatter = segment.formatter || series.formatter || exports.formatter;
 
-            Util.extend(datum, segment); // Make sure the data included in the segment is merged into the datum
+            extend(datum, segment); // Make sure the data included in the segment is merged into the datum
 
             datum.label = segment.label;
             datum.value = value;
@@ -470,6 +475,7 @@ angular.module('shart', [])
       return data;
     }
 
+
     //
     // Band
     //
@@ -487,7 +493,8 @@ angular.module('shart', [])
         .attr('width', chart.x(data.w - 1) - xPadding)
         .attr('height', chart.y(0) - chart.y(data.h))
         .attr('stroke', data.color)
-        .attr('fill', data.color);
+        .attr('fill', data.color)
+      ;
     };
 
 
@@ -501,9 +508,7 @@ angular.module('shart', [])
       this.color = data.color;
       this.sequence = data.sequence;
       this.segments = data.segments;
-
       this.invisible = true;
-
       this.formatter = data.formatter || c.formatter;
     };
 
@@ -536,7 +541,7 @@ angular.module('shart', [])
       this.lineSegments.forEach(function(segment){
         if (segment.sequence[segment.sequence.length - 1] === 0 && data.extrapolate_last) {
           segment.sequence.pop();
-          segment.sequence.push(Util.predictNextValue(segment.sequence));
+          segment.sequence.push(predictNextValue(segment.sequence));
         }
 
         segment.label = segment.label;
@@ -547,7 +552,7 @@ angular.module('shart', [])
         if (self.interpolate) {
           segment.sequence.map(function(d, i) {
             if (d === 0) {
-              segment.sequence[i] = Util.predictNextValue(segment.sequence.slice(0, i));
+              segment.sequence[i] = predictNextValue(segment.sequence.slice(0, i));
             }
           }, segment);
         }
@@ -594,32 +599,38 @@ angular.module('shart', [])
             area = d3.svg.area()
               .x(function(d) { return chart.x(d.x) })
               .y0(chart.y(chart.yRange[0]))
-              .y1(function(d) { return chart.y(d.y) });
+              .y1(function(d) { return chart.y(d.y) })
+            ;
 
             fill = chart.svg.append('svg:path')
               .attr('d', area(sequence))
-              .attr('transform', 'translate(0,-1)');
+              .attr('transform', 'translate(0,-1)')
+            ;
 
             if (typeof segment.fill === "boolean") {
               fill
                 .attr('fill', color)
-                .attr('fill-opacity', 0.3);
+                .attr('fill-opacity', 0.3)
+              ;
             } else {
               fill
-                .attr('fill', segment.fill);
+                .attr('fill', segment.fill)
+              ;
             }
           }
 
           line = d3.svg.line()
             .x(function(d) { return chart.x(d.x) })
-            .y(function(d) { return chart.y(d.y) });
+            .y(function(d) { return chart.y(d.y) })
+          ;
 
           path = chart.svg.append('svg:path')
             .attr('d', line(sequence))
             .attr('transform', 'translate(0,-1)')
             .attr('stroke', color)
             .attr('stroke-width', segment.strokewidth || self.strokewidth)
-            .attr('fill', 'transparent');
+            .attr('fill', 'transparent')
+          ;
 
           if (segment.dasharray || self.dasharray) {
             path.attr('stroke-dasharray', segment.dasharray || self.dasharray);
@@ -672,14 +683,14 @@ angular.module('shart', [])
           this.segments.map(function(area, ai) {
             area.sequence.map(function(a, i) {
               if (zeros.indexOf(i) !== -1) {
-                this.segments[ai].sequence[i] = Util.predictNextValue(this.segments[ai].sequence.slice(0, i));
+                this.segments[ai].sequence[i] = predictNextValue(this.segments[ai].sequence.slice(0, i));
               }
             }, this);
           }, this);
         } else {
           this.sequence.map(function(a, i) {
             if (zeros.indexOf(i) !== -1) {
-              this.sequence[i] = Util.predictNextValue(this.sequence.slice(0, i));
+              this.sequence[i] = predictNextValue(this.sequence.slice(0, i));
             }
           }, this);
         }
@@ -743,7 +754,8 @@ angular.module('shart', [])
             .attr('d', area(seq))
             .attr('fill', seq[0].color)
             .attr('stroke-width', 0)
-            .attr('stroke', seq[0].color);
+            .attr('stroke', seq[0].color)
+          ;
         });
       }
 
@@ -755,7 +767,6 @@ angular.module('shart', [])
     //
 
     Column = function(data, i, c) {
-
       this.key = data.key;
 
       this.label = data.label;
@@ -854,7 +865,8 @@ angular.module('shart', [])
             .attr('width', cw)
             .attr('height', ch)
             .attr('stroke-width', 0)
-            .attr('fill', d.color);
+            .attr('fill', d.color)
+          ;
         };
 
         sequence.forEach(function(seg){
@@ -950,11 +962,11 @@ angular.module('shart', [])
       this.tooltip = opts.tooltip || exports.tooltip;
 
       if (this.tooltip) {
-        this.el.on('mousemove', Util.throttle(function() {
+        this.el.on('mousemove', throttle(function() {
           if (!chart.x) { return }
 
           var el      = this
-          ,   offset  = Util.offset(el)
+          ,   offset  = getOffset(el)
           ,   series_i
           ,   x_pos
           ,   data
@@ -997,7 +1009,7 @@ angular.module('shart', [])
           }
         }, 50));
 
-        this.el.on('mouseleave', Util.debounce(function() {
+        this.el.on('mouseleave', debounce(function() {
           exports.hideTooltip({
             target: chart.scrubber.node()
           });
@@ -1061,13 +1073,14 @@ angular.module('shart', [])
         this.svg = this.el
           .append('svg:svg')
           .attr('width', width)
-          .attr('height', height);
+          .attr('height', height)
+        ;
 
         this.x = d3.scale.linear().domain([0, this.series[0].cardinality - 1]).rangeRound(_xRange);
         this.x_axis = d3.scale.linear().domain([0, this.series[0].cardinality - 1]).rangeRound(_xAxisRange);
         this.y = d3.scale.linear().domain(this.yRange).rangeRound(_yRange);
         this.timeScale = scale().domain([this.startTime, this.endTime]).range(_xRange);
-        this.timeScaleTicks = Util.uniq(this.timeScale.ticks(this.ticks.x).concat([this.endTime]), true, function(d){ return d.valueOf(); });
+        this.timeScaleTicks = uniq(this.timeScale.ticks(this.ticks.x).concat([this.endTime]), true, function(d){ return d.valueOf(); });
 
         if (this.dateAxis || this.xAxis) {
           var xAxis = this.svg.append('svg:g');
@@ -1077,7 +1090,8 @@ angular.module('shart', [])
 
           xAxis.append('svg:path')
             .attr('d', line([p1, p2]))
-            .attr({'stroke-width': 1, 'stroke': '#aaaaaa'});
+            .attr({'stroke-width': 1, 'stroke': '#aaaaaa'})
+          ;
 
           this.timeScaleTicks.forEach(function(t, i) {
             if (this.xAxis) {
@@ -1100,7 +1114,8 @@ angular.module('shart', [])
               xAxis.append('svg:path')
                 .attr('d', line([p1, p2]))
                 .attr('stroke-width', 1)
-                .attr('stroke', '#aaaaaa');
+                .attr('stroke', '#aaaaaa')
+              ;
 
               xAxis.append('svg:text')
                 .text(this.dateFormatter(t))
@@ -1108,7 +1123,8 @@ angular.module('shart', [])
                 .attr('y', p1.y + 6)
                 .attr('font-size', 9)
                 .attr('text-anchor', 'middle')
-                .attr('fill', '#333');
+                .attr('fill', '#333')
+              ;
             }
           }, this);
         }
@@ -1137,9 +1153,11 @@ angular.module('shart', [])
             p2 = {x: p1.x, y: this.y.range()[1]};
           }
 
-          yAxis.append('svg:path').attr('d', line([p1, p2]))
+          yAxis.append('svg:path')
+            .attr('d', line([p1, p2]))
             .attr('stroke-width', 1)
-            .attr('stroke', '#aaaaaa');
+            .attr('stroke', '#aaaaaa')
+          ;
 
           var interval = Math.floor((this.y.domain()[1] - this.y.domain()[0]) / (ticks.length - 1));
 
@@ -1164,7 +1182,8 @@ angular.module('shart', [])
             tick = yAxis.append('svg:path')
               .attr('d', line([p1, p2]))
               .attr('stroke-width', 1)
-              .attr('stroke', '#aaaaaa');
+              .attr('stroke', '#aaaaaa')
+            ;
 
             if (typeof d === 'string') {
               formatted = d3.requote(d);
@@ -1178,7 +1197,8 @@ angular.module('shart', [])
               .attr('font-size', 9)
               .attr('text-anchor', 'right')
               .attr('alignment-baseline', 'middle')
-              .attr('fill', '#333');
+              .attr('fill', '#333')
+            ;
 
           }, this);
         }
@@ -1191,7 +1211,9 @@ angular.module('shart', [])
           series_s.draw(this);
         }, this);
 
-        this.scrubber = this.el.append('div').classed('shart-scrubber', true);
+        this.scrubber = this.el.append('div')
+          .classed('shart-scrubber', true)
+        ;
 
         return chart;
       },
@@ -1371,7 +1393,8 @@ angular.module('shart', [])
           .attr('d', arc(slice))
           .attr('transform', 'translate(' + (radius + 1) + ',' + (radius + 1) + ')')
           .attr('fill', cooler)
-          .attr('stroke', cooler);
+          .attr('stroke', cooler)
+        ;
 
       }, this);
     };
@@ -1393,7 +1416,7 @@ angular.module('shart', [])
       this.thickness = opts.thickness || Math.round(this.radius / 7);
 
       this.value = opts.value;
-      this.value_text = typeof(opts.value_text) === "undefined" ? Util.formatInt(this.value) : opts.value_text;
+      this.value_text = typeof(opts.value_text) === "undefined" ? formatInt(this.value) : opts.value_text;
       this.value_color = opts.value_color;
 
       this.label = opts.label;
@@ -1436,28 +1459,32 @@ angular.module('shart', [])
       }
 
       this.el
-        .html("")
         .classed('shart-donut-graph', true)
         .style('width', this.size + 'px')
-        .style('height', this.size + 'px');
+        .style('height', this.size + 'px')
+        .html('')
+      ;
 
       if (this.class_name) { this.el.classed(this.class_name, true); }
 
       var graph = this.el.append('div')
         .style('position', 'relative')
         .style('width', this.size + 'px')
-        .style('height', this.size + 'px');
+        .style('height', this.size + 'px')
+      ;
 
       var svg = graph
         .append('svg:svg')
         .attr('width', this.size)
-        .attr('height', this.size);
+        .attr('height', this.size)
+      ;
 
       svg.append('svg:path')
         .classed('shart-donut-graph-background', true)
         .attr('fill', '#e5e5e5')
         .attr('transform', 'translate(' + this.radius + ',' + this.radius + ')')
-        .attr('d', arc().startAngle(0).endAngle(2*Math.PI)());
+        .attr('d', arc().startAngle(0).endAngle(2 * Math.PI)())
+      ;
 
       svg.append('svg:g')
         .selectAll('.shart-donut-graph-arc')
@@ -1467,7 +1494,8 @@ angular.module('shart', [])
             .classed('shart-donut-graph-arc', true)
             .attr('transform', 'translate(' + this.radius + ',' + this.radius + ')')
             .attr('fill', function(d) { return d.data.color; })
-            .attr('d', arc());
+            .attr('d', arc())
+      ;
 
       if (this.label && this.label_position === 'center') {
 
@@ -1477,21 +1505,25 @@ angular.module('shart', [])
           .style("top", this.thickness + "px")
           .style("left", this.thickness + "px")
           .style("width", this.size - (this.thickness * 2) + "px")
-          .style("height", this.size - (this.thickness * 2) + "px");
+          .style("height", this.size - (this.thickness * 2) + "px")
+        ;
 
         var label_group_inner = label_group.append("div")
           .style("display", "table-cell")
           .style("text-align", "center")
-          .style("vertical-align", "middle");
+          .style("vertical-align", "middle")
+        ;
 
         value = label_group_inner.append("div")
           .classed('shart-donut-graph-value', true)
-          .text(this.value_text);
+          .text(this.value_text)
+        ;
 
         label = label_group_inner.append("div")
           .classed("shart-donut-graph-label", true)
           .style("text-align", "center")
-          .text(this.label);
+          .text(this.label)
+        ;
 
       } else {
 
@@ -1500,7 +1532,8 @@ angular.module('shart', [])
           .style("white-space", "nowrap")
           .style("overflow", "visible")
           .style("display", "inline-block")
-          .text(this.value_text);
+          .text(this.value_text)
+        ;
 
         var value_rect = {
           width: parseInt(value.style('width'), 10),
@@ -1520,14 +1553,16 @@ angular.module('shart', [])
             .style("white-space", "nowrap")
             .style("overflow", "visible")
             .style("display", "inline-block")
-            .text(this.label);
+            .text(this.label)
+          ;
 
           if (this.label_subtext) {
             label.node().appendChild(document.createTextNode(" "));
 
             label.append('span')
               .classed("shart-donut-graph-label-subtext", true)
-              .text(this.label_subtext);
+              .text(this.label_subtext)
+            ;
           }
 
           var label_rect = {
@@ -1591,20 +1626,23 @@ angular.module('shart', [])
         }
       }
 
-      this.el.html(''); // Clear out contents
-
-      this.el.classed('shart-donut-stack-graph', true);
+      this.el
+        .classed('shart-donut-stack-graph', true)
+        .html('') // Clear out contents
+      ;
 
       for (i = 0; i < series.length; i++) {
-        var item = this.el.append('div').classed('shart-donut-stack-graph-item', true);
+        var item = this.el.append('div')
+          .classed('shart-donut-stack-graph-item', true)
+        ;
 
-        var subtext = Util.formatInt(series[i].value);
+        var subtext = formatInt(series[i].value);
         if (this.label_subtext) { subtext += ' ' + this.label_subtext; }
 
         var donut = new DonutGraph(item.node(), [], {
           total: total,
           value: series[i].value,
-          value_text: Util.formatInt(Math.round(100 * series[i].value / total)) + '%',
+          value_text: formatInt(Math.round(100 * series[i].value / total)) + '%',
           value_color: series[i].color,
           label: series[i].label,
           label_position: 'right',
@@ -1655,10 +1693,14 @@ angular.module('shart', [])
         .selectAll(".shart-horizontal-bar-graph-segment")
           .data(this.series)
         .enter()
-          .append("div").classed("shart-horizontal-bar-graph-segment", true);
+          .append("div")
+            .classed("shart-horizontal-bar-graph-segment", true)
+      ;
 
       var label = segment
-        .append("div").classed("shart-horizontal-bar-graph-label", true);
+        .append("div")
+          .classed("shart-horizontal-bar-graph-label", true)
+      ;
 
       if (this.percentages) {
         label
@@ -1673,15 +1715,20 @@ angular.module('shart', [])
       }
 
       label
-        .append("span").classed("shart-horizontal-bar-graph-label-subtext", true)
-          .text(function(d) { return d.label_subtext });
+        .append("span")
+          .classed("shart-horizontal-bar-graph-label-subtext", true)
+          .text(function(d) { return d.label_subtext })
+      ;
 
       segment
-        .append("div").classed("shart-horizontal-bar-graph-value", true)
-          .append("div").classed("shart-horizontal-bar-graph-value-bar", true)
+        .append("div")
+          .classed("shart-horizontal-bar-graph-value", true)
+          .append("div")
+            .classed("shart-horizontal-bar-graph-value-bar", true)
             .style("background-color", function(d) { return d.color })
             .style("width", function(d) { return x(d.value || 0) + "%" })
-            .style("min-width", "1px");
+            .style("min-width", "1px")
+      ;
 
     };
 
@@ -1797,8 +1844,7 @@ angular.module('shart', [])
             .attr('y', baselines.label)
             .text(function(d) {
               var percentage_label = formatPercentage(d.percentage);
-              if(isEmpty){ percentage_label = '--' + '%'; }
-
+              if (isEmpty) { percentage_label = '--' + '%'; }
               return percentage_label + ' ' + d.label;
             })
           ;
@@ -1829,7 +1875,6 @@ angular.module('shart', [])
         ;
 
         this.attachMouseEvents();
-
       },
 
       attachMouseEvents: function() {
@@ -1838,7 +1883,7 @@ angular.module('shart', [])
         ,   hovered = -1
         ;
 
-        this.el.on('mousemove', Util.throttle(function() {
+        this.el.on('mousemove', throttle(function() {
           var mouseX = d3.mouse(svg.node())[0]
           ,   items = svg.selectAll('.shart-pipeline-graph-item')
           ;
@@ -2033,31 +2078,39 @@ angular.module('shart', [])
 
       var enter = item.enter()
         .append("div")
-          .classed("shart-legend-item", true);
+          .classed("shart-legend-item", true)
+        ;
 
-      enter.filter(function(d) { return !!d.color }).append("span")
+      enter
+        .filter(function(d) { return !!d.color })
+        .append("span")
           .classed("shart-swatch shart-legend-item-swatch", true)
-          .style("background-color", function(d) { return d.color });
+          .style("background-color", function(d) { return d.color })
+      ;
 
       enter.append("span")
         .classed("shart-legend-item-label", true)
-        .text(function(d) { return d.label });
+        .text(function(d) { return d.label })
+      ;
 
       enter.append("span")
         .classed("shart-legend-item-value", true)
-        .text(function(d) { return d.formatted_value || d.value });
+        .text(function(d) { return d.formatted_value || d.value })
+      ;
 
       if (animate) {
         exit
           .transition()
             .style('opacity', 0)
-            .remove();
+            .remove()
+        ;
 
         enter
           .style('opacity', 0)
           .transition()
             .duration(1000)
-            .style('opacity', 1);
+            .style('opacity', 1)
+        ;
 
       } else {
         exit
@@ -2072,10 +2125,8 @@ angular.module('shart', [])
 
     var resizeId = 0;
     function autosize(shart) {
-      d3.select(window).on('resize.shart' + resizeId++, Util.debounce(function() { shart.draw() }, 50));
+      d3.select(window).on('resize.shart' + resizeId++, debounce(function() { shart.draw() }, 50));
     }
-
-    exports.Util = Util;
 
     exports.colors = d3.scale.category10();
 
@@ -2100,15 +2151,18 @@ angular.module('shart', [])
         var datum = series[0];
 
         placard = el.append('div')
-          .classed('shart-tip-placard', true);
+          .classed('shart-tip-placard', true)
+        ;
 
         placard.append('div')
           .classed('shart-tip-placard-value', true)
-          .text(datum.formatted_value || datum.value);
+          .text(datum.formatted_value || datum.value)
+        ;
 
         placard.append('div')
           .classed('shart-tip-placard-label', true)
-          .text(datum.tip_label || datum.label);
+          .text(datum.tip_label || datum.label)
+        ;
 
       } else {
         legend = el.append('div');
@@ -2120,7 +2174,8 @@ angular.module('shart', [])
       if (data.date) {
         date = el.append('div')
           .classed('shart-tip-date', true)
-          .text(chart.dateFormatter(data.date));
+          .text(chart.dateFormatter(data.date))
+        ;
       }
 
       return el.node();
