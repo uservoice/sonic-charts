@@ -104,7 +104,7 @@ angular.module('shart', [])
 
     link: function($scope, $element) {
       Shart.Donut($element[0], $scope.data, {
-        class_name: $scope.type || false,
+        type: $scope.type || false,
         label: $scope.label,
         label_position: $scope.labelPosition,
         value: $scope.value,

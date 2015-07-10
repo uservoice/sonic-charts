@@ -1260,7 +1260,7 @@
         this.series = [{ value: this.value, color: this.color }];
       }
 
-      this.class_name = opts.class_name;
+      this.type = opts.type || 'small';
     };
 
     DonutGraph.prototype.draw = function() {
@@ -1292,7 +1292,7 @@
         .html('')
       ;
 
-      if (this.class_name) { this.el.classed(this.class_name, true); }
+      if (this.type) { this.el.classed(this.type, true); }
 
       var graph = this.el.append('div')
         .style('position', 'relative')

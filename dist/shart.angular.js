@@ -104,7 +104,7 @@ angular.module('shart', [])
 
     link: function($scope, $element) {
       Shart.Donut($element[0], $scope.data, {
-        class_name: $scope.type || false,
+        type: $scope.type || false,
         label: $scope.label,
         label_position: $scope.labelPosition,
         value: $scope.value,
@@ -1433,7 +1433,7 @@ angular.module('shart', [])
         this.series = [{ value: this.value, color: this.color }];
       }
 
-      this.class_name = opts.class_name;
+      this.type = opts.type || 'small';
     };
 
     DonutGraph.prototype.draw = function() {
@@ -1465,7 +1465,7 @@ angular.module('shart', [])
         .html('')
       ;
 
-      if (this.class_name) { this.el.classed(this.class_name, true); }
+      if (this.type) { this.el.classed(this.type, true); }
 
       var graph = this.el.append('div')
         .style('position', 'relative')
