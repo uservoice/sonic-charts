@@ -76,14 +76,12 @@ angular.module('shart', [])
 
     scope: {
       data: '=',
-      width: '=',
-      height: '='
+      size: '='
     },
 
     link: function($scope, $element) {
       Shart.Pie($element[0], $scope.data, {
-        width: $scope.width,
-        height: $scope.height
+        size: $scope.size
       });
     }
   };
@@ -1340,8 +1338,7 @@ angular.module('shart', [])
 
       this.el = d3.select(el);
 
-      this.width = opts.width || 50;
-      this.height = opts.height || 50;
+      this.size = opts.size || 50;
 
       this.series = series;
     };
@@ -1354,7 +1351,7 @@ angular.module('shart', [])
     };
 
     PieGraph.prototype.draw = function() {
-      var diameter = Math.min(this.width, this.height)
+      var diameter = this.size
       ,   radius  = (diameter / 2) - 1
       ,   arc     = d3.svg.arc().outerRadius(radius)
       ,   data    = this.sequenceData()
@@ -1364,16 +1361,16 @@ angular.module('shart', [])
         .classed('shart-pie-graph', true)
         .style({
           'position': 'relative',
-          'width': this.width + 'px',
+          'width': this.size + 'px',
           'height': 0,
-          'padding-bottom': this.height + 'px'
+          'padding-bottom': this.size + 'px'
         })
         .html('')
       ;
       
       var svg = chart.append('svg:svg')
-        .attr('width', this.width)
-        .attr('height', this.height)
+        .attr('width', this.size)
+        .attr('height', this.size)
         .attr('viewBox', [0, 0, diameter, diameter].join(' '))
         .style({
           'position': 'absolute',

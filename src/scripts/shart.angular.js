@@ -76,14 +76,12 @@ angular.module('shart', [])
 
     scope: {
       data: '=',
-      width: '=',
-      height: '='
+      size: '='
     },
 
     link: function($scope, $element) {
       Shart.Pie($element[0], $scope.data, {
-        width: $scope.width,
-        height: $scope.height
+        size: $scope.size
       });
     }
   };

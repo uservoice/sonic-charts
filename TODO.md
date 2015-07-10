@@ -10,8 +10,8 @@
   - [x] Refactor HTML class names to include "shart"
   - [x] Make sure that each chart applies it's own class name to the div that it is applied to
   - [ ] API inconsistencies
-    - [ ] size vs. width & height
-  - [ ] Remove class_name from DonutGraph
+    - [x] size vs. width & height
+  - [x] Remove class_name from DonutGraph
 - [ ] Dynamically update graphs when data changes
 - [ ] Any way to automate testing?
 - [ ] Create a default CSS file for dist
