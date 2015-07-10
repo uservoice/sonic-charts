@@ -1,4 +1,4 @@
-;(function(window, undefined) {
+if (angular) {
 /* globals angular, Shart */
 
 angular.module('shart', [])
@@ -166,5 +166,4 @@ angular.module('shart', [])
 })
 
 ;
-
-})(window);
+}

@@ -17,7 +17,11 @@ var gulp = require('gulp')
 gulp.task('clean', shell.task('rm -Rf ./dist/*'));
 
 gulp.task('scripts:lint', function() {
-  return gulp.src('src/*.js')
+  return gulp.src([
+      'src/scripts/*.js',
+      '!src/scripts/intro.js',
+      '!src/scripts/outro.js'
+    ])
     .pipe(jshint())
     .pipe(jshint.reporter(jstylish))
     .pipe(jshint.reporter('fail'))
@@ -25,7 +29,11 @@ gulp.task('scripts:lint', function() {
 });
 
 gulp.task('scripts:core', function () {
-  return gulp.src('src/scripts/shart.js')
+  return gulp.src([
+      'src/scripts/intro.js',
+      'src/scripts/shart.js',
+      'src/scripts/outro.js'
+    ])
     .pipe(concat('shart.js'))
       .pipe(babel())
       .pipe(gulp.dest('dist'))
@@ -36,7 +44,12 @@ gulp.task('scripts:core', function () {
 });
 
 gulp.task('scripts:angular', function () {
-  return gulp.src('src/scripts/*.js')
+  return gulp.src([
+      'src/scripts/intro.js',
+      'src/scripts/shart.js',
+      'src/scripts/shart.angular.js',
+      'src/scripts/outro.js'
+    ])
     .pipe(concat('shart.angular.js'))
       .pipe(babel())
       .pipe(gulp.dest('dist'))
