@@ -1,5 +1,61 @@
 /* globals d3, Shart */
 
+//
+// Shart
+//
+
+var config = {}
+
+// Padding
+,   xPadding = 40
+,   yPadding = 20
+
+// Formatters
+,   dayFormat = d3.time.format('%b %e')
+,   hourFormat = d3.time.format('%I%p')
+,   weekFormat = d3.time.format('%x')
+,   monthFormat = d3.time.format('%m/%y')
+
+// Series Graph chart types
+,   seriesType
+
+// Misc
+,   timeScales
+
+;
+
+timeScales = {
+  hourly: {
+    ticks: 24,
+    formatter: hourFormat,
+    ruleTicks: 3
+  },
+
+  daily: {
+    ticks: 30,
+    formatter: dayFormat,
+    ruleTicks: 7
+  },
+
+  weekly: {
+    ticks: 8,
+    formatter: weekFormat,
+    ruleTicks: 1
+  },
+
+  monthly: {
+    ticks: 6,
+    formatter: monthFormat,
+    ruleTicks: 1
+  },
+
+  none: {
+    ticks: 0,
+    formatter: function(d){return d;},
+    ruleTicks: 0
+  }
+};
+
 // Format an integer with commas.
 function formatInt(number) {
   var int = parseInt("0" + number, 10);
@@ -133,62 +189,6 @@ function predictNextValue(values_y) {
 }
 
 
-//
-// Shart
-//
-
-var config = {}
-
-// Padding
-,   xPadding = 40
-,   yPadding = 20
-
-// Formatters
-,   dayFormat = d3.time.format('%b %e')
-,   hourFormat = d3.time.format('%I%p')
-,   weekFormat = d3.time.format('%x')
-,   monthFormat = d3.time.format('%m/%y')
-
-// Series Graph chart types
-,   seriesType
-
-// Misc
-,   timeScales
-
-;
-
-timeScales = {
-  hourly: {
-    ticks: 24,
-    formatter: hourFormat,
-    ruleTicks: 3
-  },
-
-  daily: {
-    ticks: 30,
-    formatter: dayFormat,
-    ruleTicks: 7
-  },
-
-  weekly: {
-    ticks: 8,
-    formatter: weekFormat,
-    ruleTicks: 1
-  },
-
-  monthly: {
-    ticks: 6,
-    formatter: monthFormat,
-    ruleTicks: 1
-  },
-
-  none: {
-    ticks: 0,
-    formatter: function(d){return d;},
-    ruleTicks: 0
-  }
-};
-
 // Given a series, extract the individual segements.
 function flattenSeries(data) {
   var results = [];
@@ -277,28 +277,51 @@ function extractSeriesData(series, i) {
 
 class Graph {
   constructor(el, series, options) {
-    this.id = Graph.uniqueId();
+    Graph.instances.push(this);
+    this.id = Graph.lastUniqueId++;
     this.el = d3.select(el);
     this.series = series || [];
     this.options = options || {};
+    this.autosize = false;
+    Graph.installResizeListener();
   }
+
   draw() {
     // abstract: draw the chart
   }
-  update(series /*, animate */) {
-    this.series = series;
-    // abstract: update the chart
+  
+  resize() {
+    this.draw();
   }
+
+  update(series /*, animate */) {
+    // abstract: update the chart
+    this.series = series;
+  }
+
   destroy() {
-    // abstract: remove events and internal DOM
+    // abstract method: don't forget to also remove events
+    var index = Graph.instances.indexOf(this);
+    if (index > -1) { Graph.instances.splice(index, 1); }
+    this.el.html('');
+  }
+
+  // Global resize listener
+  static installResizeListener() {
+    if (!Graph.resizeListenerInstalled) {
+      console.log('installing resize listener');
+      d3.select(window).on('resize.shart', debounce(function() {
+        Graph.instances
+          .filter(g => g.autosize)
+          .forEach(g => g.resize());
+      }, 50));
+      Graph.resizeListenerInstalled = true;
+    }
   }
 }
-
-// Calculate unique IDs for charts
 Graph.lastUniqueId = 0;
-Graph.uniqueId = function() {
-  return Graph.lastUniqueId++;
-};
+Graph.instances = [];
+Graph.resizeListenerInstalled = false;
 
 
 //
@@ -715,6 +738,7 @@ seriesType = {
 class SeriesGraph extends Graph {
   constructor(el, series, options) {
     super(el, series, options);
+    this.autosize = true;
 
     var opts = this.options
     ,   chart = this
@@ -1541,6 +1565,7 @@ class HorizontalBarGraph extends Graph {
 class PipelineGraph extends Graph {
   constructor(el, series, options) {
     super(el, series, options);
+    this.autosize = true;
     var opts = this.options;
 
     this.svg = this.el.append('svg');
@@ -1853,10 +1878,7 @@ class PipelineGraph extends Graph {
 
 class Legend extends Graph {
   draw() {
-    this.el
-      .classed("shart-legend", true)
-    ;
-
+    this.el.classed("shart-legend", true);
     this.update(this.series);
   }
 
@@ -1916,11 +1938,6 @@ class Legend extends Graph {
 //
 // Exports
 //
-
-var resizeId = 0;
-function autosize(shart) {
-  d3.select(window).on('resize.shart' + resizeId++, debounce(function() { shart.draw() }, 50));
-}
 
 config.colors = d3.scale.category10();
 
@@ -1993,7 +2010,6 @@ Shart.Legend = function(el, series, opts) {
 
 Shart.Series = function(el, series, opts) {
   var shart = new SeriesGraph(el, series, opts);
-  autosize(shart);
   shart.draw();
   return shart;
 };
@@ -2012,28 +2028,24 @@ Shart.Pie = function(el, series, opts) {
 
 Shart.Donut = function(el, series, opts) {
   var shart = new DonutGraph(el, series, opts);
-  autosize(shart);
   shart.draw();
   return shart;
 };
 
 Shart.DonutStack = function(el, series, opts) {
   var shart = new DonutStackGraph(el, series, opts);
-  autosize(shart);
   shart.draw();
   return shart;
 };
 
 Shart.HorizontalBar = function(el, series, opts) {
   var shart = new HorizontalBarGraph(el, series, opts);
-  autosize(shart);
   shart.draw();
   return shart;
 };
 
 Shart.Pipeline = function(el, series, opts) {
   var shart = new PipelineGraph(el, series, opts);
-  autosize(shart);
   shart.draw();
   return shart;
 };

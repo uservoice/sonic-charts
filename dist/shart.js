@@ -16,6 +16,66 @@ function _classCallCheck(instance, Constructor) { if (!(instance instanceof Cons
 
 /* globals d3, Shart */
 
+//
+// Shart
+//
+
+var config = {}
+
+// Padding
+,
+    xPadding = 40,
+    yPadding = 20
+
+// Formatters
+,
+    dayFormat = d3.time.format('%b %e'),
+    hourFormat = d3.time.format('%I%p'),
+    weekFormat = d3.time.format('%x'),
+    monthFormat = d3.time.format('%m/%y')
+
+// Series Graph chart types
+,
+    seriesType
+
+// Misc
+,
+    timeScales;
+
+timeScales = {
+  hourly: {
+    ticks: 24,
+    formatter: hourFormat,
+    ruleTicks: 3
+  },
+
+  daily: {
+    ticks: 30,
+    formatter: dayFormat,
+    ruleTicks: 7
+  },
+
+  weekly: {
+    ticks: 8,
+    formatter: weekFormat,
+    ruleTicks: 1
+  },
+
+  monthly: {
+    ticks: 6,
+    formatter: monthFormat,
+    ruleTicks: 1
+  },
+
+  none: {
+    ticks: 0,
+    formatter: function formatter(d) {
+      return d;
+    },
+    ruleTicks: 0
+  }
+};
+
 // Format an integer with commas.
 function formatInt(number) {
   var int = parseInt('0' + number, 10);
@@ -152,66 +212,6 @@ function predictNextValue(values_y) {
   return ret >= 0 ? ret : 0;
 }
 
-//
-// Shart
-//
-
-var config = {}
-
-// Padding
-,
-    xPadding = 40,
-    yPadding = 20
-
-// Formatters
-,
-    dayFormat = d3.time.format('%b %e'),
-    hourFormat = d3.time.format('%I%p'),
-    weekFormat = d3.time.format('%x'),
-    monthFormat = d3.time.format('%m/%y')
-
-// Series Graph chart types
-,
-    seriesType
-
-// Misc
-,
-    timeScales;
-
-timeScales = {
-  hourly: {
-    ticks: 24,
-    formatter: hourFormat,
-    ruleTicks: 3
-  },
-
-  daily: {
-    ticks: 30,
-    formatter: dayFormat,
-    ruleTicks: 7
-  },
-
-  weekly: {
-    ticks: 8,
-    formatter: weekFormat,
-    ruleTicks: 1
-  },
-
-  monthly: {
-    ticks: 6,
-    formatter: monthFormat,
-    ruleTicks: 1
-  },
-
-  none: {
-    ticks: 0,
-    formatter: function formatter(d) {
-      return d;
-    },
-    ruleTicks: 0
-  }
-};
-
 // Given a series, extract the individual segements.
 function flattenSeries(data) {
   var results = [];
@@ -304,34 +304,64 @@ var Graph = (function () {
   function Graph(el, series, options) {
     _classCallCheck(this, Graph);
 
-    this.id = Graph.uniqueId();
+    Graph.instances.push(this);
+    this.id = Graph.lastUniqueId++;
     this.el = d3.select(el);
     this.series = series || [];
     this.options = options || {};
+    this.autosize = false;
+    Graph.installResizeListener();
   }
 
   _createClass(Graph, [{
     key: 'draw',
     value: function draw() {}
   }, {
+    key: 'resize',
+    value: function resize() {
+      this.draw();
+    }
+  }, {
     key: 'update',
     value: function update(series /*, animate */) {
-      this.series = series;
       // abstract: update the chart
+      this.series = series;
     }
   }, {
     key: 'destroy',
-    value: function destroy() {}
+    value: function destroy() {
+      // abstract method: don't forget to also remove events
+      var index = Graph.instances.indexOf(this);
+      if (index > -1) {
+        Graph.instances.splice(index, 1);
+      }
+      this.el.html('');
+    }
+  }], [{
+    key: 'installResizeListener',
+
+    // Global resize listener
+    value: function installResizeListener() {
+      if (!Graph.resizeListenerInstalled) {
+        console.log('installing resize listener');
+        d3.select(window).on('resize.shart', debounce(function () {
+          Graph.instances.filter(function (g) {
+            return g.autosize;
+          }).forEach(function (g) {
+            return g.resize();
+          });
+        }, 50));
+        Graph.resizeListenerInstalled = true;
+      }
+    }
   }]);
 
   return Graph;
 })();
 
-// Calculate unique IDs for charts
 Graph.lastUniqueId = 0;
-Graph.uniqueId = function () {
-  return Graph.lastUniqueId++;
-};
+Graph.instances = [];
+Graph.resizeListenerInstalled = false;
 
 //
 // Band
@@ -758,6 +788,7 @@ var SeriesGraph = (function (_Graph) {
     _classCallCheck(this, SeriesGraph);
 
     _get(Object.getPrototypeOf(SeriesGraph.prototype), 'constructor', this).call(this, el, series, options);
+    this.autosize = true;
 
     var opts = this.options,
         chart = this,
@@ -1483,6 +1514,7 @@ var PipelineGraph = (function (_Graph7) {
     _classCallCheck(this, PipelineGraph);
 
     _get(Object.getPrototypeOf(PipelineGraph.prototype), 'constructor', this).call(this, el, series, options);
+    this.autosize = true;
     var opts = this.options;
 
     this.svg = this.el.append('svg');
@@ -1767,7 +1799,6 @@ var Legend = (function (_Graph8) {
     key: 'draw',
     value: function draw() {
       this.el.classed('shart-legend', true);
-
       this.update(this.series);
     }
   }, {
@@ -1811,13 +1842,6 @@ var Legend = (function (_Graph8) {
 //
 // Exports
 //
-
-var resizeId = 0;
-function autosize(shart) {
-  d3.select(window).on('resize.shart' + resizeId++, debounce(function () {
-    shart.draw();
-  }, 50));
-}
 
 config.colors = d3.scale.category10();
 
@@ -1879,7 +1903,6 @@ Shart.Legend = function (el, series, opts) {
 
 Shart.Series = function (el, series, opts) {
   var shart = new SeriesGraph(el, series, opts);
-  autosize(shart);
   shart.draw();
   return shart;
 };
@@ -1898,35 +1921,29 @@ Shart.Pie = function (el, series, opts) {
 
 Shart.Donut = function (el, series, opts) {
   var shart = new DonutGraph(el, series, opts);
-  autosize(shart);
   shart.draw();
   return shart;
 };
 
 Shart.DonutStack = function (el, series, opts) {
   var shart = new DonutStackGraph(el, series, opts);
-  autosize(shart);
   shart.draw();
   return shart;
 };
 
 Shart.HorizontalBar = function (el, series, opts) {
   var shart = new HorizontalBarGraph(el, series, opts);
-  autosize(shart);
   shart.draw();
   return shart;
 };
 
 Shart.Pipeline = function (el, series, opts) {
   var shart = new PipelineGraph(el, series, opts);
-  autosize(shart);
   shart.draw();
   return shart;
 };
 
 // abstract: draw the chart
-
-// abstract: remove events and internal DOM
 
 // Invisible chart elements do not draw themselves on the chart. Instead,
 // they can be used to display additional stats in the Tooltip.
