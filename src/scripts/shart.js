@@ -4,57 +4,7 @@
 // Shart
 //
 
-var config = {}
-
-// Padding
-,   xPadding = 40
-,   yPadding = 20
-
-// Formatters
-,   dayFormat = d3.time.format('%b %e')
-,   hourFormat = d3.time.format('%I%p')
-,   weekFormat = d3.time.format('%x')
-,   monthFormat = d3.time.format('%m/%y')
-
-// Series Graph chart types
-,   seriesType
-
-// Misc
-,   timeScales
-
-;
-
-timeScales = {
-  hourly: {
-    ticks: 24,
-    formatter: hourFormat,
-    ruleTicks: 3
-  },
-
-  daily: {
-    ticks: 30,
-    formatter: dayFormat,
-    ruleTicks: 7
-  },
-
-  weekly: {
-    ticks: 8,
-    formatter: weekFormat,
-    ruleTicks: 1
-  },
-
-  monthly: {
-    ticks: 6,
-    formatter: monthFormat,
-    ruleTicks: 1
-  },
-
-  none: {
-    ticks: 0,
-    formatter: function(d){return d;},
-    ruleTicks: 0
-  }
-};
+var config = {}; 
 
 // Format an integer with commas.
 function formatInt(number) {
@@ -307,8 +257,8 @@ class Graph {
     this.draw();
   }
 
-  // Destroy the chart. Preform any cleanup on the chart that is necessary
-  // before removeing the DOM. (Remove event listners, etc.) Allways call
+  // Destroy the chart. Perform any cleanup on the chart that is necessary
+  // before removing the DOM. (Remove event listners, etc.) Allways call
   // super in a Subclass if you override this method.
   destroy() {
     // abstract method: don't forget to also remove events
@@ -350,7 +300,7 @@ class Band {
     chart.svg.append('svg:rect')
       .attr('x', chart.x(data.x))
       .attr('y', chart.y(data.y))
-      .attr('width', chart.x(data.w - 1) - xPadding)
+      .attr('width', chart.x(data.w - 1) - SeriesGraph.xPadding)
       .attr('height', chart.y(0) - chart.y(data.h))
       .attr('stroke', data.color)
       .attr('fill', data.color)
@@ -594,14 +544,14 @@ class Area {
       return chart.x(d.x);
     }).y0(function(d) {
       if (instance.percent) {
-        var y = chart.yAxis ? (chart.y(0) - yPadding) : chart.y(0);
+        var y = chart.yAxis ? (chart.y(0) - SeriesGraph.yPadding) : chart.y(0);
         return chart.y(0) - (y * d.y0);
       } else {
         return chart.y(d.y0);
       }
     }).y1(function(d) {
       if (instance.percent) {
-        var y = chart.yAxis ? (chart.y(0) - yPadding) : chart.y(0);
+        var y = chart.yAxis ? (chart.y(0) - SeriesGraph.yPadding) : chart.y(0);
         return chart.y(0) - (y * (d.y0 + d.y));
       } else {
         return chart.y(d.y0 + d.y);
@@ -693,7 +643,7 @@ class Column {
     // Set ratio to use to determine column height
     // If percent: the ratio is just the chart height minus ypadding * 2
     // If no percent: the ratio is the (chart height minus (ypadding * 2)) / max column total
-    var chart_height = chart.height - (yPadding * 2);
+    var chart_height = chart.height - (SeriesGraph.yPadding * 2);
     ratio = chart_height;
 
     if (!percent) {
@@ -711,7 +661,7 @@ class Column {
       if(seq_totals[d.x] === 0) { return; }
 
       // Determine how high to start drawing the column
-      cy = (d.y0 * ratio) + yPadding;
+      cy = (d.y0 * ratio) + SeriesGraph.yPadding;
       if(!percent) {
         cy += (chart_height - (seq_totals[d.x] * ratio));
       }
@@ -735,13 +685,6 @@ class Column {
   }
 }
 
-// allow for fetching (evaling) the types of series.
-seriesType = {
-  invisible: Invisible,
-  line: Line,
-  area: Area,
-  column: Column
-};
 
 //
 // Series Graph
@@ -784,20 +727,20 @@ class SeriesGraph extends Graph {
     }
 
     this.ticks = this.ticks || {
-      x: timeScales[opts.dateAxis].ticks
+      x: SeriesGraph.timeScales[opts.dateAxis].ticks
     };
 
     this.ruleTicks = {
-      x: opts.ruleTicks || timeScales[opts.dateAxis].ruleTicks
+      x: opts.ruleTicks || SeriesGraph.timeScales[opts.dateAxis].ruleTicks
     };
 
-    this.dateFormatter = timeScales[opts.dateAxis].formatter;
+    this.dateFormatter = SeriesGraph.timeScales[opts.dateAxis].formatter;
 
     this.formatter = opts.formatter || config.formatter;
 
     // turn our series into proper functions
     this.series = this.series.map(function(series_s, index_s) {
-      return new seriesType[series_s.type](series_s, index_s, chart);
+      return new SeriesGraph.elementTypes[series_s.type](series_s, index_s, chart);
     });
 
     // same with bands
@@ -908,8 +851,8 @@ class SeriesGraph extends Graph {
     }
 
     if (this.dateAxis || this.xAxis) {
-      _xRange = [xPadding + this.xTickPadding, width - xPadding - this.xTickPadding];
-      _xAxisRange = [xPadding, width - xPadding];
+      _xRange = [SeriesGraph.xPadding + this.xTickPadding, width - SeriesGraph.xPadding - this.xTickPadding];
+      _xAxisRange = [SeriesGraph.xPadding, width - SeriesGraph.xPadding];
     } else {
       _xRange = [this.xTickPadding, width - this.xTickPadding];
       _xAxisRange = [0, width];
@@ -917,7 +860,7 @@ class SeriesGraph extends Graph {
 
     if (this.yAxis) {
       this.el.classed('y-axis', true);
-      _yRange = [height - yPadding, yPadding];
+      _yRange = [height - SeriesGraph.yPadding, SeriesGraph.yPadding];
     } else {
       _yRange = [height, 0];
     }
@@ -1100,6 +1043,48 @@ class SeriesGraph extends Graph {
     return data;
   }
 }
+
+SeriesGraph.xPadding = 40;
+SeriesGraph.yPadding = 20;
+
+SeriesGraph.timeScales = {
+  hourly: {
+    ticks: 24,
+    formatter: d3.time.format('%I%p'),
+    ruleTicks: 3
+  },
+
+  daily: {
+    ticks: 30,
+    formatter: d3.time.format('%b %e'),
+    ruleTicks: 7
+  },
+
+  weekly: {
+    ticks: 8,
+    formatter: d3.time.format('%x'),
+    ruleTicks: 1
+  },
+
+  monthly: {
+    ticks: 6,
+    formatter: d3.time.format('%m/%y'),
+    ruleTicks: 1
+  },
+
+  none: {
+    ticks: 0,
+    formatter: function(d){return d;},
+    ruleTicks: 0
+  }
+};
+
+SeriesGraph.elementTypes = {
+  invisible: Invisible,
+  line: Line,
+  area: Area,
+  column: Column
+};
 
 
 //
