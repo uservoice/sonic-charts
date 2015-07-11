@@ -276,6 +276,8 @@ function extractSeriesData(series, i) {
 //
 
 class Graph {
+
+  // Create a new Graph.
   constructor(el, series, options) {
     Graph.instances.push(this);
     this.id = Graph.lastUniqueId++;
@@ -286,19 +288,28 @@ class Graph {
     Graph.installResizeListener();
   }
 
+  // This method is responsible for drawing the chart. Override this in a
+  // subclass to create your own chart.
   draw() {
     // abstract: draw the chart
   }
   
+  // If the autoresize property is true, this method will be called whenever
+  // the window is resized. By default, this method will call draw(), but you
+  // can override it in a subclass to provide more intelligent behaivor.
   resize() {
     this.draw();
   }
 
+  // Update the chart.
   update(series /*, animate */) {
-    // abstract: update the chart
     this.series = series;
+    this.draw();
   }
 
+  // Destroy the chart. Preform any cleanup on the chart that is necessary
+  // before removeing the DOM. (Remove event listners, etc.) Allways call
+  // super in a Subclass if you override this method.
   destroy() {
     // abstract method: don't forget to also remove events
     var index = Graph.instances.indexOf(this);
@@ -306,10 +317,11 @@ class Graph {
     this.el.html('');
   }
 
-  // Global resize listener
+  // Install the global resize listner. Shart only uses one for all charts.
+  // This method is called once for every chart, yet only initializes the
+  // listener on the first call.
   static installResizeListener() {
     if (!Graph.resizeListenerInstalled) {
-      console.log('installing resize listener');
       d3.select(window).on('resize.shart', debounce(function() {
         Graph.instances
           .filter(g => g.autosize)

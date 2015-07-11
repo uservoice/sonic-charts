@@ -301,6 +301,9 @@ function extractSeriesData(series, i) {
 //
 
 var Graph = (function () {
+
+  // Create a new Graph.
+
   function Graph(el, series, options) {
     _classCallCheck(this, Graph);
 
@@ -315,20 +318,33 @@ var Graph = (function () {
 
   _createClass(Graph, [{
     key: 'draw',
+
+    // This method is responsible for drawing the chart. Override this in a
+    // subclass to create your own chart.
     value: function draw() {}
   }, {
     key: 'resize',
+
+    // If the autoresize property is true, this method will be called whenever
+    // the window is resized. By default, this method will call draw(), but you
+    // can override it in a subclass to provide more intelligent behaivor.
     value: function resize() {
       this.draw();
     }
   }, {
     key: 'update',
+
+    // Update the chart.
     value: function update(series /*, animate */) {
-      // abstract: update the chart
       this.series = series;
+      this.draw();
     }
   }, {
     key: 'destroy',
+
+    // Destroy the chart. Preform any cleanup on the chart that is necessary
+    // before removeing the DOM. (Remove event listners, etc.) Allways call
+    // super in a Subclass if you override this method.
     value: function destroy() {
       // abstract method: don't forget to also remove events
       var index = Graph.instances.indexOf(this);
@@ -340,10 +356,11 @@ var Graph = (function () {
   }], [{
     key: 'installResizeListener',
 
-    // Global resize listener
+    // Install the global resize listner. Shart only uses one for all charts.
+    // This method is called once for every chart, yet only initializes the
+    // listener on the first call.
     value: function installResizeListener() {
       if (!Graph.resizeListenerInstalled) {
-        console.log('installing resize listener');
         d3.select(window).on('resize.shart', debounce(function () {
           Graph.instances.filter(function (g) {
             return g.autosize;
