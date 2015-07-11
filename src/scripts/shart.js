@@ -4,7 +4,7 @@
 // Shart
 //
 
-var config = {}; 
+var config = {};
 
 // Format an integer with commas.
 function formatInt(number) {
@@ -118,7 +118,7 @@ function predictNextValue(values_y) {
   for (v = 0; v < values_length; v++) {
     values_x.push(v);
   }
-  
+
   // Calculate the sum for each of the parts necessary
   for (v = 0; v < values_length; v++) {
     x = values_x[v];
@@ -243,7 +243,7 @@ class Graph {
   draw() {
     // abstract: draw the chart
   }
-  
+
   // If the autoresize property is true, this method will be called whenever
   // the window is resized. By default, this method will call draw(), but you
   // can override it in a subclass to provide more intelligent behaivor.
@@ -1097,10 +1097,10 @@ class SparklineGraph extends Graph {
 
     this.width = opts.width || 120;
     this.height = opts.height || 40;
-    
+
     this.yGuides = opts.y_guides || [];
     if (opts.y_guide) { this.yGuides.push(opts.y_guide) }
-    
+
     this.strokeColor = opts.stroke_color || opts.color || 'blue';
     this.strokeWidth = opts.stroke_width || 1;
   }
@@ -1120,17 +1120,17 @@ class SparklineGraph extends Graph {
     ,   y = d3.scale.linear().domain([min, max]).range([height - padding.top - padding.bottom, padding.top])
     ,   line = d3.svg.line().x(function(d,i) { return x(i) }).y(function(d) { return y(d) })
     ;
-    
+
     var chart = this.el
       .classed('shart-sparkline-graph', true)
       .html('')
     ;
-    
+
     var svg = chart.append('svg')
-      .attr('width', width) 
+      .attr('width', width)
       .attr('height', height)
     ;
-    
+
     svg.append('clipPath')
       .attr('id', 'clip')
       .append('rect')
@@ -1139,7 +1139,7 @@ class SparklineGraph extends Graph {
         .attr('width', width)
         .attr('height', height)
     ;
-    
+
     svg
       .selectAll('.shart-sparkline-graph-y-guide')
         .data(yGuides)
@@ -1155,7 +1155,7 @@ class SparklineGraph extends Graph {
             .attr('stroke-width', 1)
             .attr('stroke-linecap', 'butt')
     ;
-    
+
     svg.append('path').classed('shart-sparkline-graph-stroke', true)
       .attr('clip-path', 'url(#clip)')
       .attr('d', line(data))
@@ -1203,7 +1203,7 @@ class PieGraph extends Graph {
       })
       .html('')
     ;
-    
+
     var svg = chart.append('svg:svg')
       .attr('width', this.size)
       .attr('height', this.size)
