@@ -1955,7 +1955,6 @@ if (angular) {
 
       link: function link($scope, $element) {
         $scope.$shart = Shart.Legend($element[0], $scope.data, {});
-        $scope.shart = shart;
         $scope.$on('$destroy', function () {
           $scope.$shart.destroy();
         });
