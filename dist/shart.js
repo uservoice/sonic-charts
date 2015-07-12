@@ -281,9 +281,9 @@ var Graph = (function () {
     key: 'update',
 
     // Update the chart.
-    value: function update(series /*, animate */) {
+    value: function update(series, animate) {
       this.series = series;
-      this.draw();
+      this.draw(animate);
     }
   }, {
     key: 'destroy',
@@ -1796,40 +1796,44 @@ var Legend = (function (_Graph8) {
 
   _createClass(Legend, [{
     key: 'draw',
-    value: function draw() {
-      this.el.classed('shart-legend', true);
-      this.update(this.series);
-    }
-  }, {
-    key: 'update',
-    value: function update(series, animate) {
-      this.series = series;
+    value: function draw(animate) {
+      var color = function color(d) {
+        return d.color;
+      },
+          label = function label(d) {
+        return d.label;
+      },
+          value = function value(d) {
+        return d.formatted_value || formatInt(d.value);
+      };
 
-      var item = this.el.selectAll('.shart-legend-item').data(series);
+      this.el.classed('shart-legend', true);
+
+      var item = this.el.selectAll('.shart-legend-item').data(this.series);
+
+      // Update existing items
+      item.select('.shart-legend-item-swatch').style('background-color', color);
+      item.select('.shart-legend-item-label').text(label);
+      item.select('.shart-legend-item-value').text(value);
+
+      // Add new items
+      var enter = item.enter().append('div').classed('shart-legend-item', true);
+      enter.filter(function (d) {
+        return !!d.color;
+      }).append('span').classed('shart-swatch shart-legend-item-swatch', true).style('background-color', color);
+      enter.append('span').classed('shart-legend-item-label', true).text(label);
+      enter.append('span').classed('shart-legend-item-value', true).text(value);
 
       var exit = item.exit();
 
-      var enter = item.enter().append('div').classed('shart-legend-item', true);
-
-      enter.filter(function (d) {
-        return !!d.color;
-      }).append('span').classed('shart-swatch shart-legend-item-swatch', true).style('background-color', function (d) {
-        return d.color;
-      });
-
-      enter.append('span').classed('shart-legend-item-label', true).text(function (d) {
-        return d.label;
-      });
-
-      enter.append('span').classed('shart-legend-item-value', true).text(function (d) {
-        return d.formatted_value || d.value;
-      });
-
       if (animate) {
-        exit.transition().style('opacity', 0).remove();
-
+        // If animate, setup transitions
         enter.style('opacity', 0).transition().duration(1000).style('opacity', 1);
+
+        // Remove extra items with transition
+        exit.transition().style('opacity', 0).remove();
       } else {
+        // When not animating, just remove extra items without transition
         exit.remove();
       }
     }
@@ -1941,8 +1945,8 @@ Shart.Pipeline = function (el, series, opts) {
   shart.draw();
   return shart;
 };
-
-// abstract: draw the chart
+/* animate */
+// abstract: draw the chart, if animate is true optionally use animation
 
 // Invisible chart elements do not draw themselves on the chart. Instead,
 // they can be used to display additional stats in the Tooltip.

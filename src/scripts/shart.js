@@ -240,8 +240,8 @@ class Graph {
 
   // This method is responsible for drawing the chart. Override this in a
   // subclass to create your own chart.
-  draw() {
-    // abstract: draw the chart
+  draw(/* animate */) {
+    // abstract: draw the chart, if animate is true optionally use animation
   }
 
   // If the autoresize property is true, this method will be called whenever
@@ -252,9 +252,9 @@ class Graph {
   }
 
   // Update the chart.
-  update(series /*, animate */) {
+  update(series, animate) {
     this.series = series;
-    this.draw();
+    this.draw(animate);
   }
 
   // Destroy the chart. Perform any cleanup on the chart that is necessary
@@ -1874,49 +1874,56 @@ class PipelineGraph extends Graph {
 //
 
 class Legend extends Graph {
-  draw() {
+  draw(animate) {
+    var color = function(d) { return d.color }
+    ,   label = function(d) { return d.label }
+    ,   value = function(d) { return d.formatted_value || formatInt(d.value) }
+    ;
+
     this.el.classed("shart-legend", true);
-    this.update(this.series);
-  }
 
-  update(series, animate) {
-    this.series = series;
+    var item = this.el.selectAll(".shart-legend-item")
+      .data(this.series)
+    ;
+    
+    // Update existing items
+    item
+      .select(".shart-legend-item-swatch")
+        .style("background-color", color)
+    ;
+    item
+      .select(".shart-legend-item-label")
+        .text(label)
+    ;
+    item
+      .select(".shart-legend-item-value")
+        .text(value)
+    ;
 
-    var item = this.el
-      .selectAll(".shart-legend-item")
-        .data(series);
-
-    var exit = item.exit();
-
+    // Add new items
     var enter = item.enter()
       .append("div")
         .classed("shart-legend-item", true)
       ;
-
     enter
       .filter(function(d) { return !!d.color })
       .append("span")
         .classed("shart-swatch shart-legend-item-swatch", true)
-        .style("background-color", function(d) { return d.color })
+        .style("background-color", color)
     ;
-
     enter.append("span")
       .classed("shart-legend-item-label", true)
-      .text(function(d) { return d.label })
+      .text(label)
     ;
-
     enter.append("span")
       .classed("shart-legend-item-value", true)
-      .text(function(d) { return d.formatted_value || d.value })
+      .text(value)
     ;
 
-    if (animate) {
-      exit
-        .transition()
-          .style('opacity', 0)
-          .remove()
-      ;
+    var exit = item.exit();
 
+    if (animate) {
+      // If animate, setup transitions
       enter
         .style('opacity', 0)
         .transition()
@@ -1924,9 +1931,17 @@ class Legend extends Graph {
           .style('opacity', 1)
       ;
 
-    } else {
+      // Remove extra items with transition
       exit
-        .remove();
+        .transition()
+          .style('opacity', 0)
+          .remove()
+      ;
+    } else {
+      // When not animating, just remove extra items without transition
+      exit
+        .remove()
+      ;
     }
   }
 }

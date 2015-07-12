@@ -1,0 +1,75 @@
+<!DOCTYPE html>
+<html>
+<head>
+
+<title>Dynamic updating</title>
+<link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.5/css/bootstrap.min.css">
+<link rel="stylesheet" href="//cdnjs.cloudflare.com/ajax/libs/highlight.js/8.6/styles/default.min.css">
+<link rel="stylesheet" href="../example.css">
+
+<script src="http://d3js.org/d3.v3.min.js"></script>
+<script src="//cdn.jsdelivr.net/highlight.js/8.6/highlight.min.js"></script>
+<script src="//ajax.googleapis.com/ajax/libs/angularjs/1.3.15/angular.min.js"></script>
+<script src="../../shart.angular.js"></script>
+<script>
+angular.module('app', ['shart']);
+</script>
+
+</head>
+<body ng-app="app">
+
+<div class="container">
+
+<div class="page-header">
+  <a href="./index.html">Back to index</a> 
+  <h1>Dynamic updating</h1>
+</div>
+
+
+<div ng-controller="DynamicCtrl">
+  <div class="well">
+    <shart-legend data="data"></shart-legend>
+  </div>
+
+  <div class="form-group">
+    <textarea class="form-control" ng-model="newValue" rows="18"></textarea>
+  </div>
+  
+  <button class="btn btn-primary" type="button" ng-click="update()">
+    Update
+  </button>
+</div>
+
+<script>
+angular.module('app').controller('DynamicCtrl', function($scope, $filter) {
+  $scope.data = [
+    {label: 'Mobile',  value: 1167, color: '#6ea6df' },
+    {label: 'Web',     value: 224,  color: '#e17a69' },
+    {label: 'Desktop', value: 543,  color: '#84c26d' }
+  ];
+
+  $scope.newValue = $filter('json')($scope.data, 4);
+
+  $scope.update = function() {
+    $scope.data = angular.fromJson($scope.newValue)
+  };
+});
+</script>
+
+
+</div>
+
+<script>
+var blocks = document.getElementsByClassName("code-block");
+for (var i = 0; i < blocks.length; i++) {
+  var el = angular.element(blocks[i])
+  ,   pre = angular.element('<pre>').text(el.html().trim())
+  ;
+  pre.attr('class', el.attr('class'));
+  el.attr('class', '');
+  el.after(pre);
+  hljs.highlightBlock(pre[0]);
+}
+</script>
+</body>
+</html>

@@ -13,9 +13,8 @@ angular.module('shart', [])
 
     link: function($scope, $element) {
       $scope.$shart = Shart.Legend($element[0], $scope.data, {});
-      $scope.$on('$destroy', function() {
-        $scope.$shart.destroy();
-      });
+      $scope.$watch('data', data => $scope.$shart.update(data, true));
+      $scope.$on('$destroy', () => $scope.$shart.destroy());
     }
   };
 })
@@ -40,9 +39,7 @@ angular.module('shart', [])
         dateAxis: $scope.dateAxis || 'none',
         yAxis: { ticks: $scope.yAxisTicks }
       });
-      $scope.$on('$destroy', function() {
-        $scope.$shart.destroy();
-      });
+      $scope.$on('$destroy', () => $scope.$shart.destroy());
     }
   };
 })
@@ -72,9 +69,7 @@ angular.module('shart', [])
         y_guide: $scope.yGuide,
         y_guides: $scope.yGuides
       });
-      $scope.$on('$destroy', function() {
-        $scope.$shart.destroy();
-      });
+      $scope.$on('$destroy', () => $scope.$shart.destroy());
     }
   };
 })
@@ -92,9 +87,7 @@ angular.module('shart', [])
       $scope.$shart = Shart.Pie($element[0], $scope.data, {
         size: $scope.size
       });
-      $scope.$on('$destroy', function() {
-        $scope.$shart.destroy();
-      });
+      $scope.$on('$destroy', () => $scope.$shart.destroy());
     }
   };
 })
@@ -120,9 +113,7 @@ angular.module('shart', [])
         value: $scope.value,
         size: $scope.size
       });
-      $scope.$on('$destroy', function() {
-        $scope.$shart.destroy();
-      });
+      $scope.$on('$destroy', () => $scope.$shart.destroy());
     }
   };
 })
@@ -144,9 +135,7 @@ angular.module('shart', [])
         label_subtext: $scope.labelSubtext,
         thickness: $scope.thickness
       });
-      $scope.$on('$destroy', function() {
-        $scope.$shart.destroy();
-      });
+      $scope.$on('$destroy', () => $scope.$shart.destroy());
     }
   };
 })
@@ -164,9 +153,7 @@ angular.module('shart', [])
       $scope.$shart = Shart.HorizontalBar($element[0], $scope.data, {
         percentages: $scope.percentages
       });
-      $scope.$on('$destroy', function() {
-        $scope.$shart.destroy();
-      });
+      $scope.$on('$destroy', () => $scope.$shart.destroy());
     }
   };
 })
@@ -182,9 +169,7 @@ angular.module('shart', [])
     link: function($scope, $element) {
       // TODO: opts { colors, tooltip, formatter }
       $scope.shart = Shart.Pipeline($element[0], $scope.data, {});
-      $scope.$on('$destroy', function() {
-        $scope.$shart.destroy();
-      });
+      $scope.$on('$destroy', () => $scope.$shart.destroy());
     }
   };
 })

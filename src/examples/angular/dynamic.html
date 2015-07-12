@@ -1,0 +1,34 @@
+---
+title: "Dynamic updating"
+layout: "angular-example"
+---
+
+<div ng-controller="DynamicCtrl">
+  <div class="well">
+    <shart-legend data="data"></shart-legend>
+  </div>
+
+  <div class="form-group">
+    <textarea class="form-control" ng-model="newValue" rows="18"></textarea>
+  </div>
+  
+  <button class="btn btn-primary" type="button" ng-click="update()">
+    Update
+  </button>
+</div>
+
+<script>
+angular.module('app').controller('DynamicCtrl', function($scope, $filter) {
+  $scope.data = [
+    {label: 'Mobile',  value: 1167, color: '#6ea6df' },
+    {label: 'Web',     value: 224,  color: '#e17a69' },
+    {label: 'Desktop', value: 543,  color: '#84c26d' }
+  ];
+
+  $scope.newValue = $filter('json')($scope.data, 4);
+
+  $scope.update = function() {
+    $scope.data = angular.fromJson($scope.newValue)
+  };
+});
+</script>
