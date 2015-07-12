@@ -181,44 +181,44 @@ function flattenSeries(data) {
 }
 
 // Given a series, extract the cross section of values at a given index (i).
-function extractSeriesData(series, i) {
+function extractSeriesCrossSection(data, i) {
   var segment_seq_totals,
-      data = [],
+      results = [],
       segments = [],
       datum,
       formatter;
 
-  if (series.sequence) {
-    var value = series.sequence[i];
+  if (data.sequence) {
+    var value = data.sequence[i];
 
     datum = {};
-    formatter = series.formatter || config.formatter;
+    formatter = data.formatter || config.formatter;
 
-    datum.key = series.key;
-    datum.label = series.label;
+    datum.key = data.key;
+    datum.label = data.label;
     datum.value = value;
     datum.formatted_value = formatter(value);
 
-    if (series.color) {
-      datum.color = series.color;
+    if (data.color) {
+      datum.color = data.color;
     }
 
-    data.push(datum);
+    results.push(datum);
   }
 
-  if (series.segments) {
-    segment_seq_totals = d3.zip.apply(null, series.segments.map(function (seg) {
+  if (data.segments) {
+    segment_seq_totals = d3.zip.apply(null, data.segments.map(function (seg) {
       return seg.sequence;
     })).map(function (seg) {
       return d3.sum(seg);
     });
 
-    series.segments.forEach(function (segment, segment_i) {
-      if (series.topSegments.indexOf(segment) !== -1 && !segment.hide_tooltip) {
+    data.segments.forEach(function (segment, segment_i) {
+      if (data.topSegments.indexOf(segment) !== -1 && !segment.hide_tooltip) {
         var value = segment.sequence[i];
 
         datum = {};
-        formatter = segment.formatter || series.formatter || config.formatter;
+        formatter = segment.formatter || data.formatter || config.formatter;
 
         extend(datum, segment); // Make sure the data included in the segment is merged into the datum
 
@@ -226,20 +226,20 @@ function extractSeriesData(series, i) {
         datum.value = value;
         datum.formatted_value = formatter(value);
         datum.percentage = Math.round(value / segment_seq_totals[i] * 100) || 0;
-        datum.color = segment.color || series.colors(segment_i).toString();
+        datum.color = segment.color || data.colors(segment_i).toString();
 
         segments.push(datum);
       }
     });
 
     if (segments.length && data.length) {
-      data[0].segments = segments;
+      results[0].segments = segments;
     } else {
-      data = data.concat(segments);
+      results = results.concat(segments);
     }
   }
 
-  return data;
+  return results;
 }
 
 //
@@ -250,13 +250,13 @@ var Graph = (function () {
 
   // Create a new Graph.
 
-  function Graph(el, series, options) {
+  function Graph(el, data, options) {
     _classCallCheck(this, Graph);
 
     Graph.instances.push(this);
     this.id = Graph.lastUniqueId++;
     this.el = d3.select(el);
-    this.series = series || [];
+    this.data = data || [];
     this.options = options || {};
     this.autosize = false;
     Graph.installResizeListener();
@@ -281,8 +281,8 @@ var Graph = (function () {
     key: 'update',
 
     // Update the chart.
-    value: function update(series, animate) {
-      this.series = series;
+    value: function update(data, animate) {
+      this.data = data;
       this.draw(animate);
     }
   }, {
@@ -739,10 +739,10 @@ var Column = (function () {
 //
 
 var SeriesGraph = (function (_Graph) {
-  function SeriesGraph(el, series, options) {
+  function SeriesGraph(el, data, options) {
     _classCallCheck(this, SeriesGraph);
 
-    _get(Object.getPrototypeOf(SeriesGraph.prototype), 'constructor', this).call(this, el, series, options);
+    _get(Object.getPrototypeOf(SeriesGraph.prototype), 'constructor', this).call(this, el, data, options);
     this.autosize = true;
 
     var opts = this.options,
@@ -787,8 +787,8 @@ var SeriesGraph = (function (_Graph) {
 
     this.formatter = opts.formatter || config.formatter;
 
-    // turn our series into proper functions
-    this.series = this.series.map(function (series_s, index_s) {
+    // turn our data into proper functions
+    this.data = this.data.map(function (series_s, index_s) {
       return new SeriesGraph.elementTypes[series_s.type](series_s, index_s, chart);
     });
 
@@ -799,7 +799,7 @@ var SeriesGraph = (function (_Graph) {
 
     // Figure out our yMax. We need to find the largest value across all series
     // (including grouped 'stack' series but not 'invisible' series).
-    yMax = d3.max(this.series.map(function (series_s) {
+    yMax = d3.max(this.data.map(function (series_s) {
       return series_s.invisible ? 0 : series_s.max();
     })) || 1;
 
@@ -925,8 +925,8 @@ var SeriesGraph = (function (_Graph) {
 
       this.svg = this.el.append('svg:svg').attr('width', width).attr('height', height);
 
-      this.x = d3.scale.linear().domain([0, this.series[0].cardinality - 1]).rangeRound(_xRange);
-      this.x_axis = d3.scale.linear().domain([0, this.series[0].cardinality - 1]).rangeRound(_xAxisRange);
+      this.x = d3.scale.linear().domain([0, this.data[0].cardinality - 1]).rangeRound(_xRange);
+      this.x_axis = d3.scale.linear().domain([0, this.data[0].cardinality - 1]).rangeRound(_xAxisRange);
       this.y = d3.scale.linear().domain(this.yRange).rangeRound(_yRange);
       this.timeScale = scale().domain([this.startTime, this.endTime]).range(_xRange);
       this.timeScaleTicks = uniq(this.timeScale.ticks(this.ticks.x).concat([this.endTime]), true, function (d) {
@@ -1027,7 +1027,7 @@ var SeriesGraph = (function (_Graph) {
         bands_s.draw(this);
       }, this);
 
-      this.series.forEach(function (series_s) {
+      this.data.forEach(function (series_s) {
         series_s.draw(this);
       }, this);
 
@@ -1039,7 +1039,7 @@ var SeriesGraph = (function (_Graph) {
     key: 'tooltipData',
     value: function tooltipData(i) {
       var data = {},
-          series = [],
+          segments = [],
           date;
 
       try {
@@ -1051,11 +1051,11 @@ var SeriesGraph = (function (_Graph) {
         data.formatted_date = this.dateFormatter(data.date);
       }
 
-      this.series.forEach(function (s) {
-        series = series.concat(extractSeriesData(s, i));
+      this.data.forEach(function (s) {
+        segments.concat(extractSeriesCrossSection(s, i));
       });
 
-      data.series = series;
+      data.segments = segments;
 
       return data;
     }
@@ -1113,10 +1113,10 @@ SeriesGraph.elementTypes = {
 //
 
 var SparklineGraph = (function (_Graph2) {
-  function SparklineGraph(el, series, options) {
+  function SparklineGraph(el, data, options) {
     _classCallCheck(this, SparklineGraph);
 
-    _get(Object.getPrototypeOf(SparklineGraph.prototype), 'constructor', this).call(this, el, series, options);
+    _get(Object.getPrototypeOf(SparklineGraph.prototype), 'constructor', this).call(this, el, data, options);
     var opts = this.options;
 
     this.width = opts.width || 120;
@@ -1140,7 +1140,7 @@ var SparklineGraph = (function (_Graph2) {
           width = this.width,
           height = this.height,
           yGuides = this.yGuides,
-          data = this.series,
+          data = this.data,
           strokeColor = this.strokeColor,
           strokeWidth = this.strokeWidth,
           max = d3.max(data),
@@ -1178,10 +1178,10 @@ var SparklineGraph = (function (_Graph2) {
 //
 
 var PieGraph = (function (_Graph3) {
-  function PieGraph(el, series, options) {
+  function PieGraph(el, data, options) {
     _classCallCheck(this, PieGraph);
 
-    _get(Object.getPrototypeOf(PieGraph.prototype), 'constructor', this).call(this, el, series, options);
+    _get(Object.getPrototypeOf(PieGraph.prototype), 'constructor', this).call(this, el, data, options);
     var opts = this.options;
     this.size = opts.size || 50;
   }
@@ -1193,7 +1193,7 @@ var PieGraph = (function (_Graph3) {
     value: function sequenceData() {
       var data = d3.layout.pie().value(function (d) {
         return d.value;
-      })(this.series);
+      })(this.data);
 
       this.sequenceData = function () {
         return data;
@@ -1227,7 +1227,7 @@ var PieGraph = (function (_Graph3) {
           return;
         }
 
-        var cooler = this.series[i].color || config.colors(i).toString();
+        var cooler = this.data[i].color || config.colors(i).toString();
 
         svg.append('svg:path').attr('d', arc(slice)).attr('transform', 'translate(' + (radius + 1) + ',' + (radius + 1) + ')').attr('fill', cooler).attr('stroke', cooler);
       }, this);
@@ -1242,10 +1242,10 @@ var PieGraph = (function (_Graph3) {
 //
 
 var DonutGraph = (function (_Graph4) {
-  function DonutGraph(el, series, options) {
+  function DonutGraph(el, data, options) {
     _classCallCheck(this, DonutGraph);
 
-    _get(Object.getPrototypeOf(DonutGraph.prototype), 'constructor', this).call(this, el, series, options);
+    _get(Object.getPrototypeOf(DonutGraph.prototype), 'constructor', this).call(this, el, data, options);
     var opts = options;
 
     this.size = opts.size || parseInt(this.el.style('width'), 10);
@@ -1265,8 +1265,8 @@ var DonutGraph = (function (_Graph4) {
     this.color = opts.color || 'gray';
     this.total = opts.total;
 
-    if (!this.series.length) {
-      this.series = [{ value: this.value, color: this.color }];
+    if (!this.data.length) {
+      this.data = [{ value: this.value, color: this.color }];
     }
 
     this.type = opts.type || 'small';
@@ -1280,7 +1280,7 @@ var DonutGraph = (function (_Graph4) {
       var pie = d3.layout.pie().sort(null).startAngle(0).value(function (d) {
         return d.value;
       }),
-          series = this.series,
+          data = this.data,
           total = this.total,
           innerRadius = this.radius - this.thickness,
           outerRadius = this.radius,
@@ -1291,8 +1291,8 @@ var DonutGraph = (function (_Graph4) {
           value,
           label;
 
-      for (var i = 0; i < series.length; i++) {
-        sum += series[i].value;
+      for (var i = 0; i < data.length; i++) {
+        sum += data[i].value;
       }
 
       if (this.total) {
@@ -1313,7 +1313,7 @@ var DonutGraph = (function (_Graph4) {
 
       svg.append('svg:path').classed('shart-donut-graph-background', true).attr('fill', '#e5e5e5').attr('transform', 'translate(' + this.radius + ',' + this.radius + ')').attr('d', arc().startAngle(0).endAngle(2 * Math.PI)());
 
-      svg.append('svg:g').selectAll('.shart-donut-graph-arc').data(pie(this.series)).enter().append('svg:path').classed('shart-donut-graph-arc', true).attr('transform', 'translate(' + this.radius + ',' + this.radius + ')').attr('fill', function (d) {
+      svg.append('svg:g').selectAll('.shart-donut-graph-arc').data(pie(this.data)).enter().append('svg:path').classed('shart-donut-graph-arc', true).attr('transform', 'translate(' + this.radius + ',' + this.radius + ')').attr('fill', function (d) {
         return d.data.color;
       }).attr('d', arc());
 
@@ -1380,10 +1380,10 @@ var DonutGraph = (function (_Graph4) {
 //
 
 var DonutStackGraph = (function (_Graph5) {
-  function DonutStackGraph(el, series, options) {
+  function DonutStackGraph(el, data, options) {
     _classCallCheck(this, DonutStackGraph);
 
-    _get(Object.getPrototypeOf(DonutStackGraph.prototype), 'constructor', this).call(this, el, series, options);
+    _get(Object.getPrototypeOf(DonutStackGraph.prototype), 'constructor', this).call(this, el, data, options);
     var opts = this.options;
 
     this.size = opts.size || 44;
@@ -1397,36 +1397,36 @@ var DonutStackGraph = (function (_Graph5) {
   _createClass(DonutStackGraph, [{
     key: 'draw',
     value: function draw() {
-      var series = this.series,
+      var data = this.data,
           total = this.total,
           i;
 
       if (!total) {
         total = 0;
-        for (i = 0; i < series.length; i++) {
-          total += series[i].value;
+        for (i = 0; i < data.length; i++) {
+          total += data[i].value;
         }
       }
 
       this.el.classed('shart-donut-stack-graph', true).html('');
 
-      for (i = 0; i < series.length; i++) {
+      for (i = 0; i < data.length; i++) {
         var item = this.el.append('div').classed('shart-donut-stack-graph-item', true);
 
-        var subtext = formatInt(series[i].value);
+        var subtext = formatInt(data[i].value);
         if (this.label_subtext) {
           subtext += ' ' + this.label_subtext;
         }
 
         var donut = new DonutGraph(item.node(), [], {
           total: total,
-          value: series[i].value,
-          value_text: formatInt(Math.round(100 * series[i].value / total)) + '%',
-          value_color: series[i].color,
-          label: series[i].label,
+          value: data[i].value,
+          value_text: formatInt(Math.round(100 * data[i].value / total)) + '%',
+          value_color: data[i].color,
+          label: data[i].label,
           label_position: 'right',
           label_subtext: subtext,
-          color: series[i].color,
+          color: data[i].color,
           size: this.size,
           thickness: this.thickness
         });
@@ -1446,10 +1446,10 @@ var DonutStackGraph = (function (_Graph5) {
 //
 
 var HorizontalBarGraph = (function (_Graph6) {
-  function HorizontalBarGraph(el, series, options) {
+  function HorizontalBarGraph(el, data, options) {
     _classCallCheck(this, HorizontalBarGraph);
 
-    _get(Object.getPrototypeOf(HorizontalBarGraph.prototype), 'constructor', this).call(this, el, series, options);
+    _get(Object.getPrototypeOf(HorizontalBarGraph.prototype), 'constructor', this).call(this, el, data, options);
     var opts = this.options;
     this.percentages = opts.percentages;
   }
@@ -1459,11 +1459,11 @@ var HorizontalBarGraph = (function (_Graph6) {
   _createClass(HorizontalBarGraph, [{
     key: 'draw',
     value: function draw() {
-      var total = d3.sum(this.series, function (d) {
+      var total = d3.sum(this.data, function (d) {
         return d.value;
       });
 
-      var x = d3.scale.linear().domain([0, d3.max(this.series, function (d) {
+      var x = d3.scale.linear().domain([0, d3.max(this.data, function (d) {
         return d.value;
       })]).range([0, 100]);
 
@@ -1471,7 +1471,7 @@ var HorizontalBarGraph = (function (_Graph6) {
 
       this.el.classed('shart-horizontal-bar-graph', true);
 
-      var segment = this.el.selectAll('.shart-horizontal-bar-graph-segment').data(this.series).enter().append('div').classed('shart-horizontal-bar-graph-segment', true);
+      var segment = this.el.selectAll('.shart-horizontal-bar-graph-segment').data(this.data).enter().append('div').classed('shart-horizontal-bar-graph-segment', true);
 
       var label = segment.append('div').classed('shart-horizontal-bar-graph-label', true);
 
@@ -1509,16 +1509,16 @@ var HorizontalBarGraph = (function (_Graph6) {
 //
 
 var PipelineGraph = (function (_Graph7) {
-  function PipelineGraph(el, series, options) {
+  function PipelineGraph(el, data, options) {
     _classCallCheck(this, PipelineGraph);
 
-    _get(Object.getPrototypeOf(PipelineGraph.prototype), 'constructor', this).call(this, el, series, options);
+    _get(Object.getPrototypeOf(PipelineGraph.prototype), 'constructor', this).call(this, el, data, options);
     this.autosize = true;
     var opts = this.options;
 
     this.svg = this.el.append('svg');
-    this.labels = !!series[0].label;
-    this.label_subtext = !!series[0].label_subtext;
+    this.labels = !!data[0].label;
+    this.label_subtext = !!data[0].label_subtext;
     this.colors = opts.colors || config.colors;
     this.tooltip = opts.tooltip || config.tooltip;
     this.formatter = opts.formatter || config.formatter;
@@ -1533,7 +1533,7 @@ var PipelineGraph = (function (_Graph7) {
           svg = chart.svg,
           barHeight = 35,
           baselines = { label: 18, label_subtext: 16, bar: barHeight + 8 },
-          total = d3.sum(this.series, function (d) {
+          total = d3.sum(this.data, function (d) {
         return d.value;
       }),
           isEmpty = total === 0,
@@ -1563,10 +1563,10 @@ var PipelineGraph = (function (_Graph7) {
 
       // Caclulate x and width for each datum
       var currentX = 0,
-          lastIndex = this.series.length - 1;
-      this.series.forEach(function (d, i, series) {
+          lastIndex = this.data.length - 1;
+      this.data.forEach(function (d, i, data) {
         d.x = currentX;
-        d.percentage = isEmpty ? 1 / series.length : d.value / total;
+        d.percentage = isEmpty ? 1 / data.length : d.value / total;
         if (i === lastIndex) {
           d.width = chart.width - currentX;
         } else {
@@ -1577,7 +1577,7 @@ var PipelineGraph = (function (_Graph7) {
       });
 
       // Create clip paths for each datum
-      var clipPath = svg.append('defs').selectAll('clipPath').data(this.series);
+      var clipPath = svg.append('defs').selectAll('clipPath').data(this.data);
       clipPath.enter().append('clipPath').attr('id', function (d, i) {
         return 'clip-' + chart.id + '-' + i;
       }).append('rect').attr('width', function (d) {
@@ -1586,7 +1586,7 @@ var PipelineGraph = (function (_Graph7) {
       clipPath.exit().remove();
 
       // Items
-      var item = svg.selectAll('.shart-pipeline-graph-item').data(this.series);
+      var item = svg.selectAll('.shart-pipeline-graph-item').data(this.data);
 
       item.exit().remove();
 
@@ -1736,7 +1736,7 @@ var PipelineGraph = (function (_Graph7) {
         datum.formatted_value = this.formatter(datum.value);
       }
 
-      tip = chart.tooltip(chart, { series: [datum] });
+      tip = chart.tooltip(chart, { segments: [datum] });
       if (tip) {
         config.showTooltip({
           body: tip,
@@ -1809,7 +1809,7 @@ var Legend = (function (_Graph8) {
 
       this.el.classed('shart-legend', true);
 
-      var item = this.el.selectAll('.shart-legend-item').data(this.series);
+      var item = this.el.selectAll('.shart-legend-item').data(this.data);
 
       // Update existing items
       item.select('.shart-legend-item-swatch').style('background-color', color);
@@ -1860,14 +1860,14 @@ config.showTooltip = function () {};
 config.hideTooltip = function () {};
 config.tooltip = function (chart, data) {
   var el = d3.select(document.createElement('div')),
-      series = flattenSeries(data.series),
+      segments = flattenSeries(data.segments),
       placard,
       legend,
       date,
       shart;
 
-  if (series.length === 1) {
-    var datum = series[0];
+  if (segments.length === 1) {
+    var datum = segments[0];
 
     placard = el.append('div').classed('shart-tip-placard', true);
 
@@ -1877,7 +1877,7 @@ config.tooltip = function (chart, data) {
   } else {
     legend = el.append('div');
 
-    shart = new Legend(legend.node(), series);
+    shart = new Legend(legend.node(), segments);
     shart.draw();
   }
 
@@ -1898,50 +1898,50 @@ Shart.configure = function (callback) {
   config.formatter = opts.formatter || config.formatter;
 };
 
-Shart.Legend = function (el, series, opts) {
-  var shart = new Legend(el, series, opts);
+Shart.Legend = function (el, data, opts) {
+  var shart = new Legend(el, data, opts);
   shart.draw();
   return shart;
 };
 
-Shart.Series = function (el, series, opts) {
-  var shart = new SeriesGraph(el, series, opts);
+Shart.Series = function (el, data, opts) {
+  var shart = new SeriesGraph(el, data, opts);
   shart.draw();
   return shart;
 };
 
-Shart.Sparkline = function (el, series, opts) {
-  var shart = new SparklineGraph(el, series, opts);
+Shart.Sparkline = function (el, data, opts) {
+  var shart = new SparklineGraph(el, data, opts);
   shart.draw();
   return shart;
 };
 
-Shart.Pie = function (el, series, opts) {
-  var shart = new PieGraph(el, series, opts);
+Shart.Pie = function (el, data, opts) {
+  var shart = new PieGraph(el, data, opts);
   shart.draw();
   return shart;
 };
 
-Shart.Donut = function (el, series, opts) {
-  var shart = new DonutGraph(el, series, opts);
+Shart.Donut = function (el, data, opts) {
+  var shart = new DonutGraph(el, data, opts);
   shart.draw();
   return shart;
 };
 
-Shart.DonutStack = function (el, series, opts) {
-  var shart = new DonutStackGraph(el, series, opts);
+Shart.DonutStack = function (el, data, opts) {
+  var shart = new DonutStackGraph(el, data, opts);
   shart.draw();
   return shart;
 };
 
-Shart.HorizontalBar = function (el, series, opts) {
-  var shart = new HorizontalBarGraph(el, series, opts);
+Shart.HorizontalBar = function (el, data, opts) {
+  var shart = new HorizontalBarGraph(el, data, opts);
   shart.draw();
   return shart;
 };
 
-Shart.Pipeline = function (el, series, opts) {
-  var shart = new PipelineGraph(el, series, opts);
+Shart.Pipeline = function (el, data, opts) {
+  var shart = new PipelineGraph(el, data, opts);
   shart.draw();
   return shart;
 };
