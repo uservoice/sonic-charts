@@ -289,10 +289,10 @@ var Graph = (function () {
     key: 'destroy',
 
     // Destroy the chart. Perform any cleanup on the chart that is necessary
-    // before removing the DOM. (Remove event listners, etc.) Allways call
-    // super in a Subclass if you override this method.
+    // before removing the DOM. (Note that if event listners were attached with
+    // d3 for child elements of the chart they will be automatically removed
+    // by the browser when the elements are removed by this method.)
     value: function destroy() {
-      // abstract method: don't forget to also remove events
       var index = Graph.instances.indexOf(this);
       if (index > -1) {
         Graph.instances.splice(index, 1);
