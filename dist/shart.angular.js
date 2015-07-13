@@ -254,10 +254,10 @@ var Graph = (function () {
     _classCallCheck(this, Graph);
 
     Graph.instances.push(this);
+    this.options = options || {};
     this.id = Graph.lastUniqueId++;
     this.el = d3.select(el);
     this.data = data || [];
-    this.options = options || {};
     this.autosize = false;
     Graph.installResizeListener();
   }
@@ -745,9 +745,7 @@ var SeriesGraph = (function (_Graph) {
     _get(Object.getPrototypeOf(SeriesGraph.prototype), 'constructor', this).call(this, el, data, options);
     this.autosize = true;
 
-    var opts = this.options,
-        chart = this,
-        yMax;
+    var opts = this.options;
 
     this.dateAxis = opts.dateAxis || 'daily';
     this.dateAxisTicks = opts.dateAxisTicks;
@@ -787,92 +785,84 @@ var SeriesGraph = (function (_Graph) {
 
     this.formatter = opts.formatter || config.formatter;
 
-    // turn our data into proper functions
-    this.data = this.data.map(function (series_s, index_s) {
-      return new SeriesGraph.elementTypes[series_s.type](series_s, index_s, chart);
-    });
-
     // same with bands
     this.bands = (opts.bands || []).map(function (bands_s) {
       return new Band(bands_s);
     });
 
-    // Figure out our yMax. We need to find the largest value across all series
-    // (including grouped 'stack' series but not 'invisible' series).
-    yMax = d3.max(this.data.map(function (series_s) {
-      return series_s.invisible ? 0 : series_s.max();
-    })) || 1;
-
     this.tickFormat = opts.tickFormat || ',';
-
-    // figure out the yRange, which is opts.yBase || 0 ... yMax
-    this.yRange = opts.yRange || [opts.yBase || 0, yMax];
 
     this.xTickPadding = opts.xTickPadding || 0;
 
     this.tooltip = opts.tooltip || config.tooltip;
 
-    if (this.tooltip) {
-      this.el.on('mousemove', throttle(function () {
-        if (!chart.x) {
-          return;
-        }
-
-        var el = this,
-            offset = getOffset(el),
-            series_i,
-            x_pos,
-            data,
-            body;
-
-        // This retrieves our index value for the mouse position
-        series_i = Math.round(chart.x.invert(d3.event.pageX - offset.left));
-
-        // Add lower/upper bounds to series index
-        var max_i = chart.timeScaleTicks && chart.timeScaleTicks.length - 1;
-        if (max_i) {
-          series_i = Math.min(Math.max(series_i, 0), max_i);
-        }
-
-        // Find snapping point
-        x_pos = chart.x(series_i);
-
-        // Get the data for the tooltip
-        data = chart.tooltipData(series_i);
-
-        if (data.series) {
-          // Format the tip body
-          body = chart.tooltip(chart, data);
-        }
-
-        if (body) {
-          chart.scrubber.style({
-            height: chart.y.range()[0] - chart.y.range()[1] + 'px',
-            visibility: 'visible',
-            left: x_pos + 'px',
-            top: chart.y.range()[1] + 'px'
-          });
-
-          config.showTooltip({
-            body: body,
-            target: chart.scrubber.node(),
-            chart: chart.el.node()
-          });
-        }
-      }, 50));
-
-      this.el.on('mouseleave', debounce(function () {
-        config.hideTooltip({
-          target: chart.scrubber.node()
-        });
-        chart.scrubber.style('visibility', 'hidden');
-      }, 100));
-    }
+    this.attachMouseEvents();
   }
 
   _inherits(SeriesGraph, _Graph);
 
   _createClass(SeriesGraph, [{
+    key: 'attachMouseEvents',
+    value: function attachMouseEvents() {
+      var chart = this;
+      if (this.tooltip) {
+        this.el.on('mousemove', throttle(function () {
+          if (!chart.x) {
+            return;
+          }
+
+          var el = this,
+              offset = getOffset(el),
+              series_i,
+              x_pos,
+              data,
+              body;
+
+          // This retrieves our index value for the mouse position
+          series_i = Math.round(chart.x.invert(d3.event.pageX - offset.left));
+
+          // Add lower/upper bounds to series index
+          var max_i = chart.timeScaleTicks && chart.timeScaleTicks.length - 1;
+          if (max_i) {
+            series_i = Math.min(Math.max(series_i, 0), max_i);
+          }
+
+          // Find snapping point
+          x_pos = chart.x(series_i);
+
+          // Get the data for the tooltip
+          data = chart.tooltipData(series_i);
+
+          if (data.series) {
+            // Format the tip body
+            body = chart.tooltip(chart, data);
+          }
+
+          if (body) {
+            chart.scrubber.style({
+              height: chart.y.range()[0] - chart.y.range()[1] + 'px',
+              visibility: 'visible',
+              left: x_pos + 'px',
+              top: chart.y.range()[1] + 'px'
+            });
+
+            config.showTooltip({
+              body: body,
+              target: chart.scrubber.node(),
+              chart: chart.el.node()
+            });
+          }
+        }, 50));
+
+        this.el.on('mouseleave', debounce(function () {
+          config.hideTooltip({
+            target: chart.scrubber.node()
+          });
+          chart.scrubber.style('visibility', 'hidden');
+        }, 100));
+      }
+    }
+  }, {
     key: 'draw',
     value: function draw() {
       var chart = this,
@@ -925,8 +915,8 @@ var SeriesGraph = (function (_Graph) {
 
       this.svg = this.el.append('svg:svg').attr('width', width).attr('height', height);
 
-      this.x = d3.scale.linear().domain([0, this.data[0].cardinality - 1]).rangeRound(_xRange);
-      this.x_axis = d3.scale.linear().domain([0, this.data[0].cardinality - 1]).rangeRound(_xAxisRange);
+      this.x = d3.scale.linear().domain([0, this.elements[0].cardinality - 1]).rangeRound(_xRange);
+      this.x_axis = d3.scale.linear().domain([0, this.elements[0].cardinality - 1]).rangeRound(_xAxisRange);
       this.y = d3.scale.linear().domain(this.yRange).rangeRound(_yRange);
       this.timeScale = scale().domain([this.startTime, this.endTime]).range(_xRange);
       this.timeScaleTicks = uniq(this.timeScale.ticks(this.ticks.x).concat([this.endTime]), true, function (d) {
@@ -1027,7 +1017,7 @@ var SeriesGraph = (function (_Graph) {
         bands_s.draw(this);
       }, this);
 
-      this.data.forEach(function (series_s) {
+      this.elements.forEach(function (series_s) {
         series_s.draw(this);
       }, this);
 
@@ -1051,11 +1041,39 @@ var SeriesGraph = (function (_Graph) {
         data.formatted_date = this.dateFormatter(data.date);
       }
 
-      this.data.forEach(function (s) {
+      this.elements.forEach(function (s) {
         segments.concat(extractSeriesCrossSection(s, i));
       });
 
       data.segments = segments;
+
+      return data;
+    }
+  }, {
+    key: 'data',
+    get: function get() {
+      return this._data;
+    },
+    set: function set(data) {
+      var chart = this,
+          opts = this.options,
+          yMax;
+
+      this._data = data;
+
+      // turn our data into proper functions
+      this.elements = data.map(function (series_s, index_s) {
+        return new SeriesGraph.elementTypes[series_s.type](series_s, index_s, chart);
+      });
+
+      // Figure out our yMax. We need to find the largest value across all series
+      // (including grouped 'stack' series but not 'invisible' series).
+      yMax = d3.max(this.elements.map(function (series_s) {
+        return series_s.invisible ? 0 : series_s.max();
+      })) || 1;
+
+      // figure out the yRange, which is opts.yBase || 0 ... yMax
+      this.yRange = opts.yRange || [opts.yBase || 0, yMax];
 
       return data;
     }
@@ -1986,6 +2004,9 @@ if (angular) {
           endTime: $scope.endTime,
           dateAxis: $scope.dateAxis || 'none',
           yAxis: { ticks: $scope.yAxisTicks }
+        });
+        $scope.$watch('data', function (data) {
+          return $scope.$shart.update(data, true);
         });
         $scope.$on('$destroy', function () {
           return $scope.$shart.destroy();

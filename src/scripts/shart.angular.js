@@ -39,6 +39,7 @@ angular.module('shart', [])
         dateAxis: $scope.dateAxis || 'none',
         yAxis: { ticks: $scope.yAxisTicks }
       });
+      $scope.$watch('data', data => $scope.$shart.update(data, true));
       $scope.$on('$destroy', () => $scope.$shart.destroy());
     }
   };

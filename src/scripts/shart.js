@@ -230,10 +230,10 @@ class Graph {
   // Create a new Graph.
   constructor(el, data, options) {
     Graph.instances.push(this);
+    this.options = options || {};
     this.id = Graph.lastUniqueId++;
     this.el = d3.select(el);
     this.data = data || [];
-    this.options = options || {};
     this.autosize = false;
     Graph.installResizeListener();
   }
@@ -695,10 +695,7 @@ class SeriesGraph extends Graph {
     super(el, data, options);
     this.autosize = true;
 
-    var opts = this.options
-    ,   chart = this
-    ,   yMax
-    ;
+    var opts = this.options;
 
     this.dateAxis = opts.dateAxis || 'daily';
     this.dateAxisTicks = opts.dateAxisTicks;
@@ -738,31 +735,50 @@ class SeriesGraph extends Graph {
 
     this.formatter = opts.formatter || config.formatter;
 
-    // turn our data into proper functions
-    this.data = this.data.map(function(series_s, index_s) {
-      return new SeriesGraph.elementTypes[series_s.type](series_s, index_s, chart);
-    });
-
     // same with bands
     this.bands = (opts.bands || []).map(function(bands_s) {
       return new Band(bands_s);
     });
 
-    // Figure out our yMax. We need to find the largest value across all series
-    // (including grouped 'stack' series but not 'invisible' series).
-    yMax = d3.max(this.data.map(function(series_s) {
-      return series_s.invisible ? 0 : series_s.max();
-    })) || 1;
-
     this.tickFormat = opts.tickFormat || ',';
-
-    // figure out the yRange, which is opts.yBase || 0 ... yMax
-    this.yRange = opts.yRange || [opts.yBase || 0, yMax];
 
     this.xTickPadding = opts.xTickPadding || 0;
 
     this.tooltip = opts.tooltip || config.tooltip;
 
+    this.attachMouseEvents();
+  }
+  
+  get data() {
+    return this._data;
+  }
+  set data(data) {
+    var chart = this
+    ,   opts = this.options
+    ,   yMax
+    ;
+
+    this._data = data;
+
+    // turn our data into proper functions
+    this.elements = data.map(function(series_s, index_s) {
+      return new SeriesGraph.elementTypes[series_s.type](series_s, index_s, chart);
+    });
+
+    // Figure out our yMax. We need to find the largest value across all series
+    // (including grouped 'stack' series but not 'invisible' series).
+    yMax = d3.max(this.elements.map(function(series_s) {
+      return series_s.invisible ? 0 : series_s.max();
+    })) || 1;
+
+    // figure out the yRange, which is opts.yBase || 0 ... yMax
+    this.yRange = opts.yRange || [opts.yBase || 0, yMax];
+
+    return data;
+  }
+
+  attachMouseEvents() {
+    var chart = this;
     if (this.tooltip) {
       this.el.on('mousemove', throttle(function() {
         if (!chart.x) { return }
@@ -818,7 +834,6 @@ class SeriesGraph extends Graph {
         chart.scrubber.style('visibility', 'hidden');
       }, 100));
     }
-
   }
 
   draw() {
@@ -877,8 +892,8 @@ class SeriesGraph extends Graph {
       .attr('height', height)
     ;
 
-    this.x = d3.scale.linear().domain([0, this.data[0].cardinality - 1]).rangeRound(_xRange);
-    this.x_axis = d3.scale.linear().domain([0, this.data[0].cardinality - 1]).rangeRound(_xAxisRange);
+    this.x = d3.scale.linear().domain([0, this.elements[0].cardinality - 1]).rangeRound(_xRange);
+    this.x_axis = d3.scale.linear().domain([0, this.elements[0].cardinality - 1]).rangeRound(_xAxisRange);
     this.y = d3.scale.linear().domain(this.yRange).rangeRound(_yRange);
     this.timeScale = scale().domain([this.startTime, this.endTime]).range(_xRange);
     this.timeScaleTicks = uniq(this.timeScale.ticks(this.ticks.x).concat([this.endTime]), true, function(d){ return d.valueOf(); });
@@ -1008,7 +1023,7 @@ class SeriesGraph extends Graph {
       bands_s.draw(this);
     }, this);
 
-    this.data.forEach(function(series_s) {
+    this.elements.forEach(function(series_s) {
       series_s.draw(this);
     }, this);
 
@@ -1034,7 +1049,7 @@ class SeriesGraph extends Graph {
       data.formatted_date = this.dateFormatter(data.date);
     }
 
-    this.data.forEach(function(s) {
+    this.elements.forEach(function(s) {
       segments.concat(extractSeriesCrossSection(s, i));
     });
 

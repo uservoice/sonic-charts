@@ -4,8 +4,21 @@ layout: "angular-example"
 ---
 
 <div ng-controller="DynamicCtrl">
-  <div class="well">
-    <shart-legend data="data"></shart-legend>
+  <div class="form-group">
+    <select class="form-control" ng-model="key" ng-options="titleize(label) for label in keys" ng-change="keyChanged()"></select>
+  </div>
+
+  <div class="well" ng-show="key === 'legend'">
+    <shart-legend data="data.legend"></shart-legend>
+  </div>
+
+  <div class="well" ng-show="key === 'series'">
+    <shart-series
+      start-time="21 Feb 2014"
+      end-time="22 Mar 2014"
+      date-axis="daily"
+      y-axis-ticks="4"
+      data="data.series"></shart-series>
   </div>
 
   <div class="form-group">
@@ -15,20 +28,58 @@ layout: "angular-example"
   <button class="btn btn-primary" type="button" ng-click="update()">
     Update
   </button>
+  <button class="btn btn-default" type="button" ng-click="reset()">
+    Reset 
+  </button>
 </div>
 
 <script>
 angular.module('app').controller('DynamicCtrl', function($scope, $filter) {
-  $scope.data = [
-    {label: 'Mobile',  value: 1167, color: '#6ea6df' },
-    {label: 'Web',     value: 224,  color: '#e17a69' },
-    {label: 'Desktop', value: 543,  color: '#84c26d' }
-  ];
+  var toJson = function(o) { return $filter('json')(o, 4); }
+  ,   parseJson = function(s) { return angular.fromJson(s); }
+  ,   clone = function(o){ return parseJson(toJson(o)); }
+  ;
 
-  $scope.newValue = $filter('json')($scope.data, 4);
+  var initial = {
+    legend:
+      [
+        {label: 'Mobile',  value: 1167, color: '#6ea6df'},
+        {label: 'Web',     value: 224,  color: '#e17a69'},
+        {label: 'Desktop', value: 543,  color: '#84c26d'}
+      ],
+    series:
+      [{
+        type: 'area',
+        label: 'Unique visitors',
+        sequence: [765,280,344,930,989,852,814,734,330,305,893,826,808,820,727,305,286,913,868,758,833,577,253,266,724,752,698,727,648,292],
+        color: '#9a9bc9'
+      }]
+  };
+  
+  $scope.data = clone(initial);
+  $scope.key = 'legend';
+  $scope.keys = Object.keys(initial);
 
   $scope.update = function() {
-    $scope.data = angular.fromJson($scope.newValue)
+    $scope.data[$scope.key] = angular.fromJson($scope.newValue)
   };
+
+  $scope.reset = function() {
+    $scope.data[$scope.key] = initial[$scope.key];
+    $scope.newValue = toJson($scope.data[$scope.key]);
+  }
+
+  $scope.titleize = function(string) {
+    return string.replace(/^([a-z])/, function() { return RegExp.$1.toUpperCase(); })
+  };
+
+  var oldKey;
+  $scope.keyChanged = function() {
+    if (oldKey !== $scope.key) {
+      $scope.newValue = toJson($scope.data[$scope.key]);
+    }
+  };
+  $scope.keyChanged();
+
 });
 </script>
