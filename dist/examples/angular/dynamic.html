@@ -37,23 +37,21 @@ angular.module('app', ['shart']);
 
   <div class="well" ng-show="key === 'series'">
     <shart-series
-      start-time="21 Feb 2014"
-      end-time="22 Mar 2014"
-      date-axis="daily"
+      start-time="'21 Feb 2014'"
+      end-time="'22 Mar 2014'"
+      date-axis="'daily'"
       y-axis-ticks="4"
       data="data.series"></shart-series>
   </div>
 
-  <div class="form-group">
-    <textarea class="form-control" ng-model="newValue" rows="18"></textarea>
+  <div class="form-group" style="position: relative">
+    <textarea class="form-control" ng-model="newValue" ng-keyup="update()" rows="18"></textarea>
+    <button class="btn btn-default btn-sm" style="position: absolute; top: 0; right: 0; border-top-left-radius: 0; border-bottom-right-radius: 0" type="button" ng-click="reset()">
+      Reset
+    </button>
   </div>
   
-  <button class="btn btn-primary" type="button" ng-click="update()">
-    Update
-  </button>
-  <button class="btn btn-default" type="button" ng-click="reset()">
-    Reset 
-  </button>
+  <span ng-cloak ng-if="error" style="color: red">{{error.toString()}}</span>
 </div>
 
 <script>
@@ -84,7 +82,13 @@ angular.module('app').controller('DynamicCtrl', function($scope, $filter) {
   $scope.keys = Object.keys(initial);
 
   $scope.update = function() {
-    $scope.data[$scope.key] = angular.fromJson($scope.newValue)
+    try {
+      var o = angular.fromJson($scope.newValue)
+      $scope.data[$scope.key] = o;
+      $scope.error = false;
+    } catch(error) {
+      $scope.error = error;
+    }
   };
 
   $scope.reset = function() {

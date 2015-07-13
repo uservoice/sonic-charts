@@ -1991,9 +1991,9 @@ if (angular) {
 
       scope: {
         data: '=',
-        startTime: '@',
-        endTime: '@',
-        dateAxis: '@',
+        startTime: '=',
+        endTime: '=',
+        dateAxis: '=',
         yAxisTicks: '='
       },
 
