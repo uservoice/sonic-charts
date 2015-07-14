@@ -69,12 +69,24 @@ angular.module('app', ['shart']);
     <shart-series
       start-time="fields.series.options.start_time"
       end-time="fields.series.options.end_time"
-      date-axis="fields.series.options.data_axis"
+      date-axis="fields.series.options.date_axis"
       y-axis-ticks="fields.series.options.y_axis_ticks"
       data="fields.series.data"></shart-series>
   </div>
 
+  <div ng-if="initial[key].options">
+    <label>Options</label>
+    <span ng-cloak ng-if="errors[key].options" class="pull-right" style="color: red">{{errors[key].options.toString()}}</span>
+    <div class="form-group" style="position: relative">
+      <textarea class="form-control" ng-model="updates[key].options" ng-keyup="update('options')" rows="8" style="font-family: monospace; font-size: 13px"></textarea>
+      <button class="btn btn-default btn-sm" style="position: absolute; top: 0; right: 0; border-top-left-radius: 0; border-bottom-right-radius: 0" type="button" ng-click="reset('options')">
+        Reset
+      </button>
+    </div>
+  </div>
+
   <label>Data</label>
+  <span ng-cloak ng-if="errors[key].data" class="pull-right" style="color: red">{{errors[key].data.toString()}}</span>
   <div class="form-group" style="position: relative">
     <textarea class="form-control" ng-model="updates[key].data" ng-keyup="update('data')" rows="18" style="font-family: monospace; font-size: 13px"></textarea>
     <button class="btn btn-default btn-sm" style="position: absolute; top: 0; right: 0; border-top-left-radius: 0; border-bottom-right-radius: 0" type="button" ng-click="reset('data')">
@@ -82,7 +94,6 @@ angular.module('app', ['shart']);
     </button>
   </div>
   
-  <span ng-cloak ng-if="error" style="color: red">{{error.toString()}}</span>
 </div>
 
 <script>
@@ -92,10 +103,8 @@ angular.module('app').controller('PlaygroundCtrl', function($scope, $filter) {
   ,   clone = function(o){ return parseJson(toJson(o)); }
   ;
 
-  var initial = {
+  $scope.initial = {
     legend: {
-      options:
-        '{}',
       data:
         '[\n' +
         '  {"label": "Mobile",  "value": 1167, "color": "#6ea6df"},\n' +
@@ -122,34 +131,37 @@ angular.module('app').controller('PlaygroundCtrl', function($scope, $filter) {
     }
   };
   
-  $scope.fields = {}
-  $scope.updates = clone(initial); 
+  $scope.fields = {};
+  $scope.updates = clone($scope.initial); 
+  $scope.errors = {};
   $scope.key = 'series';
-  $scope.keys = Object.keys(initial);
+  $scope.keys = Object.keys($scope.initial);
 
-  Object.keys(initial).forEach(function(key) {
-    var o = {};
-    Object.keys(initial[key]).forEach(function(field) {
-      console.log(initial[key][field]);
-      o[field] = parseJson(initial[key][field])
+  Object.keys($scope.initial).forEach(function(key) {
+    var o = {}
+    ,   e = {}
+    ;
+    Object.keys($scope.initial[key]).forEach(function(field) {
+      o[field] = parseJson($scope.initial[key][field])
+      e[field] = false;
     })
     $scope.fields[key] = o;
+    $scope.errors[key] = e;
   });
-  console.log('here');
 
   $scope.update = function(field) {
     try {
       var o = parseJson($scope.updates[$scope.key][field])
       $scope.fields[$scope.key][field] = o;
-      $scope.error = false;
+      $scope.errors[$scope.key][field] = false;
     } catch(error) {
-      $scope.error = error;
+      $scope.errors[$scope.key][field] = error;
     }
   };
 
   $scope.reset = function(field) {
-    $scope.fields[$scope.key][field] = initial[$scope.key][field];
-    $scope.updates[$scope.key][field] = initial[$scope.key][field];
+    $scope.fields[$scope.key][field] = $scope.initial[$scope.key][field];
+    $scope.updates[$scope.key][field] = $scope.initial[$scope.key][field];
     $scope.update(field);
   }
 
