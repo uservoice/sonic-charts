@@ -23,7 +23,7 @@ layout: "playground"
 
   <label>Data</label>
   <div class="form-group" style="position: relative">
-    <textarea class="form-control" ng-model="updates.data" ng-keyup="update('data')" rows="18"></textarea>
+    <textarea class="form-control" ng-model="updates[key].data" ng-keyup="update('data')" rows="18" style="font-family: monospace; font-size: 13px"></textarea>
     <button class="btn btn-default btn-sm" style="position: absolute; top: 0; right: 0; border-top-left-radius: 0; border-bottom-right-radius: 0" type="button" ng-click="reset('data')">
       Reset
     </button>
@@ -42,41 +42,51 @@ angular.module('app').controller('PlaygroundCtrl', function($scope, $filter) {
   var initial = {
     legend: {
       options:
-        {},
+        '{}',
       data:
-        [
-          {label: 'Mobile',  value: 1167, color: '#6ea6df'},
-          {label: 'Web',     value: 224,  color: '#e17a69'},
-          {label: 'Desktop', value: 543,  color: '#84c26d'}
-        ]
+        '[\n' +
+        '  {"label": "Mobile",  "value": 1167, "color": "#6ea6df"},\n' +
+        '  {"label": "Web",     "value": 224,  "color": "#e17a69"},\n' +
+        '  {"label": "Desktop", "value": 543,  "color": "#84c26d"}\n' +
+        ']'
     },
     series: {
       options:
-        {
-          start_time: '21 Feb 2014',
-          end_time: '22 Mar 2014',
-          date_axis: 'daily',
-          y_axis_ticks: 4,
-        },
+        '{\n' +
+        '  "start_time": "21 Feb 2014",\n' +
+        '  "end_time": "22 Mar 2014",\n' +
+        '  "date_axis": "daily",\n' +
+        '  "y_axis_ticks": 4\n' +
+        '}',
       data:
-        [{
-          type: 'line',
-          fill: true,
-          label: 'Unique visitors',
-          sequence: [765,280,344,930,989,852,814,734,330,305,893,826,808,820,727,305,286,913,868,758,833,577,253,266,724,752,698,727,648,292],
-          color: '#9a9bc9'
-        }]
+        '[{\n' +
+        '  "type": "line",\n' +
+        '  "fill": true,\n' +
+        '  "label": "Unique visitors",\n' +
+        '  "sequence": [765,280,344,930,989,852,814,734,330,305,893,826,808,820,727,305,286,913,868,758,833,577,253,266,724,752,698,727,648,292],\n' +
+        '  "color": "#9a9bc9"\n' +
+        '}]'
     }
   };
   
-  $scope.fields = clone(initial);
-  $scope.updates = {}
+  $scope.fields = {}
+  $scope.updates = clone(initial); 
   $scope.key = 'series';
   $scope.keys = Object.keys(initial);
 
+  Object.keys(initial).forEach(function(key) {
+    var o = {};
+    Object.keys(initial[key]).forEach(function(field) {
+      console.log(initial[key][field]);
+      o[field] = parseJson(initial[key][field])
+    })
+    $scope.fields[key] = o;
+  });
+  console.log('here');
+
   $scope.update = function(field) {
     try {
-      var o = angular.fromJson($scope.updates[field])
+      var o = parseJson($scope.updates[$scope.key][field])
       $scope.fields[$scope.key][field] = o;
       $scope.error = false;
     } catch(error) {
@@ -86,22 +96,13 @@ angular.module('app').controller('PlaygroundCtrl', function($scope, $filter) {
 
   $scope.reset = function(field) {
     $scope.fields[$scope.key][field] = initial[$scope.key][field];
-    $scope.updates[field] = toJson(initial[$scope.key][field]);
+    $scope.updates[$scope.key][field] = initial[$scope.key][field];
     $scope.update(field);
   }
 
   $scope.titleize = function(string) {
     return string.replace(/^([a-z])/, function() { return RegExp.$1.toUpperCase(); })
   };
-
-  var oldKey;
-  $scope.keyChanged = function() {
-    if (oldKey !== $scope.key) {
-      $scope.updates.options = toJson($scope.fields[$scope.key].options);
-      $scope.updates.data = toJson($scope.fields[$scope.key].data);
-    }
-  };
-  $scope.keyChanged();
 
 });
 </script>
