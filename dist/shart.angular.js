@@ -20,6 +20,7 @@ function _classCallCheck(instance, Constructor) { if (!(instance instanceof Cons
 // Shart
 //
 
+// Main configuration
 var config = {};
 
 // Format an integer with commas.
@@ -833,7 +834,7 @@ var SeriesGraph = (function (_Graph) {
           // Get the data for the tooltip
           data = chart.tooltipData(series_i);
 
-          if (data.series) {
+          if (data.segments) {
             // Format the tip body
             body = chart.tooltip(chart, data);
           }
@@ -1042,7 +1043,7 @@ var SeriesGraph = (function (_Graph) {
       }
 
       this.elements.forEach(function (s) {
-        segments.concat(extractSeriesCrossSection(s, i));
+        segments = segments.concat(extractSeriesCrossSection(s, i));
       });
 
       data.segments = segments;

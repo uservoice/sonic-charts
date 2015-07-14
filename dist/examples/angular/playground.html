@@ -1,0 +1,176 @@
+<!DOCTYPE html>
+<html>
+<head>
+
+<title>Shart playground</title>
+<link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.5/css/bootstrap.min.css">
+<link rel="stylesheet" href="//cdnjs.cloudflare.com/ajax/libs/qtip2/2.2.1/jquery.qtip.min.css">
+<link rel="stylesheet" href="../example.css">
+
+<script src="http://d3js.org/d3.v3.min.js"></script>
+<script src="//code.jquery.com/jquery-2.1.4.min.js"></script>
+<script src="//cdnjs.cloudflare.com/ajax/libs/qtip2/2.2.1/jquery.qtip.min.js"></script>
+<script src="//ajax.googleapis.com/ajax/libs/angularjs/1.3.15/angular.min.js"></script>
+<script src="../../shart.angular.js"></script>
+<script>
+Shart.configure(function(opts) {
+
+  opts.showTooltip = function(tip) {
+    $(tip.target).qtip({
+      style: 'qtip-light qtip-shadow qtip-rounded',
+      show: {
+        event: true,
+        solo: true,
+        ready: true
+      },
+      hide: {
+        event: false
+      },
+      content: {
+        text: $(tip.body)
+      },
+      position: {
+        my: 'top center',
+        at: 'bottom center',
+        adjust: { y: 3 }
+      }
+    });
+  };
+  opts.hideTooltip = function(tip) {
+    var api = $(tip.target).qtip('api');
+    if (api) { api.hide(); }
+  };
+});
+</script>
+<script>
+angular.module('app', ['shart']);
+</script>
+
+
+</head>
+<body ng-app="app">
+
+<div class="container">
+
+<div class="page-header">
+   
+  <h1>Shart playground</h1>
+</div>
+
+
+<div ng-controller="PlaygroundCtrl">
+  <div class="form-group">
+    <select class="form-control" ng-model="key" ng-options="titleize(label) for label in keys" ng-change="keyChanged()"></select>
+  </div>
+
+  <div class="well" ng-show="key === 'legend'">
+    <shart-legend data="fields.legend.data"></shart-legend>
+  </div>
+
+  <div class="well" ng-show="key === 'series'">
+    <shart-series
+      start-time="fields.series.options.start_time"
+      end-time="fields.series.options.end_time"
+      date-axis="fields.series.options.data_axis"
+      y-axis-ticks="fields.series.options.y_axis_ticks"
+      data="fields.series.data"></shart-series>
+  </div>
+
+  <label>Options</label>
+  <div class="form-group" style="position: relative">
+    <textarea class="form-control" ng-model="updates.options" ng-keyup="update('options')" rows="6"></textarea>
+    <button class="btn btn-default btn-sm" style="position: absolute; top: 0; right: 0; border-top-left-radius: 0; border-bottom-right-radius: 0" type="button" ng-click="reset('options')">
+      Reset
+    </button>
+  </div>
+
+  <label>Data</label>
+  <div class="form-group" style="position: relative">
+    <textarea class="form-control" ng-model="updates.data" ng-keyup="update('data')" rows="18"></textarea>
+    <button class="btn btn-default btn-sm" style="position: absolute; top: 0; right: 0; border-top-left-radius: 0; border-bottom-right-radius: 0" type="button" ng-click="reset('data')">
+      Reset
+    </button>
+  </div>
+  
+  <span ng-cloak ng-if="error" style="color: red">{{error.toString()}}</span>
+</div>
+
+<script>
+angular.module('app').controller('PlaygroundCtrl', function($scope, $filter) {
+  var toJson = function(o) { return $filter('json')(o, 4); }
+  ,   parseJson = function(s) { return angular.fromJson(s); }
+  ,   clone = function(o){ return parseJson(toJson(o)); }
+  ;
+
+  var initial = {
+    legend: {
+      options:
+        {},
+      data:
+        [
+          {label: 'Mobile',  value: 1167, color: '#6ea6df'},
+          {label: 'Web',     value: 224,  color: '#e17a69'},
+          {label: 'Desktop', value: 543,  color: '#84c26d'}
+        ]
+    },
+    series: {
+      options:
+        {
+          start_time: '21 Feb 2014',
+          end_time: '22 Mar 2014',
+          date_axis: 'daily',
+          y_axis_ticks: 4,
+        },
+      data:
+        [{
+          type: 'line',
+          fill: true,
+          label: 'Unique visitors',
+          sequence: [765,280,344,930,989,852,814,734,330,305,893,826,808,820,727,305,286,913,868,758,833,577,253,266,724,752,698,727,648,292],
+          color: '#9a9bc9'
+        }]
+    }
+  };
+  
+  $scope.fields = clone(initial);
+  $scope.updates = {}
+  $scope.key = 'series';
+  $scope.keys = Object.keys(initial);
+
+  $scope.update = function(field) {
+    try {
+      var o = angular.fromJson($scope.updates[field])
+      $scope.fields[$scope.key][field] = o;
+      $scope.error = false;
+    } catch(error) {
+      $scope.error = error;
+    }
+  };
+
+  $scope.reset = function(field) {
+    $scope.fields[$scope.key][field] = initial[$scope.key][field];
+    $scope.updates[field] = toJson(initial[$scope.key][field]);
+    $scope.update(field);
+  }
+
+  $scope.titleize = function(string) {
+    return string.replace(/^([a-z])/, function() { return RegExp.$1.toUpperCase(); })
+  };
+
+  var oldKey;
+  $scope.keyChanged = function() {
+    if (oldKey !== $scope.key) {
+      $scope.updates.options = toJson($scope.fields[$scope.key].options);
+      $scope.updates.data = toJson($scope.fields[$scope.key].data);
+    }
+  };
+  $scope.keyChanged();
+
+});
+</script>
+
+
+</div>
+
+</body>
+</html>
