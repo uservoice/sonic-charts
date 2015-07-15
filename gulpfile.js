@@ -72,7 +72,6 @@ gulp.task('scripts:core', function () {
 
 gulp.task('scripts:angular', function () {
   return gulp.src([
-      'src/scripts/shart.js',
       'src/scripts/shart.angular.js',
     ])
     .pipe(concat('shart.angular.js'))
