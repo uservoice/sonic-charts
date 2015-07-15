@@ -28,7 +28,8 @@ angular.module('shart', [])
       startTime: '=',
       endTime: '=',
       dateAxis: '=',
-      yAxisTicks: '='
+      yAxis: '=',
+      xAxis: '='
     },
 
     link: function($scope, $element) {
@@ -37,9 +38,25 @@ angular.module('shart', [])
         startTime: $scope.startTime,
         endTime: $scope.endTime,
         dateAxis: $scope.dateAxis || 'none',
-        yAxis: { ticks: $scope.yAxisTicks }
+        yAxis: $scope.yAxis,
+        xAxis: $scope.xAxis
       });
-      $scope.$watch('data', data => $scope.$shart.update(data, true));
+
+      function update() {
+        return (data, old) => { if (data !== old) { $scope.$shart.update(data, true) } };
+      }
+      function setOption(key) {
+        return (value, old) => { if (value !== old) { $scope.$shart.setOption(key, value, true) } };
+      }
+
+      $scope.$watch('data', update());
+
+      $scope.$watch('startTime', setOption('startTime'));
+      $scope.$watch('endTime', setOption('endTime'));
+      $scope.$watch('dateAxis', setOption('dateAxis'));
+      $scope.$watch('yAxis', setOption('yAxis'));
+      $scope.$watch('xAxis', setOption('xAxis'));
+
       $scope.$on('$destroy', () => $scope.$shart.destroy());
     }
   };

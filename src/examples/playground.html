@@ -17,7 +17,7 @@ layout: "playground"
       start-time="fields.series.options.start_time"
       end-time="fields.series.options.end_time"
       date-axis="fields.series.options.date_axis"
-      y-axis-ticks="fields.series.options.y_axis_ticks"
+      y-axis="fields.series.options.y_axis"
       data="fields.series.data"></shart-series>
   </div>
 
@@ -65,7 +65,7 @@ angular.module('app').controller('PlaygroundCtrl', function($scope, $filter) {
         '  "start_time": "21 Feb 2014",\n' +
         '  "end_time": "22 Mar 2014",\n' +
         '  "date_axis": "daily",\n' +
-        '  "y_axis_ticks": 4\n' +
+        '  "y_axis": true\n' +
         '}',
       data:
         '[{\n' +

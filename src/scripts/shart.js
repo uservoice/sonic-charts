@@ -221,6 +221,23 @@ function extractSeriesCrossSection(data, i) {
   return results;
 }
 
+function setNestedKey(object, key, value) {
+  var o = object
+  ,   parts = key.split('.')
+  ,   last = parts.pop()
+  ,   part = parts.shift()
+  ;
+  while (part) {
+    if (!o.hasOwnProperty(part)) {
+      o[part] = {};
+    }
+    o = o[part];
+    part = parts.shift();
+  }
+  o[last] = value;
+  return value;
+}
+
 
 //
 // Graph - abstract base class from which all graphs inherit
@@ -695,7 +712,17 @@ class SeriesGraph extends Graph {
   constructor(el, data, options) {
     super(el, data, options);
     this.autosize = true;
+    this.loadOptions();
+    this.attachMouseEvents();
+  }
+  
+  setOption(key, value, animate) {
+    setNestedKey(this.options, key, value);
+    this.loadOptions();
+    this.draw(animate);
+  }
 
+  loadOptions() {
     var opts = this.options;
 
     this.dateAxis = opts.dateAxis || 'daily';
@@ -746,8 +773,6 @@ class SeriesGraph extends Graph {
     this.xTickPadding = opts.xTickPadding || 0;
 
     this.tooltip = opts.tooltip || config.tooltip;
-
-    this.attachMouseEvents();
   }
   
   get data() {

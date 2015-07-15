@@ -243,6 +243,22 @@ function extractSeriesCrossSection(data, i) {
   return results;
 }
 
+function setNestedKey(object, key, value) {
+  var o = object,
+      parts = key.split('.'),
+      last = parts.pop(),
+      part = parts.shift();
+  while (part) {
+    if (!o.hasOwnProperty(part)) {
+      o[part] = {};
+    }
+    o = o[part];
+    part = parts.shift();
+  }
+  o[last] = value;
+  return value;
+}
+
 //
 // Graph - abstract base class from which all graphs inherit
 //
@@ -745,64 +761,74 @@ var SeriesGraph = (function (_Graph) {
 
     _get(Object.getPrototypeOf(SeriesGraph.prototype), 'constructor', this).call(this, el, data, options);
     this.autosize = true;
-
-    var opts = this.options;
-
-    this.dateAxis = opts.dateAxis || 'daily';
-    this.dateAxisTicks = opts.dateAxisTicks;
-    this.yAxis = opts.yAxis;
-    this.xAxis = opts.xAxis;
-
-    this.colors = opts.colors || config.colors;
-
-    this.el.style('position', 'relative');
-
-    if (this.dateAxis !== 'none') {
-      this.startTime = new Date(opts.startTime);
-      this.endTime = new Date(opts.endTime);
-    } else if (this.xAxis) {
-      this.startTime = 1;
-      this.endTime = this.xAxis.length;
-
-      this.ticks = { x: this.xAxis.length };
-    } else {
-      this.startTime = opts.startTime;
-      this.endTime = opts.endTime;
-    }
-
-    if (this.dateAxisTicks) {
-      this.ticks = { x: this.dateAxisTicks };
-    }
-
-    this.ticks = this.ticks || {
-      x: SeriesGraph.timeScales[opts.dateAxis].ticks
-    };
-
-    this.ruleTicks = {
-      x: opts.ruleTicks || SeriesGraph.timeScales[opts.dateAxis].ruleTicks
-    };
-
-    this.dateFormatter = SeriesGraph.timeScales[opts.dateAxis].formatter;
-
-    this.formatter = opts.formatter || config.formatter;
-
-    // same with bands
-    this.bands = (opts.bands || []).map(function (bands_s) {
-      return new Band(bands_s);
-    });
-
-    this.tickFormat = opts.tickFormat || ',';
-
-    this.xTickPadding = opts.xTickPadding || 0;
-
-    this.tooltip = opts.tooltip || config.tooltip;
-
+    this.loadOptions();
     this.attachMouseEvents();
   }
 
   _inherits(SeriesGraph, _Graph);
 
   _createClass(SeriesGraph, [{
+    key: 'setOption',
+    value: function setOption(key, value, animate) {
+      setNestedKey(this.options, key, value);
+      this.loadOptions();
+      this.draw(animate);
+    }
+  }, {
+    key: 'loadOptions',
+    value: function loadOptions() {
+      var opts = this.options;
+
+      this.dateAxis = opts.dateAxis || 'daily';
+      this.dateAxisTicks = opts.dateAxisTicks;
+      this.yAxis = opts.yAxis;
+      this.xAxis = opts.xAxis;
+
+      this.colors = opts.colors || config.colors;
+
+      this.el.style('position', 'relative');
+
+      if (this.dateAxis !== 'none') {
+        this.startTime = new Date(opts.startTime);
+        this.endTime = new Date(opts.endTime);
+      } else if (this.xAxis) {
+        this.startTime = 1;
+        this.endTime = this.xAxis.length;
+
+        this.ticks = { x: this.xAxis.length };
+      } else {
+        this.startTime = opts.startTime;
+        this.endTime = opts.endTime;
+      }
+
+      if (this.dateAxisTicks) {
+        this.ticks = { x: this.dateAxisTicks };
+      }
+
+      this.ticks = this.ticks || {
+        x: SeriesGraph.timeScales[opts.dateAxis].ticks
+      };
+
+      this.ruleTicks = {
+        x: opts.ruleTicks || SeriesGraph.timeScales[opts.dateAxis].ruleTicks
+      };
+
+      this.dateFormatter = SeriesGraph.timeScales[opts.dateAxis].formatter;
+
+      this.formatter = opts.formatter || config.formatter;
+
+      // same with bands
+      this.bands = (opts.bands || []).map(function (bands_s) {
+        return new Band(bands_s);
+      });
+
+      this.tickFormat = opts.tickFormat || ',';
+
+      this.xTickPadding = opts.xTickPadding || 0;
+
+      this.tooltip = opts.tooltip || config.tooltip;
+    }
+  }, {
     key: 'attachMouseEvents',
     value: function attachMouseEvents() {
       var chart = this;
