@@ -15,6 +15,7 @@ var gulp = require('gulp')
 ,   runSequence = require('run-sequence')
 ,   webserver = require('gulp-webserver')
 ,   pkg = require('./package.json')
+,   _ = require('underscore')
 ,   options = {}
 ;
 
@@ -22,26 +23,41 @@ options.babel = {
   blacklist: ['strict']
 };
 
-options.preamble = [
-  '/**',
-  ' * <%= pkg.name %> - <%= pkg.description %>',
-  ' * @version v<%= pkg.version %>',
-  ' * @link <%= pkg.homepage %>',
-  ' * @license <%= pkg.license %>',
-  ' */',
-  '!function(undefined) { "use strict"; var Shart = {version: "<%= pkg.version %>"};',
-  '',
-  ''
-].join('\n');
+function preamble(addVersion) {
+  var result = [
+    '/**',
+    ' * <%= pkg.name %> - <%= pkg.description %>',
+    ' * @version v<%= pkg.version %>',
+    ' * @link <%= pkg.homepage %>',
+    ' * @license <%= pkg.license %>',
+    ' */',
+    '!function(undefined) {'
+  ];
+  if (addVersion) {
+    result.push('"use strict"; var Shart = {version: "<%= pkg.version %>"};');
+  }
+  result = result.concat([
+    '',
+    '',
+  ]);
+  return result.join('\n');
+}
 
-options.postamble = [
-  '',
-  '',
-  'if (typeof define === "function" && define.amd) { define(Shart); }',
-  'else if (typeof module === "object" && module.exports) { module.exports = Shart; }',
-  'else if (window) { window.Shart = Shart; }',
-  '}();'
-].join('\n');
+function postamble(defineShart) {
+  var result = [
+    '',
+    '',
+  ];
+  if (defineShart) {
+    result = result.concat([
+      'if (typeof define === "function" && define.amd) { define(Shart); }',
+      'else if (typeof module === "object" && module.exports) { module.exports = Shart; }',
+      'else if (window) { window.Shart = Shart; }'
+    ]);
+  }
+  result.push('}();');
+  return result.join('\n');
+}
 
 gulp.task('clean', shell.task('rm -Rf ./dist/*'));
 
@@ -56,13 +72,14 @@ gulp.task('scripts:lint', function() {
 });
 
 gulp.task('scripts:core', function () {
+  var sharts = _.clone(pkg);
   return gulp.src([
       'src/scripts/shart.js',
     ])
     .pipe(concat('shart.js'))
       .pipe(babel(options.babel))
-      .pipe(header(options.preamble, {pkg: pkg}))
-      .pipe(footer(options.postamble))
+      .pipe(header(preamble(true), {pkg: sharts}))
+      .pipe(footer(postamble(true)))
       .pipe(gulp.dest('dist'))
     .pipe(concat('shart.min.js'))
       .pipe(uglify({preserveComments: 'some'}))
@@ -71,13 +88,15 @@ gulp.task('scripts:core', function () {
 });
 
 gulp.task('scripts:angular', function () {
+  var shartsAngular = _.clone(pkg);
+  shartsAngular.name = 'sharts.angular.js';
   return gulp.src([
       'src/scripts/shart.angular.js',
     ])
     .pipe(concat('shart.angular.js'))
       .pipe(babel(options.babel))
-      .pipe(header(options.preamble, {pkg: pkg}))
-      .pipe(footer(options.postamble))
+      .pipe(header(preamble(false), {pkg: shartsAngular}))
+      .pipe(footer(postamble(false)))
       .pipe(gulp.dest('dist'))
     .pipe(concat('shart.angular.min.js'))
       .pipe(uglify({preserveComments: 'some'}))
