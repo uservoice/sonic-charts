@@ -18,8 +18,10 @@ Then build the assets with Gulp:
 
     gulp build
 
-Or, if you want an auto-building server, run:
+Or, if you want an auto-building server with examples, run:
 
     gulp server
+
+And go to <http://localhost:5000/examples>.
 
 After running finished packages are available in `dist`.
