@@ -165,7 +165,7 @@ function flattenSeries(data) {
 }
 
 // Given a series, extract the cross section of values at a given index (i).
-function extractSeriesCrossSection(data, i) {
+function extractSeriesCrossSection(chart, data, i) {
   var segment_seq_totals
   ,   results = []
   ,   segments = []
@@ -177,7 +177,7 @@ function extractSeriesCrossSection(data, i) {
     var value = data.sequence[i];
 
     datum = {};
-    formatter = data.formatter || config.formatter;
+    formatter = data.formatter || chart.formatter || config.formatter;
 
     datum.key = data.key;
     datum.label = data.label;
@@ -1061,7 +1061,8 @@ class SeriesGraph extends Graph {
   }
 
   tooltipData(i) {
-    var data = {}
+    var chart = this
+    ,   data = {}
     ,   segments = []
     ,   date
     ;
@@ -1076,7 +1077,7 @@ class SeriesGraph extends Graph {
     }
 
     this.elements.forEach(function(s) {
-      segments = segments.concat(extractSeriesCrossSection(s, i));
+      segments = segments.concat(extractSeriesCrossSection(chart, s, i));
     });
 
     data.segments = segments;
