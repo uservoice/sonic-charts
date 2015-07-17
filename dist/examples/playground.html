@@ -74,7 +74,8 @@ angular.module('app', ['shart']);
       y-axis="fields.series.options.y_axis"
       data="fields.series.data"
       width="fields.series.options.width || 'auto'"
-      height="fields.series.options.height || 'auto'"></shart-series>
+      height="fields.series.options.height || 'auto'"
+      formatter="fields.series.options.formatter"></shart-series>
   </div>
 
   <div ng-if="initial[key].options">

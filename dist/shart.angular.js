@@ -39,7 +39,8 @@ if (angular) {
         endTime: '=',
         dateAxis: '=',
         yAxis: '=',
-        xAxis: '='
+        xAxis: '=',
+        formatter: '='
       },
 
       link: function link($scope, $element) {
@@ -51,7 +52,8 @@ if (angular) {
           endTime: $scope.endTime,
           dateAxis: $scope.dateAxis || 'none',
           yAxis: $scope.yAxis,
-          xAxis: $scope.xAxis
+          xAxis: $scope.xAxis,
+          formatter: $scope.formatter
         });
 
         function update() {
@@ -78,6 +80,7 @@ if (angular) {
         $scope.$watch('dateAxis', setOption('dateAxis'));
         $scope.$watch('yAxis', setOption('yAxis'));
         $scope.$watch('xAxis', setOption('xAxis'));
+        $scope.$watch('formatter', setOption('formatter'));
 
         $scope.$on('$destroy', function () {
           return $scope.$shart.destroy();
