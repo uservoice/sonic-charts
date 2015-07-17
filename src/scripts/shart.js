@@ -717,6 +717,7 @@ class SeriesGraph extends Graph {
   }
   
   setOption(key, value, animate) {
+    console.log(arguments);
     setNestedKey(this.options, key, value);
     this.loadOptions();
     this.draw(animate);
@@ -724,6 +725,9 @@ class SeriesGraph extends Graph {
 
   loadOptions() {
     var opts = this.options;
+
+    this.width = opts.width || 'auto';
+    this.height = opts.height || 'auto';
 
     this.dateAxis = opts.dateAxis || 'daily';
     this.dateAxisTicks = opts.dateAxisTicks;
@@ -865,11 +869,11 @@ class SeriesGraph extends Graph {
 
   draw() {
     var chart = this
-    ,   width
-    ,   height
     ,   line = d3.svg.line().x(function(d) { return d.x }).y(function(d) { return d.y }).interpolate("linear")
     ,   axis_pad = 4.5
     ,   tick_length = 5
+    ,   width
+    ,   height
     ,   _xRange
     ,   _yRange
     ,   _xAxisRange
@@ -885,8 +889,13 @@ class SeriesGraph extends Graph {
       .style('height', '')
     ;
 
-    this.width = width = parseInt(this.el.style('width'), 10) || 600;
-    this.height = height = parseInt(this.el.style('height'), 10) || 180;
+    width = this.width !== 'auto' ? this.width : parseInt(this.el.style('width'), 10) || 600;
+    height = this.height !== 'auto' ? this.height : parseInt(this.el.style('height'), 10) || 180;
+
+    this.el
+      .style('width', width + 'px')
+      .style('height', height + 'px')
+    ;
 
     if (this.dateAxis || this.xAxis) {
       this.el.classed('x-axis', true);

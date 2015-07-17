@@ -72,7 +72,9 @@ angular.module('app', ['shart']);
       end-time="fields.series.options.end_time"
       date-axis="fields.series.options.date_axis"
       y-axis="fields.series.options.y_axis"
-      data="fields.series.data"></shart-series>
+      data="fields.series.data"
+      width="fields.series.options.width || 'auto'"
+      height="fields.series.options.height || 'auto'"></shart-series>
   </div>
 
   <div ng-if="initial[key].options">

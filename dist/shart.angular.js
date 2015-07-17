@@ -33,6 +33,8 @@ if (angular) {
 
       scope: {
         data: '=',
+        width: '=',
+        height: '=',
         startTime: '=',
         endTime: '=',
         dateAxis: '=',
@@ -65,8 +67,10 @@ if (angular) {
           };
         }
 
-        $scope.$watch('data', update());
+        $scope.$watchCollection('data', update());
 
+        $scope.$watch('width', setOption('width'));
+        $scope.$watch('height', setOption('height'));
         $scope.$watch('startTime', setOption('startTime'));
         $scope.$watch('endTime', setOption('endTime'));
         $scope.$watch('dateAxis', setOption('dateAxis'));
