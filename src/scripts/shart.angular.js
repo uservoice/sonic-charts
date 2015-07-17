@@ -33,6 +33,7 @@ angular.module('shart', [])
       dateAxisTicks: '=',
       yAxis: '=',
       xAxis: '=',
+      tickFormat: '=',
       formatValue: '&'
     },
 
@@ -46,7 +47,8 @@ angular.module('shart', [])
         dateAxis: $scope.dateAxis || 'none',
         dateAxisTicks: $scope.dateAxisTicks,
         yAxis: $scope.yAxis,
-        xAxis: $scope.xAxis
+        xAxis: $scope.xAxis,
+        tickFormat: $scope.tickFormat
       };
 
       if ($scope.formatValue) {
@@ -56,8 +58,6 @@ angular.module('shart', [])
       }
 
       $scope.$shart = Shart.Series($element[0], $scope.data, options);
-
-      console.log('options', options);
 
       function update() {
         return (data, old) => { if (data !== old) { $scope.$shart.update(data, true) } };
@@ -75,6 +75,7 @@ angular.module('shart', [])
       $scope.$watch('dateAxis', setOption('dateAxis'));
       $scope.$watch('yAxis', setOption('yAxis'));
       $scope.$watch('xAxis', setOption('xAxis'));
+      $scope.$watch('tickFormat', setOption('tickFormat'));
       $scope.$watch('formatValue', (formatValue, old) => {
         if (formatValue !== old) {
           $scope.$shart.setOption('formatter', function(value) {
