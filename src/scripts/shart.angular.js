@@ -37,6 +37,8 @@ angular.module('shart', [])
     link: function($scope, $element) {
       // TODO: More options!
       $scope.$shart = Shart.Series($element[0], $scope.data, {
+        width: $scope.width,
+        height: $scope.height,
         startTime: $scope.startTime,
         endTime: $scope.endTime,
         dateAxis: $scope.dateAxis || 'none',
