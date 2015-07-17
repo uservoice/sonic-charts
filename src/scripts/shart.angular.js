@@ -73,6 +73,7 @@ angular.module('shart', [])
       $scope.$watch('startTime', setOption('startTime'));
       $scope.$watch('endTime', setOption('endTime'));
       $scope.$watch('dateAxis', setOption('dateAxis'));
+      $scope.$watch('dateAxisTicks', setOption('dateAxisTicks'));
       $scope.$watch('yAxis', setOption('yAxis'));
       $scope.$watch('xAxis', setOption('xAxis'));
       $scope.$watch('tickFormat', setOption('tickFormat'));
