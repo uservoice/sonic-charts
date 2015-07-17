@@ -839,6 +839,7 @@ class SeriesGraph extends Graph {
 
         if (body) {
           chart.scrubber.style({
+            position: 'absolute',
             height: (chart.y.range()[0] - chart.y.range()[1]) + 'px',
             visibility: 'visible',
             left: x_pos  + 'px',
