@@ -63,22 +63,24 @@ Shart.configure(function(opts) {
 
 <figure class="well shart-well"><div id="line-graph"></div></figure>
 <script class="code-block">
-  Shart.Series("#line-graph", [{
-    label: 'Instant answers',
-    sequence: [0.76599,0.280,0.344232,0.930,0.98922,0.852,1.142323,0.734,0.330222,0.3059080,0.893,0.8260293432,0.808,0.82023234,0.727,0.305,0.286,0.913,0.868,0.758,0.833,0.577,0.253,0.266,0.724,0.752,0.698,0.727,0.648,0.292],
-    type: 'line',
-    fill: true,
-    color: '#6ea6df',
-  }], {
-    startTime: "21 Feb 2014",
-    endTime: "22 Mar 2014",
-    dateAxis: 'monthly',
-    dateAxisTicks: 30,
-    yAxis: { ticks: 4 },
-    formatter: d3.format('.3p'),
-    tickFormat: '%'
-  });
+Shart.Series("#line-graph", [{
+  label: 'Instant answers',
+  sequence: [0.76599,0.280,0.344232,0.930,0.98922,0.852,1.142323,0.734,0.330222,0.3059080,0.893,0.8260293432,0.808,0.82023234,0.727,0.305,0.286,0.913,0.868,0.758,0.833,0.577,0.253,0.266,0.724,0.752,0.698,0.727,0.648,0.292],
+  type: 'line',
+  fill: true,
+  color: '#6ea6df',
+}], {
+  startTime: "21 Feb 2014",
+  endTime: "22 Mar 2014",
+  dateAxis: 'monthly',
+  dateAxisTicks: 30,
+  yAxis: { ticks: 4 },
+  formatter: d3.format('.3p'),
+  tickFormat: '%'
+});
 </script>
+
+<hr>
 
 <figure class="well shart-well"><div id="line-segments-graph"></div></figure>
 <script class="code-block">

@@ -38,23 +38,34 @@ if (angular) {
         startTime: '=',
         endTime: '=',
         dateAxis: '=',
+        dateAxisTicks: '=',
         yAxis: '=',
         xAxis: '=',
-        formatter: '='
+        formatValue: '&'
       },
 
       link: function link($scope, $element) {
         // TODO: More options!
-        $scope.$shart = Shart.Series($element[0], $scope.data, {
+        var options = {
           width: $scope.width,
           height: $scope.height,
           startTime: $scope.startTime,
           endTime: $scope.endTime,
           dateAxis: $scope.dateAxis || 'none',
+          dateAxisTicks: $scope.dateAxisTicks,
           yAxis: $scope.yAxis,
-          xAxis: $scope.xAxis,
-          formatter: $scope.formatter
-        });
+          xAxis: $scope.xAxis
+        };
+
+        if ($scope.formatValue) {
+          options.formatter = function (value) {
+            return $scope.formatValue({ value: value });
+          };
+        }
+
+        $scope.$shart = Shart.Series($element[0], $scope.data, options);
+
+        console.log('options', options);
 
         function update() {
           return function (data, old) {
@@ -80,7 +91,13 @@ if (angular) {
         $scope.$watch('dateAxis', setOption('dateAxis'));
         $scope.$watch('yAxis', setOption('yAxis'));
         $scope.$watch('xAxis', setOption('xAxis'));
-        $scope.$watch('formatter', setOption('formatter'));
+        $scope.$watch('formatValue', function (formatValue, old) {
+          if (formatValue !== old) {
+            $scope.$shart.setOption('formatter', function (value) {
+              return formatValue({ value: value });
+            });
+          }
+        });
 
         $scope.$on('$destroy', function () {
           return $scope.$shart.destroy();

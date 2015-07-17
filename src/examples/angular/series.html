@@ -8,6 +8,26 @@ layout: "angular-example"
 <script class="code-block" type="text/ng-template" id="shart-series-1.html">
 <shart-series
   start-time="'21 Feb 2014'"
+  end-time="'8 Sept 2014'"
+  date-axis="'monthly'"
+  date-axis-ticks="30"
+  y-axis="true"
+  format-value="value * 100"
+  data="[{
+    label: 'Instant answers',
+    sequence: [0.76599,0.280,0.344232,0.930,0.98922,0.852,1.142323,0.734,0.330222,0.3059080,0.893,0.8260293432,0.808,0.82023234,0.727,0.305,0.286,0.913,0.868,0.758,0.833,0.577,0.253,0.266,0.724,0.752,0.698,0.727,0.648,0.292],
+    type: 'line',
+    fill: true,
+    color: '#6ea6df'
+  }]"></shart-series>
+</script>
+
+<hr>
+
+<figure class="well shart-well" ng-include="'shart-series-2.html'"></figure>
+<script class="code-block" type="text/ng-template" id="shart-series-2.html">
+<shart-series
+  start-time="'21 Feb 2014'"
   end-time="'22 Mar 2014'"
   date-axis="'daily'"
   y-axis="true"
@@ -27,8 +47,8 @@ layout: "angular-example"
 
 <hr>
 <h2>Area</h2>
-<figure class="well shart-well" ng-include="'shart-series-2.html'"></figure>
-<script class="code-block" type="text/ng-template" id="shart-series-2.html">
+<figure class="well shart-well" ng-include="'shart-series-3.html'"></figure>
+<script class="code-block" type="text/ng-template" id="shart-series-3.html">
 <shart-series
   start-time="'21 Feb 2014'"
   end-time="'22 Mar 2014'"
@@ -44,8 +64,8 @@ layout: "angular-example"
 
 <hr>
 <h2>Column</h2>
-<figure class="well shart-well" ng-include="'shart-series-3.html'"></figure>
-<script class="code-block" type="text/ng-template" id="shart-series-3.html">
+<figure class="well shart-well" ng-include="'shart-series-4.html'"></figure>
+<script class="code-block" type="text/ng-template" id="shart-series-4.html">
 <shart-series
   start-time="'21 Feb 2014'"
   end-time="'22 Mar 2014'"

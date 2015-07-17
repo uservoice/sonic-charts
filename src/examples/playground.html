@@ -14,14 +14,13 @@ layout: "playground"
 
   <div class="well" ng-show="key === 'series'">
     <shart-series
+      width="fields.series.options.width || 'auto'"
+      height="fields.series.options.height || 'auto'"
       start-time="fields.series.options.start_time"
       end-time="fields.series.options.end_time"
       date-axis="fields.series.options.date_axis"
       y-axis="fields.series.options.y_axis"
-      data="fields.series.data"
-      width="fields.series.options.width || 'auto'"
-      height="fields.series.options.height || 'auto'"
-      formatter="fields.series.options.formatter"></shart-series>
+      data="fields.series.data"></shart-series>
   </div>
 
   <div ng-if="initial[key].options">
