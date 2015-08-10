@@ -705,14 +705,14 @@ var Column = (function () {
         cw = this.col_width;
       } else {
         // Set column width; equally divide chart width minus spacing
-        cw = chart.width;
+        cw = chart.getWidth();
         cw = Math.floor((cw - this.spacing * sequence[0].length) / sequence[0].length);
       }
 
       // Set ratio to use to determine column height
       // If percent: the ratio is just the chart height minus ypadding * 2
       // If no percent: the ratio is the (chart height minus (ypadding * 2)) / max column total
-      var chart_height = chart.height - SeriesGraph.yPadding * 2;
+      var chart_height = chart.getHeight() - SeriesGraph.yPadding * 2;
       ratio = chart_height;
 
       if (!percent) {
@@ -771,7 +771,6 @@ var SeriesGraph = (function (_Graph) {
   _createClass(SeriesGraph, [{
     key: 'setOption',
     value: function setOption(key, value, animate) {
-      console.log(arguments);
       setNestedKey(this.options, key, value);
       this.loadOptions();
       this.draw(animate);
@@ -896,6 +895,16 @@ var SeriesGraph = (function (_Graph) {
       }
     }
   }, {
+    key: 'getWidth',
+    value: function getWidth() {
+      return this.width !== 'auto' ? this.width : parseInt(this.el.style('width'), 10) || 600;
+    }
+  }, {
+    key: 'getHeight',
+    value: function getHeight() {
+      return this.height !== 'auto' ? this.height : parseInt(this.el.style('height'), 10) || 180;
+    }
+  }, {
     key: 'draw',
     value: function draw() {
       var chart = this,
@@ -918,8 +927,8 @@ var SeriesGraph = (function (_Graph) {
       this.el.html('') // need to clear out existing stuff
       .classed('shart-series-graph', true).style('width', '').style('height', '');
 
-      width = this.width !== 'auto' ? this.width : parseInt(this.el.style('width'), 10) || 600;
-      height = this.height !== 'auto' ? this.height : parseInt(this.el.style('height'), 10) || 180;
+      width = this.getWidth();
+      height = this.getHeight();
 
       this.el.style('width', width + 'px').style('height', height + 'px');
 

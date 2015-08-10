@@ -50,7 +50,9 @@ Shart.Series('#line-segments-graph', [{
 </script>
 
 <hr>
+
 <h2>Area</h2>
+
 <figure class="well shart-well"><div id="area-graph"></div></figure>
 <script class="code-block">
 Shart.Series('#area-graph', [
@@ -69,10 +71,12 @@ Shart.Series('#area-graph', [
 </script>
 
 <hr>
+
 <h2>Column</h2>
-<figure class="well shart-well"><div id="column-graph"></div></figure>
+
+<figure class="well shart-well"><div id="column-graph-1"></div></figure>
 <script class="code-block">
-Shart.Series('#column-graph', [
+Shart.Series('#column-graph-1', [
   {
     label: "Unique visitors",
     sequence: [765,280,344,930,989,852,814,734,330,305,893,826,808,820,727,305,286,913,868,758,833,577,253,266,724,752,698,727,648,292],
@@ -82,6 +86,31 @@ Shart.Series('#column-graph', [
 ], {
   startTime: "21 Feb 2014",
   endTime: "22 Mar 2014",
+  dateAxis: "daily",
+  yAxis: true
+});
+</script>
+
+<hr>
+
+<figure class="well shart-well"><div id="column-graph-2"></div></figure>
+<script class="code-block">
+Shart.Series('#column-graph-2', [
+  {
+    label: "Messages",
+    type: "column",
+    color: "#6ea6df",
+    sequence: [3,18,106,90,72,90,62,6,11,91,97,93,102,59,6,16,79,104,95,97,46,6,11,73,62,72,66,35,6,5,5],
+    segments: [
+      {label: "Fast", color: "#74b50d", sequence: [0,1,44,47,20,35,25,0,0,32,49,44,45,28,0,0,26,28,31,38,1,0,0,13,28,20,22,10,0,0,0]},
+      {label: "Good", color: "#a6d15d", sequence: [0,0,31,19,21,23,16,0,0,24,23,25,16,8,0,0,13,27,32,24,19,0,0,32,12,17,17,12,0,0,1]},
+      {label: "Okay", color: "#f5e14d", sequence: [0,14,29,24,30,29,5,0,8,32,22,23,37,6,0,15,39,48,27,28,15,0,4,23,21,33,25,8,0,2,4]},
+      {label: "Slow", color: "#e56244", sequence: [3,3,2,0,1,3,16,6,3,3,3,1,4,17,6,1,1,1,5,7,11,6,7,5,1,2,2,5,6,3,0]}
+    ]
+  }
+], {
+  startTime: "1 July 2015",
+  endTime: "31 July 2015",
   dateAxis: "daily",
   yAxis: true
 });
