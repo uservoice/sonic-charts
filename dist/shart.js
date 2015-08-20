@@ -327,8 +327,9 @@ var Graph = (function () {
   }, {
     key: 'hideTooltip',
     value: function hideTooltip(tip) {
+      var result = config.hideTooltip(tip);
       this.activeTip = undefined;
-      return config.hideTooltip(tip);
+      return result;
     }
   }], [{
     key: 'installResizeListener',

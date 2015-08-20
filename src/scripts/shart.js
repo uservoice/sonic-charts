@@ -292,8 +292,9 @@ class Graph {
   }
 
   hideTooltip(tip) {
+    var result = config.hideTooltip(tip);
     this.activeTip = undefined;
-    return config.hideTooltip(tip);
+    return result;
   }
 
   // Install the global resize listner. Shart only uses one for all charts.
