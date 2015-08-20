@@ -311,11 +311,25 @@ var Graph = (function () {
     // d3 for child elements of the chart they will be automatically removed
     // by the browser when the elements are removed by this method.)
     value: function destroy() {
+      console.log('destroy');
       var index = Graph.instances.indexOf(this);
       if (index > -1) {
         Graph.instances.splice(index, 1);
       }
+      this.hideTooltip(this.activeTip);
       this.el.html('');
+    }
+  }, {
+    key: 'showTooltip',
+    value: function showTooltip(tip) {
+      this.activeTip = tip;
+      return config.showTooltip(tip);
+    }
+  }, {
+    key: 'hideTooltip',
+    value: function hideTooltip(tip) {
+      this.activeTip = undefined;
+      return config.hideTooltip(tip);
     }
   }], [{
     key: 'installResizeListener',
@@ -878,7 +892,7 @@ var SeriesGraph = (function (_Graph) {
               top: chart.y.range()[1] + 'px'
             });
 
-            config.showTooltip({
+            chart.showTooltip({
               body: body,
               target: chart.scrubber.node(),
               chart: chart.el.node()
@@ -887,7 +901,7 @@ var SeriesGraph = (function (_Graph) {
         }, 50));
 
         this.el.on('mouseleave', debounce(function () {
-          config.hideTooltip({
+          chart.hideTooltip({
             target: chart.scrubber.node()
           });
           chart.scrubber.style('visibility', 'hidden');
@@ -1801,7 +1815,7 @@ var PipelineGraph = (function (_Graph7) {
 
       tip = chart.tooltip(chart, { segments: [datum] });
       if (tip) {
-        config.showTooltip({
+        chart.showTooltip({
           body: tip,
           position: 'bottom',
           target: el.select('rect').node(),
@@ -1835,7 +1849,7 @@ var PipelineGraph = (function (_Graph7) {
 
       el.select('rect').attr('fill', color);
 
-      config.hideTooltip({
+      chart.hideTooltip({
         target: el.select('rect').node()
       });
     }
