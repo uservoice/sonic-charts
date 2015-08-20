@@ -253,6 +253,7 @@ class Graph {
     this.el = d3.select(el);
     this.data = data || [];
     this.autosize = false;
+    this.activeTips = [];
     Graph.installResizeListener();
   }
 
@@ -287,13 +288,15 @@ class Graph {
   }
 
   showTooltip(tip) {
-    this.activeTip = tip;
+    this.activeTips.push(tip);
     return config.showTooltip(tip);
   }
 
   hideTooltip(tip) {
-    var result = config.hideTooltip(tip);
-    this.activeTip = undefined;
+    var result = config.hideTooltip(tip)
+    ,   index = this.activeTips.indexOf(tip)
+    ;
+    if (index > -1) { this.activeTips.splice(index, 1); }
     return result;
   }
 

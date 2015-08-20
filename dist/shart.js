@@ -277,6 +277,7 @@ var Graph = (function () {
     this.el = d3.select(el);
     this.data = data || [];
     this.autosize = false;
+    this.activeTips = [];
     Graph.installResizeListener();
   }
 
@@ -323,14 +324,17 @@ var Graph = (function () {
   }, {
     key: 'showTooltip',
     value: function showTooltip(tip) {
-      this.activeTip = tip;
+      this.activeTips.push(tip);
       return config.showTooltip(tip);
     }
   }, {
     key: 'hideTooltip',
     value: function hideTooltip(tip) {
-      var result = config.hideTooltip(tip);
-      this.activeTip = undefined;
+      var result = config.hideTooltip(tip),
+          index = this.activeTips.indexOf(tip);
+      if (index > -1) {
+        this.activeTips.splice(index, 1);
+      }
       return result;
     }
   }], [{
