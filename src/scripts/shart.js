@@ -282,7 +282,7 @@ class Graph {
   destroy() {
     var index = Graph.instances.indexOf(this);
     if (index > -1) { Graph.instances.splice(index, 1); }
-    this.hideTooltip(this.activeTip);
+    if (this.activeTip) { this.hideTooltip(this.activeTip); }
     this.el.html('');
   }
 
