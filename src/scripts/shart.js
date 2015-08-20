@@ -280,7 +280,6 @@ class Graph {
   // d3 for child elements of the chart they will be automatically removed
   // by the browser when the elements are removed by this method.)
   destroy() {
-    console.log('destroy');
     var index = Graph.instances.indexOf(this);
     if (index > -1) { Graph.instances.splice(index, 1); }
     this.hideTooltip(this.activeTip);
