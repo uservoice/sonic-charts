@@ -288,6 +288,27 @@ var Graph = (function () {
     // subclass to create your own chart.
     value: function draw() {}
   }, {
+    key: 'drawWhenReady',
+
+    // Wait until the el is in DOM and visible before drawing
+    value: function drawWhenReady() {
+      var graph = this,
+          el = graph.el[0][0],
+          delay = 100;
+
+      function wait() {
+        if (!graph.destroyed) {
+          if (el.offsetParent !== null) {
+            graph.draw();
+          } else {
+            setTimeout(wait, delay);
+          }
+        }
+      }
+
+      setTimeout(wait, 0);
+    }
+  }, {
     key: 'resize',
 
     // If the autoresize property is true, this method will be called whenever
@@ -320,6 +341,7 @@ var Graph = (function () {
         this.hideTooltip(this.activeTip);
       }
       this.el.html('');
+      this.destroyed = true;
     }
   }, {
     key: 'showTooltip',
@@ -917,12 +939,14 @@ var SeriesGraph = (function (_Graph) {
   }, {
     key: 'getWidth',
     value: function getWidth() {
-      return this.width !== 'auto' ? this.width : parseInt(this.el.style('width'), 10) || 600;
+      var w = this.el[0][0].offsetWidth;
+      return this.width !== 'auto' ? this.width : w === undefined ? 600 : w;
     }
   }, {
     key: 'getHeight',
     value: function getHeight() {
-      return this.height !== 'auto' ? this.height : parseInt(this.el.style('height'), 10) || 180;
+      var h = this.el[0][0].offsetHeight;
+      return this.height !== 'auto' ? this.height : h === undefined ? 180 : h;
     }
   }, {
     key: 'draw',
@@ -1983,49 +2007,49 @@ Shart.configure = function (callback) {
 
 Shart.Legend = function (el, data, opts) {
   var shart = new Legend(el, data, opts);
-  shart.draw();
+  shart.drawWhenReady();
   return shart;
 };
 
 Shart.Series = function (el, data, opts) {
   var shart = new SeriesGraph(el, data, opts);
-  shart.draw();
+  shart.drawWhenReady();
   return shart;
 };
 
 Shart.Sparkline = function (el, data, opts) {
   var shart = new SparklineGraph(el, data, opts);
-  shart.draw();
+  shart.drawWhenReady();
   return shart;
 };
 
 Shart.Pie = function (el, data, opts) {
   var shart = new PieGraph(el, data, opts);
-  shart.draw();
+  shart.drawWhenReady();
   return shart;
 };
 
 Shart.Donut = function (el, data, opts) {
   var shart = new DonutGraph(el, data, opts);
-  shart.draw();
+  shart.drawWhenReady();
   return shart;
 };
 
 Shart.DonutStack = function (el, data, opts) {
   var shart = new DonutStackGraph(el, data, opts);
-  shart.draw();
+  shart.drawWhenReady();
   return shart;
 };
 
 Shart.HorizontalBar = function (el, data, opts) {
   var shart = new HorizontalBarGraph(el, data, opts);
-  shart.draw();
+  shart.drawWhenReady();
   return shart;
 };
 
 Shart.Pipeline = function (el, data, opts) {
   var shart = new PipelineGraph(el, data, opts);
-  shart.draw();
+  shart.drawWhenReady();
   return shart;
 };
 /* animate */
