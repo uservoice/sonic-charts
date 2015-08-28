@@ -39,6 +39,7 @@ if (angular) {
         endTime: '=',
         dateAxis: '=',
         dateAxisTicks: '=',
+        axis: '=',
         yAxis: '=',
         xAxis: '=',
         tickFormat: '=',
@@ -54,6 +55,7 @@ if (angular) {
           endTime: $scope.endTime,
           dateAxis: $scope.dateAxis || 'none',
           dateAxisTicks: $scope.dateAxisTicks,
+          axis: 'axis' in $scope ? $scope.axis : true,
           yAxis: $scope.yAxis,
           xAxis: $scope.xAxis,
           tickFormat: $scope.tickFormat
@@ -90,6 +92,7 @@ if (angular) {
         $scope.$watch('endTime', setOption('endTime'));
         $scope.$watch('dateAxis', setOption('dateAxis'));
         $scope.$watch('dateAxisTicks', setOption('dateAxisTicks'));
+        $scope.$watch('axis', setOption('axis'));
         $scope.$watch('yAxis', setOption('yAxis'));
         $scope.$watch('xAxis', setOption('xAxis'));
         $scope.$watch('tickFormat', setOption('tickFormat'));

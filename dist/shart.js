@@ -825,6 +825,7 @@ var SeriesGraph = (function (_Graph) {
       this.width = opts.width || 'auto';
       this.height = opts.height || 'auto';
 
+      this.axis = 'axis' in opts ? opts.axis : true;
       this.dateAxis = opts.dateAxis || 'daily';
       this.dateAxisTicks = opts.dateAxisTicks;
       this.yAxis = opts.yAxis;
@@ -946,7 +947,7 @@ var SeriesGraph = (function (_Graph) {
     key: 'getHeight',
     value: function getHeight() {
       var h = this.el[0][0].offsetHeight;
-      return this.height !== 'auto' ? this.height : h === undefined ? 180 : h;
+      return this.height !== 'auto' ? this.height : h === 0 ? 180 : h;
     }
   }, {
     key: 'draw',
@@ -976,7 +977,7 @@ var SeriesGraph = (function (_Graph) {
 
       this.el.style('width', width + 'px').style('height', height + 'px');
 
-      if (this.dateAxis || this.xAxis) {
+      if (this.axis && (this.dateAxis || this.xAxis)) {
         this.el.classed('x-axis', true);
       }
 
@@ -1011,7 +1012,7 @@ var SeriesGraph = (function (_Graph) {
         return d.valueOf();
       });
 
-      if (this.dateAxis || this.xAxis) {
+      if (this.axis && (this.dateAxis || this.xAxis)) {
         var xAxis = this.svg.append('svg:g');
 
         p1 = { x: this.x_axis(0), y: this.y(this.yRange[0]) + axis_pad };
@@ -1043,7 +1044,7 @@ var SeriesGraph = (function (_Graph) {
         }, this);
       }
 
-      if (this.yAxis) {
+      if (this.axis && this.yAxis) {
         var ordinal = this.yAxis instanceof Array,
             tickScale = d3.scale.linear().domain([0, this.y.domain()[1] - this.y.domain()[0]]).range(this.y.range()),
             yAxis = this.svg.append('svg:g'),

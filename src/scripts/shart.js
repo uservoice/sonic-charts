@@ -764,6 +764,7 @@ class SeriesGraph extends Graph {
     this.width = opts.width || 'auto';
     this.height = opts.height || 'auto';
 
+    this.axis = 'axis' in opts ? opts.axis : true;
     this.dateAxis = opts.dateAxis || 'daily';
     this.dateAxisTicks = opts.dateAxisTicks;
     this.yAxis = opts.yAxis;
@@ -909,7 +910,7 @@ class SeriesGraph extends Graph {
 
   getHeight() {
     var h = this.el[0][0].offsetHeight;
-    return this.height !== 'auto' ? this.height : (h === undefined ? 180 : h);
+    return this.height !== 'auto' ? this.height : (h === 0 ? 180 : h);
   }
 
   draw() {
@@ -942,7 +943,7 @@ class SeriesGraph extends Graph {
       .style('height', height + 'px')
     ;
 
-    if (this.dateAxis || this.xAxis) {
+    if (this.axis && (this.dateAxis || this.xAxis)) {
       this.el.classed('x-axis', true);
     }
 
@@ -979,7 +980,7 @@ class SeriesGraph extends Graph {
     this.timeScale = scale().domain([this.startTime, this.endTime]).range(_xRange);
     this.timeScaleTicks = uniq(this.timeScale.ticks(this.ticks.x).concat([this.endTime]), true, function(d){ return d.valueOf(); });
 
-    if (this.dateAxis || this.xAxis) {
+    if (this.axis && (this.dateAxis || this.xAxis)) {
       var xAxis = this.svg.append('svg:g');
 
       p1 = {x: this.x_axis(0), y: this.y(this.yRange[0]) + axis_pad};
@@ -1026,7 +1027,7 @@ class SeriesGraph extends Graph {
       }, this);
     }
 
-    if (this.yAxis) {
+    if (this.axis && this.yAxis) {
       var ordinal = this.yAxis instanceof Array
       ,   tickScale = d3.scale.linear().domain([0, this.y.domain()[1] - this.y.domain()[0]]).range(this.y.range())
       ,   yAxis = this.svg.append('svg:g')

@@ -55,18 +55,16 @@ Shart.Series('#line-segments-graph', [{
 
 <figure class="well shart-well"><div id="area-graph"></div></figure>
 <script class="code-block">
-Shart.Series('#area-graph', [
-  {
-    label: "Unique visitors",
-    sequence: [765,280,344,930,989,852,814,734,330,305,893,826,808,820,727,305,286,913,868,758,833,577,253,266,724,752,698,727,648,292],
-    type: "area",
-    color: "#9a9bc9"
-  }
-], {
+Shart.Series('#area-graph', [{
+  label: "Unique visitors",
+  sequence: [765,280,344,930,989,852,814,734,330,305,893,826,808,820,727,305,286,913,868,758,833,577,253,266,724,752,698,727,648,292],
+  type: "area",
+  color: "#9a9bc9"
+}], {
   startTime: "21 Feb 2014",
   endTime: "22 Mar 2014",
   dateAxis: "daily",
-  yAxis: true
+  axis: false
 });
 </script>
 
