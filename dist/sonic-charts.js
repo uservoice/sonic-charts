@@ -825,7 +825,7 @@ var SeriesGraph = (function (_Graph) {
       this.width = opts.width || 'auto';
       this.height = opts.height || 'auto';
 
-      this.axis = 'axis' in opts ? opts.axis : true;
+      this.axis = opts.axis !== undefined ? opts.axis : true;
       this.dateAxis = opts.dateAxis || 'daily';
       this.dateAxisTicks = opts.dateAxisTicks;
       this.yAxis = opts.yAxis;

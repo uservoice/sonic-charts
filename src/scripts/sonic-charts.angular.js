@@ -47,7 +47,7 @@ angular.module('sonic', [])
         endTime: $scope.endTime,
         dateAxis: $scope.dateAxis || 'none',
         dateAxisTicks: $scope.dateAxisTicks,
-        axis: 'axis' in $scope ? $scope.axis : true,
+        axis: $scope.axis !== undefined ? $scope.axis : true,
         yAxis: $scope.yAxis,
         xAxis: $scope.xAxis,
         tickFormat: $scope.tickFormat
