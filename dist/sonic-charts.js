@@ -1,11 +1,11 @@
 /**
- * shart - D3 charting library made by UserVoice
+ * sonic-charts - D3 charting library made by UserVoice
  * @version v1.0.0
- * @link https://github.com/uservoice/shart
+ * @link https://github.com/uservoice/sonic-charts
  * @license MIT
  */
 !function(undefined) {
-"use strict"; var Shart = {version: "1.0.0"};
+"use strict"; var Sonic = {version: "1.0.0"};
 
 var _get = function get(_x, _x2, _x3) { var _again = true; _function: while (_again) { var object = _x, property = _x2, receiver = _x3; desc = parent = getter = undefined; _again = false; if (object === null) object = Function.prototype; var desc = Object.getOwnPropertyDescriptor(object, property); if (desc === undefined) { var parent = Object.getPrototypeOf(object); if (parent === null) { return undefined; } else { _x = parent; _x2 = property; _x3 = receiver; _again = true; continue _function; } } else if ('value' in desc) { return desc.value; } else { var getter = desc.get; if (getter === undefined) { return undefined; } return getter.call(receiver); } } };
 
@@ -15,10 +15,10 @@ function _inherits(subClass, superClass) { if (typeof superClass !== 'function' 
 
 function _classCallCheck(instance, Constructor) { if (!(instance instanceof Constructor)) { throw new TypeError('Cannot call a class as a function'); } }
 
-/* globals d3, Shart */
+/* globals d3, Sonic */
 
 //
-// Shart
+// Sonic
 //
 
 // Main configuration
@@ -362,12 +362,12 @@ var Graph = (function () {
   }], [{
     key: 'installResizeListener',
 
-    // Install the global resize listner. Shart only uses one for all charts.
+    // Install the global resize listner. Sonic only uses one for all charts.
     // This method is called once for every chart, yet only initializes the
     // listener on the first call.
     value: function installResizeListener() {
       if (!Graph.resizeListenerInstalled) {
-        d3.select(window).on('resize.shart', debounce(function () {
+        d3.select(window).on('resize.sonic', debounce(function () {
           Graph.instances.filter(function (g) {
             return g.autosize;
           }).forEach(function (g) {
@@ -970,7 +970,7 @@ var SeriesGraph = (function (_Graph) {
           p2;
 
       this.el.html('') // need to clear out existing stuff
-      .classed('shart-series-graph', true).style('width', '').style('height', '');
+      .classed('sonic-series-graph', true).style('width', '').style('height', '');
 
       width = this.getWidth();
       height = this.getHeight();
@@ -1110,7 +1110,7 @@ var SeriesGraph = (function (_Graph) {
         series_s.draw(this);
       }, this);
 
-      this.scrubber = this.el.append('div').classed('shart-scrubber', true);
+      this.scrubber = this.el.append('div').classed('sonic-scrubber', true);
 
       return chart;
     }
@@ -1262,19 +1262,19 @@ var SparklineGraph = (function (_Graph2) {
         return y(d);
       });
 
-      var chart = this.el.classed('shart-sparkline-graph', true).html('');
+      var chart = this.el.classed('sonic-sparkline-graph', true).html('');
 
       var svg = chart.append('svg').attr('width', width).attr('height', height);
 
       svg.append('clipPath').attr('id', 'clip').append('rect').attr('x', 0).attr('y', 0).attr('width', width).attr('height', height);
 
-      svg.selectAll('.shart-sparkline-graph-y-guide').data(yGuides).enter().append('line').classed('shart-sparkline-graph-y-guide', true).attr('clip-path', 'url(#clip)').attr('x1', x(0)).attr('y1', function (d) {
+      svg.selectAll('.sonic-sparkline-graph-y-guide').data(yGuides).enter().append('line').classed('sonic-sparkline-graph-y-guide', true).attr('clip-path', 'url(#clip)').attr('x1', x(0)).attr('y1', function (d) {
         return Math.floor(y(d)) + 0.5;
       }).attr('x2', x(length - 1)).attr('y2', function (d) {
         return Math.floor(y(d)) + 0.5;
       }).attr('fill', 'none').attr('stroke', '#ddd').attr('stroke-width', 1).attr('stroke-linecap', 'butt');
 
-      svg.append('path').classed('shart-sparkline-graph-stroke', true).attr('clip-path', 'url(#clip)').attr('d', line(data)).attr('fill', 'none').attr('stroke', strokeColor).attr('stroke-width', strokeWidth).attr('stroke-linecap', 'butt');
+      svg.append('path').classed('sonic-sparkline-graph-stroke', true).attr('clip-path', 'url(#clip)').attr('d', line(data)).attr('fill', 'none').attr('stroke', strokeColor).attr('stroke-width', strokeWidth).attr('stroke-linecap', 'butt');
     }
   }]);
 
@@ -1316,7 +1316,7 @@ var PieGraph = (function (_Graph3) {
           arc = d3.svg.arc().outerRadius(radius),
           data = this.sequenceData();
 
-      var chart = this.el.classed('shart-pie-graph', true).style({
+      var chart = this.el.classed('sonic-pie-graph', true).style({
         'position': 'relative',
         'width': this.size + 'px',
         'height': 0,
@@ -1409,7 +1409,7 @@ var DonutGraph = (function (_Graph4) {
         total = sum;
       }
 
-      this.el.classed('shart-donut-graph', true).style('width', this.size + 'px').style('height', this.size + 'px').html('');
+      this.el.classed('sonic-donut-graph', true).style('width', this.size + 'px').style('height', this.size + 'px').html('');
 
       if (this.type) {
         this.el.classed(this.type, true);
@@ -1419,9 +1419,9 @@ var DonutGraph = (function (_Graph4) {
 
       var svg = graph.append('svg:svg').attr('width', this.size).attr('height', this.size);
 
-      svg.append('svg:path').classed('shart-donut-graph-background', true).attr('fill', '#e5e5e5').attr('transform', 'translate(' + this.radius + ',' + this.radius + ')').attr('d', arc().startAngle(0).endAngle(2 * Math.PI)());
+      svg.append('svg:path').classed('sonic-donut-graph-background', true).attr('fill', '#e5e5e5').attr('transform', 'translate(' + this.radius + ',' + this.radius + ')').attr('d', arc().startAngle(0).endAngle(2 * Math.PI)());
 
-      svg.append('svg:g').selectAll('.shart-donut-graph-arc').data(pie(this.data)).enter().append('svg:path').classed('shart-donut-graph-arc', true).attr('transform', 'translate(' + this.radius + ',' + this.radius + ')').attr('fill', function (d) {
+      svg.append('svg:g').selectAll('.sonic-donut-graph-arc').data(pie(this.data)).enter().append('svg:path').classed('sonic-donut-graph-arc', true).attr('transform', 'translate(' + this.radius + ',' + this.radius + ')').attr('fill', function (d) {
         return d.data.color;
       }).attr('d', arc());
 
@@ -1431,12 +1431,12 @@ var DonutGraph = (function (_Graph4) {
 
         var label_group_inner = label_group.append('div').style('display', 'table-cell').style('text-align', 'center').style('vertical-align', 'middle');
 
-        value = label_group_inner.append('div').classed('shart-donut-graph-value', true).text(this.value_text);
+        value = label_group_inner.append('div').classed('sonic-donut-graph-value', true).text(this.value_text);
 
-        label = label_group_inner.append('div').classed('shart-donut-graph-label', true).style('text-align', 'center').text(this.label);
+        label = label_group_inner.append('div').classed('sonic-donut-graph-label', true).style('text-align', 'center').text(this.label);
       } else {
 
-        value = graph.append('div').classed('shart-donut-graph-value', true).style('white-space', 'nowrap').style('overflow', 'visible').style('display', 'inline-block').text(this.value_text);
+        value = graph.append('div').classed('sonic-donut-graph-value', true).style('white-space', 'nowrap').style('overflow', 'visible').style('display', 'inline-block').text(this.value_text);
 
         var value_rect = {
           width: parseInt(value.style('width'), 10),
@@ -1448,12 +1448,12 @@ var DonutGraph = (function (_Graph4) {
         if (this.label) {
           var width = this.size;
 
-          label = graph.append('div').classed('shart-donut-graph-label', true).style('white-space', 'nowrap').style('overflow', 'visible').style('display', 'inline-block').text(this.label);
+          label = graph.append('div').classed('sonic-donut-graph-label', true).style('white-space', 'nowrap').style('overflow', 'visible').style('display', 'inline-block').text(this.label);
 
           if (this.label_subtext) {
             label.node().appendChild(document.createTextNode(' '));
 
-            label.append('span').classed('shart-donut-graph-label-subtext', true).text(this.label_subtext);
+            label.append('span').classed('sonic-donut-graph-label-subtext', true).text(this.label_subtext);
           }
 
           var label_rect = {
@@ -1516,10 +1516,10 @@ var DonutStackGraph = (function (_Graph5) {
         }
       }
 
-      this.el.classed('shart-donut-stack-graph', true).html('');
+      this.el.classed('sonic-donut-stack-graph', true).html('');
 
       for (i = 0; i < data.length; i++) {
-        var item = this.el.append('div').classed('shart-donut-stack-graph-item', true);
+        var item = this.el.append('div').classed('sonic-donut-stack-graph-item', true);
 
         var subtext = formatInt(data[i].value);
         if (this.label_subtext) {
@@ -1539,7 +1539,7 @@ var DonutStackGraph = (function (_Graph5) {
           thickness: this.thickness
         });
 
-        donut.el.classed('shart-donut-stack-graph-item-donut-graph');
+        donut.el.classed('sonic-donut-stack-graph-item-donut-graph');
 
         donut.draw();
       }
@@ -1577,11 +1577,11 @@ var HorizontalBarGraph = (function (_Graph6) {
 
       var percentage = d3.scale.linear().domain([0, total]).range([0, 100]);
 
-      this.el.classed('shart-horizontal-bar-graph', true);
+      this.el.classed('sonic-horizontal-bar-graph', true);
 
-      var segment = this.el.selectAll('.shart-horizontal-bar-graph-segment').data(this.data).enter().append('div').classed('shart-horizontal-bar-graph-segment', true);
+      var segment = this.el.selectAll('.sonic-horizontal-bar-graph-segment').data(this.data).enter().append('div').classed('sonic-horizontal-bar-graph-segment', true);
 
-      var label = segment.append('div').classed('shart-horizontal-bar-graph-label', true);
+      var label = segment.append('div').classed('sonic-horizontal-bar-graph-label', true);
 
       if (this.percentages) {
         label.text(function (d) {
@@ -1597,11 +1597,11 @@ var HorizontalBarGraph = (function (_Graph6) {
         });
       }
 
-      label.append('span').classed('shart-horizontal-bar-graph-label-subtext', true).text(function (d) {
+      label.append('span').classed('sonic-horizontal-bar-graph-label-subtext', true).text(function (d) {
         return d.label_subtext;
       });
 
-      segment.append('div').classed('shart-horizontal-bar-graph-value', true).append('div').classed('shart-horizontal-bar-graph-value-bar', true).style('background-color', function (d) {
+      segment.append('div').classed('sonic-horizontal-bar-graph-value', true).append('div').classed('sonic-horizontal-bar-graph-value-bar', true).style('background-color', function (d) {
         return d.color;
       }).style('width', function (d) {
         return x(d.value || 0) + '%';
@@ -1652,7 +1652,7 @@ var PipelineGraph = (function (_Graph7) {
           height;
 
       // Class the element
-      this.el.classed('shart-pipeline-graph', true);
+      this.el.classed('sonic-pipeline-graph', true);
 
       // Calculate svg size
       svg.attr('width', 0); // Reset svg width to calculate width correctly
@@ -1694,18 +1694,18 @@ var PipelineGraph = (function (_Graph7) {
       clipPath.exit().remove();
 
       // Items
-      var item = svg.selectAll('.shart-pipeline-graph-item').data(this.data);
+      var item = svg.selectAll('.sonic-pipeline-graph-item').data(this.data);
 
       item.exit().remove();
 
-      var enter = item.enter().append('g').attr('class', 'shart-pipeline-graph-item').attr('transform', function (d) {
+      var enter = item.enter().append('g').attr('class', 'sonic-pipeline-graph-item').attr('transform', function (d) {
         return 'translate(' + d.x + ',0)';
       }).attr('clip-path', function (d, i) {
         return 'url(#clip-' + chart.id + '-' + i + ')';
       });
 
       if (this.labels) {
-        enter.append('text').attr('class', 'shart-pipeline-graph-item-label').attr('x', 2).attr('y', baselines.label).text(function (d) {
+        enter.append('text').attr('class', 'sonic-pipeline-graph-item-label').attr('x', 2).attr('y', baselines.label).text(function (d) {
           var percentage_label = formatPercentage(d.percentage);
           if (isEmpty) {
             percentage_label = '--' + '%';
@@ -1717,7 +1717,7 @@ var PipelineGraph = (function (_Graph7) {
       }
 
       if (this.label_subtext) {
-        enter.append('text').attr('class', 'shart-pipeline-graph-item-label-subtext').attr('x', 2).attr('y', baselines.label + baselines.label_subtext).text(function (d) {
+        enter.append('text').attr('class', 'sonic-pipeline-graph-item-label-subtext').attr('x', 2).attr('y', baselines.label + baselines.label_subtext).text(function (d) {
           return d.label_subtext;
         });
       } else {
@@ -1727,7 +1727,7 @@ var PipelineGraph = (function (_Graph7) {
       this.height = height = baselines.label + baselines.label_subtext + baselines.bar;
       svg.attr('height', height);
 
-      enter.append('rect').attr('class', 'shart-pipeline-graph-item-bar').attr('fill', function (d) {
+      enter.append('rect').attr('class', 'sonic-pipeline-graph-item-bar').attr('fill', function (d) {
         return d.color;
       }).attr('y', baselines.label + baselines.label_subtext + baselines.bar - barHeight).attr('width', function (d) {
         return d.width;
@@ -1744,7 +1744,7 @@ var PipelineGraph = (function (_Graph7) {
 
       this.el.on('mousemove', throttle(function () {
         var mouseX = d3.mouse(svg.node())[0],
-            items = svg.selectAll('.shart-pipeline-graph-item');
+            items = svg.selectAll('.sonic-pipeline-graph-item');
 
         items.each(function (d, i) {
           var el = d3.select(this),
@@ -1773,7 +1773,7 @@ var PipelineGraph = (function (_Graph7) {
 
       this.el.on('mouseleave', function () {
         if (hovered > -1) {
-          var items = svg.selectAll('.shart-pipeline-graph-item'),
+          var items = svg.selectAll('.sonic-pipeline-graph-item'),
               oldItem = items.filter(function (d, i) {
             return i === hovered;
           });
@@ -1801,13 +1801,13 @@ var PipelineGraph = (function (_Graph7) {
       el.select('rect').attr('fill', d3.lab(color).brighter(0.3).toString());
 
       if (this.labels && this.label_subtext) {
-        newWidth = Math.max(el.select('.shart-pipeline-graph-item-label').node().getComputedTextLength(), el.select('.shart-pipeline-graph-item-label-subtext').node().getComputedTextLength()) + margin;
+        newWidth = Math.max(el.select('.sonic-pipeline-graph-item-label').node().getComputedTextLength(), el.select('.sonic-pipeline-graph-item-label-subtext').node().getComputedTextLength()) + margin;
       } else {
         if (this.labels) {
-          newWidth = el.select('.shart-pipeline-graph-item-label').node().getComputedTextLength() + margin;
+          newWidth = el.select('.sonic-pipeline-graph-item-label').node().getComputedTextLength() + margin;
         }
         if (this.label_subtext) {
-          newWidth = el.select('.shart-pipeline-graph-item-label-subtext').node().getComputedTextLength() + margin;
+          newWidth = el.select('.sonic-pipeline-graph-item-label-subtext').node().getComputedTextLength() + margin;
         }
       }
 
@@ -1816,7 +1816,7 @@ var PipelineGraph = (function (_Graph7) {
       if (datum.width < newWidth) {
         var originalWidth = datum.width,
             additionalWidth = newWidth - originalWidth,
-            item = svg.selectAll('.shart-pipeline-graph-item'),
+            item = svg.selectAll('.sonic-pipeline-graph-item'),
             currentX = 0,
             lastIndex = item[0].length - 1;
 
@@ -1863,7 +1863,7 @@ var PipelineGraph = (function (_Graph7) {
           color = datum.color;
 
       if (datum.width < currentWidth) {
-        var item = svg.selectAll('.shart-pipeline-graph-item');
+        var item = svg.selectAll('.sonic-pipeline-graph-item');
 
         item.each(function (d, i) {
           var el = d3.select(this),
@@ -1915,22 +1915,22 @@ var Legend = (function (_Graph8) {
         return d.formatted_value || formatInt(d.value);
       };
 
-      this.el.classed('shart-legend', true);
+      this.el.classed('sonic-legend', true);
 
-      var item = this.el.selectAll('.shart-legend-item').data(this.data);
+      var item = this.el.selectAll('.sonic-legend-item').data(this.data);
 
       // Update existing items
-      item.select('.shart-legend-item-swatch').style('background-color', color);
-      item.select('.shart-legend-item-label').text(label);
-      item.select('.shart-legend-item-value').text(value);
+      item.select('.sonic-legend-item-swatch').style('background-color', color);
+      item.select('.sonic-legend-item-label').text(label);
+      item.select('.sonic-legend-item-value').text(value);
 
       // Add new items
-      var enter = item.enter().append('div').classed('shart-legend-item', true);
+      var enter = item.enter().append('div').classed('sonic-legend-item', true);
       enter.filter(function (d) {
         return !!d.color;
-      }).append('span').classed('shart-swatch shart-legend-item-swatch', true).style('background-color', color);
-      enter.append('span').classed('shart-legend-item-label', true).text(label);
-      enter.append('span').classed('shart-legend-item-value', true).text(value);
+      }).append('span').classed('sonic-swatch sonic-legend-item-swatch', true).style('background-color', color);
+      enter.append('span').classed('sonic-legend-item-label', true).text(label);
+      enter.append('span').classed('sonic-legend-item-value', true).text(value);
 
       var exit = item.exit();
 
@@ -1970,33 +1970,33 @@ config.tooltip = function (chart, data) {
   var el = d3.select(document.createElement('div')),
       segments = flattenSeries(data.segments),
       placard,
+      legendEl,
       legend,
-      date,
-      shart;
+      date;
 
   if (segments.length === 1) {
     var datum = segments[0];
 
-    placard = el.append('div').classed('shart-tip-placard', true);
+    placard = el.append('div').classed('sonic-tip-placard', true);
 
-    placard.append('div').classed('shart-tip-placard-value', true).text(datum.formatted_value || datum.value);
+    placard.append('div').classed('sonic-tip-placard-value', true).text(datum.formatted_value || datum.value);
 
-    placard.append('div').classed('shart-tip-placard-label', true).text(datum.tip_label || datum.label);
+    placard.append('div').classed('sonic-tip-placard-label', true).text(datum.tip_label || datum.label);
   } else {
-    legend = el.append('div');
+    legendEl = el.append('div');
 
-    shart = new Legend(legend.node(), segments);
-    shart.draw();
+    legend = new Legend(legendEl.node(), segments);
+    legend.draw();
   }
 
   if (data.date) {
-    date = el.append('div').classed('shart-tip-date', true).text(chart.dateFormatter(data.date));
+    date = el.append('div').classed('sonic-tip-date', true).text(chart.dateFormatter(data.date));
   }
 
   return el.node();
 };
 
-Shart.configure = function (callback) {
+Sonic.configure = function (callback) {
   var opts = {};
   callback(opts);
   config.colors = opts.colors || config.colors;
@@ -2006,52 +2006,52 @@ Shart.configure = function (callback) {
   config.formatter = opts.formatter || config.formatter;
 };
 
-Shart.Legend = function (el, data, opts) {
-  var shart = new Legend(el, data, opts);
-  shart.drawWhenReady();
-  return shart;
+Sonic.Legend = function (el, data, opts) {
+  var chart = new Legend(el, data, opts);
+  chart.drawWhenReady();
+  return chart;
 };
 
-Shart.Series = function (el, data, opts) {
-  var shart = new SeriesGraph(el, data, opts);
-  shart.drawWhenReady();
-  return shart;
+Sonic.Series = function (el, data, opts) {
+  var chart = new SeriesGraph(el, data, opts);
+  chart.drawWhenReady();
+  return chart;
 };
 
-Shart.Sparkline = function (el, data, opts) {
-  var shart = new SparklineGraph(el, data, opts);
-  shart.drawWhenReady();
-  return shart;
+Sonic.Sparkline = function (el, data, opts) {
+  var chart = new SparklineGraph(el, data, opts);
+  chart.drawWhenReady();
+  return chart;
 };
 
-Shart.Pie = function (el, data, opts) {
-  var shart = new PieGraph(el, data, opts);
-  shart.drawWhenReady();
-  return shart;
+Sonic.Pie = function (el, data, opts) {
+  var chart = new PieGraph(el, data, opts);
+  chart.drawWhenReady();
+  return chart;
 };
 
-Shart.Donut = function (el, data, opts) {
-  var shart = new DonutGraph(el, data, opts);
-  shart.drawWhenReady();
-  return shart;
+Sonic.Donut = function (el, data, opts) {
+  var chart = new DonutGraph(el, data, opts);
+  chart.drawWhenReady();
+  return chart;
 };
 
-Shart.DonutStack = function (el, data, opts) {
-  var shart = new DonutStackGraph(el, data, opts);
-  shart.drawWhenReady();
-  return shart;
+Sonic.DonutStack = function (el, data, opts) {
+  var chart = new DonutStackGraph(el, data, opts);
+  chart.drawWhenReady();
+  return chart;
 };
 
-Shart.HorizontalBar = function (el, data, opts) {
-  var shart = new HorizontalBarGraph(el, data, opts);
-  shart.drawWhenReady();
-  return shart;
+Sonic.HorizontalBar = function (el, data, opts) {
+  var chart = new HorizontalBarGraph(el, data, opts);
+  chart.drawWhenReady();
+  return chart;
 };
 
-Shart.Pipeline = function (el, data, opts) {
-  var shart = new PipelineGraph(el, data, opts);
-  shart.drawWhenReady();
-  return shart;
+Sonic.Pipeline = function (el, data, opts) {
+  var chart = new PipelineGraph(el, data, opts);
+  chart.drawWhenReady();
+  return chart;
 };
 /* animate */
 // abstract: draw the chart, if animate is true optionally use animation
@@ -2060,7 +2060,7 @@ Shart.Pipeline = function (el, data, opts) {
 // they can be used to display additional stats in the Tooltip.
 // Clear out contents
 
-if (typeof define === "function" && define.amd) { define(Shart); }
-else if (typeof module === "object" && module.exports) { module.exports = Shart; }
-else if (window) { window.Shart = Shart; }
+if (typeof define === "function" && define.amd) { define(Sonic); }
+else if (typeof module === "object" && module.exports) { module.exports = Sonic; }
+else if (window) { window.Sonic = Sonic; }
 }();

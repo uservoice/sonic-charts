@@ -1,5 +1,5 @@
 {
-  "name": "shart",
+  "name": "sonic-charts",
   "root": "dist",
   "clean_urls": true,
   "redirects": {

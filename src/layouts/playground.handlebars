@@ -11,10 +11,10 @@
 <script src="//code.jquery.com/jquery-2.1.4.min.js"></script>
 <script src="//cdnjs.cloudflare.com/ajax/libs/qtip2/2.2.1/jquery.qtip.min.js"></script>
 <script src="//ajax.googleapis.com/ajax/libs/angularjs/1.3.15/angular.min.js"></script>
-<script src="../../shart.js"></script>
-<script src="../../shart.angular.js"></script>
+<script src="../../sonic-charts.js"></script>
+<script src="../../sonic-charts.angular.js"></script>
 <script>
-Shart.configure(function(opts) {
+Sonic.configure(function(opts) {
   opts.showTooltip = function(tip) {
     $(tip.target).qtip({
       style: 'qtip-light qtip-shadow qtip-rounded',
@@ -43,7 +43,7 @@ Shart.configure(function(opts) {
 });
 </script>
 <script>
-angular.module('app', ['shart']);
+angular.module('app', ['sonic']);
 </script>
 
 </head>

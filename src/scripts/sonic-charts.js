@@ -1,7 +1,7 @@
-/* globals d3, Shart */
+/* globals d3, Sonic */
 
 //
-// Shart
+// Sonic
 //
 
 // Main configuration
@@ -321,12 +321,12 @@ class Graph {
     return result;
   }
 
-  // Install the global resize listner. Shart only uses one for all charts.
+  // Install the global resize listner. Sonic only uses one for all charts.
   // This method is called once for every chart, yet only initializes the
   // listener on the first call.
   static installResizeListener() {
     if (!Graph.resizeListenerInstalled) {
-      d3.select(window).on('resize.shart', debounce(function() {
+      d3.select(window).on('resize.sonic', debounce(function() {
         Graph.instances
           .filter(g => g.autosize)
           .forEach(g => g.resize());
@@ -930,7 +930,7 @@ class SeriesGraph extends Graph {
 
     this.el
       .html('') // need to clear out existing stuff
-      .classed('shart-series-graph', true)
+      .classed('sonic-series-graph', true)
       .style('width', '')
       .style('height', '')
     ;
@@ -1110,7 +1110,7 @@ class SeriesGraph extends Graph {
     }, this);
 
     this.scrubber = this.el.append('div')
-      .classed('shart-scrubber', true)
+      .classed('sonic-scrubber', true)
     ;
 
     return chart;
@@ -1220,7 +1220,7 @@ class SparklineGraph extends Graph {
     ;
 
     var chart = this.el
-      .classed('shart-sparkline-graph', true)
+      .classed('sonic-sparkline-graph', true)
       .html('')
     ;
 
@@ -1239,10 +1239,10 @@ class SparklineGraph extends Graph {
     ;
 
     svg
-      .selectAll('.shart-sparkline-graph-y-guide')
+      .selectAll('.sonic-sparkline-graph-y-guide')
         .data(yGuides)
         .enter()
-          .append('line').classed('shart-sparkline-graph-y-guide', true)
+          .append('line').classed('sonic-sparkline-graph-y-guide', true)
             .attr('clip-path', 'url(#clip)')
             .attr('x1', x(0))
             .attr('y1', function(d) { return Math.floor(y(d)) + 0.5; })
@@ -1254,7 +1254,7 @@ class SparklineGraph extends Graph {
             .attr('stroke-linecap', 'butt')
     ;
 
-    svg.append('path').classed('shart-sparkline-graph-stroke', true)
+    svg.append('path').classed('sonic-sparkline-graph-stroke', true)
       .attr('clip-path', 'url(#clip)')
       .attr('d', line(data))
       .attr('fill', 'none')
@@ -1292,7 +1292,7 @@ class PieGraph extends Graph {
     ;
 
     var chart = this.el
-      .classed('shart-pie-graph', true)
+      .classed('sonic-pie-graph', true)
       .style({
         'position': 'relative',
         'width': this.size + 'px',
@@ -1387,7 +1387,7 @@ class DonutGraph extends Graph {
     }
 
     this.el
-      .classed('shart-donut-graph', true)
+      .classed('sonic-donut-graph', true)
       .style('width', this.size + 'px')
       .style('height', this.size + 'px')
       .html('')
@@ -1408,18 +1408,18 @@ class DonutGraph extends Graph {
     ;
 
     svg.append('svg:path')
-      .classed('shart-donut-graph-background', true)
+      .classed('sonic-donut-graph-background', true)
       .attr('fill', '#e5e5e5')
       .attr('transform', 'translate(' + this.radius + ',' + this.radius + ')')
       .attr('d', arc().startAngle(0).endAngle(2 * Math.PI)())
     ;
 
     svg.append('svg:g')
-      .selectAll('.shart-donut-graph-arc')
+      .selectAll('.sonic-donut-graph-arc')
       .data(pie(this.data))
       .enter()
         .append('svg:path')
-          .classed('shart-donut-graph-arc', true)
+          .classed('sonic-donut-graph-arc', true)
           .attr('transform', 'translate(' + this.radius + ',' + this.radius + ')')
           .attr('fill', function(d) { return d.data.color; })
           .attr('d', arc())
@@ -1443,12 +1443,12 @@ class DonutGraph extends Graph {
       ;
 
       value = label_group_inner.append("div")
-        .classed('shart-donut-graph-value', true)
+        .classed('sonic-donut-graph-value', true)
         .text(this.value_text)
       ;
 
       label = label_group_inner.append("div")
-        .classed("shart-donut-graph-label", true)
+        .classed("sonic-donut-graph-label", true)
         .style("text-align", "center")
         .text(this.label)
       ;
@@ -1456,7 +1456,7 @@ class DonutGraph extends Graph {
     } else {
 
       value = graph.append('div')
-        .classed("shart-donut-graph-value", true)
+        .classed("sonic-donut-graph-value", true)
         .style("white-space", "nowrap")
         .style("overflow", "visible")
         .style("display", "inline-block")
@@ -1477,7 +1477,7 @@ class DonutGraph extends Graph {
         var width = this.size;
 
         label = graph.append('div')
-          .classed("shart-donut-graph-label", true)
+          .classed("sonic-donut-graph-label", true)
           .style("white-space", "nowrap")
           .style("overflow", "visible")
           .style("display", "inline-block")
@@ -1488,7 +1488,7 @@ class DonutGraph extends Graph {
           label.node().appendChild(document.createTextNode(" "));
 
           label.append('span')
-            .classed("shart-donut-graph-label-subtext", true)
+            .classed("sonic-donut-graph-label-subtext", true)
             .text(this.label_subtext)
           ;
         }
@@ -1550,13 +1550,13 @@ class DonutStackGraph extends Graph {
     }
 
     this.el
-      .classed('shart-donut-stack-graph', true)
+      .classed('sonic-donut-stack-graph', true)
       .html('') // Clear out contents
     ;
 
     for (i = 0; i < data.length; i++) {
       var item = this.el.append('div')
-        .classed('shart-donut-stack-graph-item', true)
+        .classed('sonic-donut-stack-graph-item', true)
       ;
 
       var subtext = formatInt(data[i].value);
@@ -1576,7 +1576,7 @@ class DonutStackGraph extends Graph {
       });
 
       donut.el
-        .classed('shart-donut-stack-graph-item-donut-graph');
+        .classed('sonic-donut-stack-graph-item-donut-graph');
 
       donut.draw();
     }
@@ -1607,19 +1607,19 @@ class HorizontalBarGraph extends Graph {
       .range([0, 100]);
 
     this.el
-      .classed("shart-horizontal-bar-graph", true);
+      .classed("sonic-horizontal-bar-graph", true);
 
     var segment = this.el
-      .selectAll(".shart-horizontal-bar-graph-segment")
+      .selectAll(".sonic-horizontal-bar-graph-segment")
         .data(this.data)
       .enter()
         .append("div")
-          .classed("shart-horizontal-bar-graph-segment", true)
+          .classed("sonic-horizontal-bar-graph-segment", true)
     ;
 
     var label = segment
       .append("div")
-        .classed("shart-horizontal-bar-graph-label", true)
+        .classed("sonic-horizontal-bar-graph-label", true)
     ;
 
     if (this.percentages) {
@@ -1636,15 +1636,15 @@ class HorizontalBarGraph extends Graph {
 
     label
       .append("span")
-        .classed("shart-horizontal-bar-graph-label-subtext", true)
+        .classed("sonic-horizontal-bar-graph-label-subtext", true)
         .text(function(d) { return d.label_subtext })
     ;
 
     segment
       .append("div")
-        .classed("shart-horizontal-bar-graph-value", true)
+        .classed("sonic-horizontal-bar-graph-value", true)
         .append("div")
-          .classed("shart-horizontal-bar-graph-value-bar", true)
+          .classed("sonic-horizontal-bar-graph-value-bar", true)
           .style("background-color", function(d) { return d.color })
           .style("width", function(d) { return x(d.value || 0) + "%" })
           .style("min-width", "1px")
@@ -1684,7 +1684,7 @@ class PipelineGraph extends Graph {
     ;
 
     // Class the element
-    this.el.classed('shart-pipeline-graph', true);
+    this.el.classed('sonic-pipeline-graph', true);
 
     // Calculate svg size
     svg.attr('width', 0); // Reset svg width to calculate width correctly
@@ -1738,7 +1738,7 @@ class PipelineGraph extends Graph {
 
     // Items
     var item = svg
-      .selectAll('.shart-pipeline-graph-item')
+      .selectAll('.sonic-pipeline-graph-item')
       .data(this.data)
     ;
 
@@ -1748,14 +1748,14 @@ class PipelineGraph extends Graph {
 
     var enter = item.enter()
       .append('g')
-       .attr('class', 'shart-pipeline-graph-item')
+       .attr('class', 'sonic-pipeline-graph-item')
        .attr('transform', function(d) { return 'translate(' + d.x + ',0)' })
        .attr('clip-path', function(d, i) { return 'url(#clip-' + chart.id + '-' + i + ')' })
     ;
 
     if (this.labels) {
       enter.append('text')
-        .attr('class', 'shart-pipeline-graph-item-label')
+        .attr('class', 'sonic-pipeline-graph-item-label')
         .attr('x', 2)
         .attr('y', baselines.label)
         .text(function(d) {
@@ -1770,7 +1770,7 @@ class PipelineGraph extends Graph {
 
     if (this.label_subtext) {
       enter.append('text')
-        .attr('class', 'shart-pipeline-graph-item-label-subtext')
+        .attr('class', 'sonic-pipeline-graph-item-label-subtext')
         .attr('x', 2)
         .attr('y', baselines.label + baselines.label_subtext)
         .text(function(d) { return d.label_subtext })
@@ -1783,7 +1783,7 @@ class PipelineGraph extends Graph {
     svg.attr("height", height);
 
     enter.append('rect')
-      .attr('class', 'shart-pipeline-graph-item-bar')
+      .attr('class', 'sonic-pipeline-graph-item-bar')
       .attr('fill', function(d) { return d.color })
       .attr('y', baselines.label + baselines.label_subtext + baselines.bar - barHeight)
       .attr('width', function(d) { return d.width })
@@ -1801,7 +1801,7 @@ class PipelineGraph extends Graph {
 
     this.el.on('mousemove', throttle(function() {
       var mouseX = d3.mouse(svg.node())[0]
-      ,   items = svg.selectAll('.shart-pipeline-graph-item')
+      ,   items = svg.selectAll('.sonic-pipeline-graph-item')
       ;
 
       items.each(function(d, i) {
@@ -1832,7 +1832,7 @@ class PipelineGraph extends Graph {
 
     this.el.on('mouseleave', function() {
       if (hovered > -1) {
-        var items = svg.selectAll('.shart-pipeline-graph-item')
+        var items = svg.selectAll('.sonic-pipeline-graph-item')
         ,   oldItem = items.filter(function(d, i) { return i === hovered })
         ;
 
@@ -1859,13 +1859,13 @@ class PipelineGraph extends Graph {
     el.select('rect').attr('fill', d3.lab(color).brighter(0.3).toString());
 
     if (this.labels && this.label_subtext) {
-      newWidth = Math.max(el.select('.shart-pipeline-graph-item-label').node().getComputedTextLength(), el.select('.shart-pipeline-graph-item-label-subtext').node().getComputedTextLength()) + margin;
+      newWidth = Math.max(el.select('.sonic-pipeline-graph-item-label').node().getComputedTextLength(), el.select('.sonic-pipeline-graph-item-label-subtext').node().getComputedTextLength()) + margin;
     } else {
       if (this.labels) {
-        newWidth = el.select('.shart-pipeline-graph-item-label').node().getComputedTextLength() + margin;
+        newWidth = el.select('.sonic-pipeline-graph-item-label').node().getComputedTextLength() + margin;
       }
       if (this.label_subtext) {
-        newWidth = el.select('.shart-pipeline-graph-item-label-subtext').node().getComputedTextLength() + margin;
+        newWidth = el.select('.sonic-pipeline-graph-item-label-subtext').node().getComputedTextLength() + margin;
       }
     }
 
@@ -1874,7 +1874,7 @@ class PipelineGraph extends Graph {
     if (datum.width < newWidth) {
       var originalWidth = datum.width
       ,   additionalWidth = newWidth - originalWidth
-      ,   item = svg.selectAll('.shart-pipeline-graph-item')
+      ,   item = svg.selectAll('.sonic-pipeline-graph-item')
       ,   currentX = 0
       ,   lastIndex = item[0].length - 1
       ;
@@ -1933,7 +1933,7 @@ class PipelineGraph extends Graph {
     ;
 
     if (datum.width < currentWidth) {
-      var item = svg.selectAll('.shart-pipeline-graph-item');
+      var item = svg.selectAll('.sonic-pipeline-graph-item');
 
       item.each(function(d, i) {
         var el = d3.select(this)
@@ -1978,43 +1978,43 @@ class Legend extends Graph {
     ,   value = function(d) { return d.formatted_value || formatInt(d.value) }
     ;
 
-    this.el.classed("shart-legend", true);
+    this.el.classed("sonic-legend", true);
 
-    var item = this.el.selectAll(".shart-legend-item")
+    var item = this.el.selectAll(".sonic-legend-item")
       .data(this.data)
     ;
     
     // Update existing items
     item
-      .select(".shart-legend-item-swatch")
+      .select(".sonic-legend-item-swatch")
         .style("background-color", color)
     ;
     item
-      .select(".shart-legend-item-label")
+      .select(".sonic-legend-item-label")
         .text(label)
     ;
     item
-      .select(".shart-legend-item-value")
+      .select(".sonic-legend-item-value")
         .text(value)
     ;
 
     // Add new items
     var enter = item.enter()
       .append("div")
-        .classed("shart-legend-item", true)
+        .classed("sonic-legend-item", true)
       ;
     enter
       .filter(function(d) { return !!d.color })
       .append("span")
-        .classed("shart-swatch shart-legend-item-swatch", true)
+        .classed("sonic-swatch sonic-legend-item-swatch", true)
         .style("background-color", color)
     ;
     enter.append("span")
-      .classed("shart-legend-item-label", true)
+      .classed("sonic-legend-item-label", true)
       .text(label)
     ;
     enter.append("span")
-      .classed("shart-legend-item-value", true)
+      .classed("sonic-legend-item-value", true)
       .text(value)
     ;
 
@@ -2063,38 +2063,38 @@ config.tooltip = function(chart, data) {
   var el = d3.select(document.createElement('div'))
   ,   segments = flattenSeries(data.segments)
   ,   placard
+  ,   legendEl
   ,   legend
   ,   date
-  ,   shart
   ;
 
   if (segments.length === 1) {
     var datum = segments[0];
 
     placard = el.append('div')
-      .classed('shart-tip-placard', true)
+      .classed('sonic-tip-placard', true)
     ;
 
     placard.append('div')
-      .classed('shart-tip-placard-value', true)
+      .classed('sonic-tip-placard-value', true)
       .text(datum.formatted_value || datum.value)
     ;
 
     placard.append('div')
-      .classed('shart-tip-placard-label', true)
+      .classed('sonic-tip-placard-label', true)
       .text(datum.tip_label || datum.label)
     ;
 
   } else {
-    legend = el.append('div');
+    legendEl = el.append('div');
 
-    shart = new Legend(legend.node(), segments);
-    shart.draw();
+    legend = new Legend(legendEl.node(), segments);
+    legend.draw();
   }
 
   if (data.date) {
     date = el.append('div')
-      .classed('shart-tip-date', true)
+      .classed('sonic-tip-date', true)
       .text(chart.dateFormatter(data.date))
     ;
   }
@@ -2102,7 +2102,7 @@ config.tooltip = function(chart, data) {
   return el.node();
 };
 
-Shart.configure = function(callback) {
+Sonic.configure = function(callback) {
   var opts = {};
   callback(opts);
   config.colors = opts.colors || config.colors;
@@ -2112,50 +2112,50 @@ Shart.configure = function(callback) {
   config.formatter = opts.formatter || config.formatter;
 };
 
-Shart.Legend = function(el, data, opts) {
-  var shart = new Legend(el, data, opts);
-  shart.drawWhenReady();
-  return shart;
+Sonic.Legend = function(el, data, opts) {
+  var chart = new Legend(el, data, opts);
+  chart.drawWhenReady();
+  return chart;
 };
 
-Shart.Series = function(el, data, opts) {
-  var shart = new SeriesGraph(el, data, opts);
-  shart.drawWhenReady();
-  return shart;
+Sonic.Series = function(el, data, opts) {
+  var chart = new SeriesGraph(el, data, opts);
+  chart.drawWhenReady();
+  return chart;
 };
 
-Shart.Sparkline = function(el, data, opts) {
-  var shart = new SparklineGraph(el, data, opts);
-  shart.drawWhenReady();
-  return shart;
+Sonic.Sparkline = function(el, data, opts) {
+  var chart = new SparklineGraph(el, data, opts);
+  chart.drawWhenReady();
+  return chart;
 };
 
-Shart.Pie = function(el, data, opts) {
-  var shart = new PieGraph(el, data, opts);
-  shart.drawWhenReady();
-  return shart;
+Sonic.Pie = function(el, data, opts) {
+  var chart = new PieGraph(el, data, opts);
+  chart.drawWhenReady();
+  return chart;
 };
 
-Shart.Donut = function(el, data, opts) {
-  var shart = new DonutGraph(el, data, opts);
-  shart.drawWhenReady();
-  return shart;
+Sonic.Donut = function(el, data, opts) {
+  var chart = new DonutGraph(el, data, opts);
+  chart.drawWhenReady();
+  return chart;
 };
 
-Shart.DonutStack = function(el, data, opts) {
-  var shart = new DonutStackGraph(el, data, opts);
-  shart.drawWhenReady();
-  return shart;
+Sonic.DonutStack = function(el, data, opts) {
+  var chart = new DonutStackGraph(el, data, opts);
+  chart.drawWhenReady();
+  return chart;
 };
 
-Shart.HorizontalBar = function(el, data, opts) {
-  var shart = new HorizontalBarGraph(el, data, opts);
-  shart.drawWhenReady();
-  return shart;
+Sonic.HorizontalBar = function(el, data, opts) {
+  var chart = new HorizontalBarGraph(el, data, opts);
+  chart.drawWhenReady();
+  return chart;
 };
 
-Shart.Pipeline = function(el, data, opts) {
-  var shart = new PipelineGraph(el, data, opts);
-  shart.drawWhenReady();
-  return shart;
+Sonic.Pipeline = function(el, data, opts) {
+  var chart = new PipelineGraph(el, data, opts);
+  chart.drawWhenReady();
+  return chart;
 };

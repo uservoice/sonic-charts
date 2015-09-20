@@ -15,10 +15,10 @@
 <script src="//code.jquery.com/jquery-2.1.4.min.js"></script>
 <script src="//cdnjs.cloudflare.com/ajax/libs/qtip2/2.2.1/jquery.qtip.min.js"></script>
 <script src="//cdn.jsdelivr.net/highlight.js/8.6/highlight.min.js"></script>
-<script src="../shart.js"></script>
+<script src="../sonic-charts.js"></script>
 
 <script>
-Shart.configure(function(opts) {
+Sonic.configure(function(opts) {
 
   opts.showTooltip = function(tip) {
     $(tip.target).qtip({
@@ -58,9 +58,9 @@ Shart.configure(function(opts) {
 
 <p>Sparkline graphs are minature graphs ideal for displaying a single sequence.</p>
 
-<figure class="well shart-well"><div id="sparkline-1"></div></figure>
+<figure class="well sonic-well"><div id="sparkline-1"></div></figure>
 <script class="code-block">
-Shart.Sparkline('#sparkline-1', [1,2,3,8,2,3,9,1,1,0,4,5,30,4], {
+Sonic.Sparkline('#sparkline-1', [1,2,3,8,2,3,9,1,1,0,4,5,30,4], {
   width: 60,
   height: 20,
   color: '#e74c3c',
@@ -71,9 +71,9 @@ Shart.Sparkline('#sparkline-1', [1,2,3,8,2,3,9,1,1,0,4,5,30,4], {
 <hr>
 <p>With a guide:</p>
 
-<figure class="well shart-well"><div id="sparkline-2"></div></figure>
+<figure class="well sonic-well"><div id="sparkline-2"></div></figure>
 <script class="code-block">
-Shart.Sparkline('#sparkline-2', [1,14,2,8,5,20,4], {
+Sonic.Sparkline('#sparkline-2', [1,14,2,8,5,20,4], {
   width: 60,
   height: 20,
   color: '#3498db',
@@ -85,9 +85,9 @@ Shart.Sparkline('#sparkline-2', [1,14,2,8,5,20,4], {
 <hr>
 <p>With a multiple guides:</p>
 
-<figure class="well shart-well"><div id="sparkline-3"></div></figure>
+<figure class="well sonic-well"><div id="sparkline-3"></div></figure>
 <script class="code-block">
-Shart.Sparkline('#sparkline-3', [1,2,4,14,2,3,15,1,1,null,null,5,30,4], {
+Sonic.Sparkline('#sparkline-3', [1,2,4,14,2,3,15,1,1,null,null,5,30,4], {
   color: '#2ecc71',
   stroke_width: 2,
   y_guides: [0,10,20,30]

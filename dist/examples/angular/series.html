@@ -14,15 +14,15 @@
 <script src="//cdnjs.cloudflare.com/ajax/libs/qtip2/2.2.1/jquery.qtip.min.js"></script>
 <script src="//cdn.jsdelivr.net/highlight.js/8.6/highlight.min.js"></script>
 <script src="//ajax.googleapis.com/ajax/libs/angularjs/1.3.15/angular.min.js"></script>
-<script src="../../shart.js"></script>
-<script src="../../shart.angular.js"></script>
+<script src="../../sonic-charts.js"></script>
+<script src="../../sonic-charts.angular.js"></script>
 
 <script>
-angular.module('app', ['shart']);
+angular.module('app', ['sonic']);
 </script>
 
 <script>
-Shart.configure(function(opts) {
+Sonic.configure(function(opts) {
   opts.showTooltip = function(tip) {
     $(tip.target).qtip({
       style: 'qtip-light qtip-shadow qtip-rounded',
@@ -66,10 +66,10 @@ Shart.configure(function(opts) {
 <h2>Line</h2>
 
 <div ng-controller="LineChartCtrl">
-<figure class="well shart-well" ng-include="'shart-series-1.html'"></figure>
+<figure class="well sonic-well" ng-include="'sonic-series-1.html'"></figure>
 </div>
-<script class="code-block" type="text/ng-template" id="shart-series-1.html">
-<shart-series
+<script class="code-block" type="text/ng-template" id="sonic-series-1.html">
+<sonic-series
   start-time="'21 Feb 2014'"
   end-time="'8 Sept 2014'"
   date-axis="'monthly'"
@@ -83,7 +83,7 @@ Shart.configure(function(opts) {
     type: 'line',
     fill: true,
     color: '#6ea6df'
-  }]"></shart-series>
+  }]"></sonic-series>
 </script>
 <script>
 angular.module('app')
@@ -94,9 +94,9 @@ angular.module('app')
 
 <hr>
 
-<figure class="well shart-well" ng-include="'shart-series-2.html'"></figure>
-<script class="code-block" type="text/ng-template" id="shart-series-2.html">
-<shart-series
+<figure class="well sonic-well" ng-include="'sonic-series-2.html'"></figure>
+<script class="code-block" type="text/ng-template" id="sonic-series-2.html">
+<sonic-series
   start-time="'21 Feb 2014'"
   end-time="'22 Mar 2014'"
   date-axis="'daily'"
@@ -112,16 +112,16 @@ angular.module('app')
     ],
     type: 'line',
     color:'#6ea6df'
-  }]"></shart-series>
+  }]"></sonic-series>
 </script>
 
 <hr>
 
 <h2>Area</h2>
 
-<figure class="well shart-well" ng-include="'shart-series-3.html'"></figure>
-<script class="code-block" type="text/ng-template" id="shart-series-3.html">
-<shart-series
+<figure class="well sonic-well" ng-include="'sonic-series-3.html'"></figure>
+<script class="code-block" type="text/ng-template" id="sonic-series-3.html">
+<sonic-series
   start-time="'21 Feb 2014'"
   end-time="'22 Mar 2014'"
   date-axis="'daily'"
@@ -131,16 +131,16 @@ angular.module('app')
     sequence: [765,280,344,930,989,852,814,734,330,305,893,826,808,820,727,305,286,913,868,758,833,577,253,266,724,752,698,727,648,292],
     type: 'area',
     color: '#9a9bc9'
-  }]"></shart-series>
+  }]"></sonic-series>
 </script>
 
 <hr>
 
 <h2>Column</h2>
 
-<figure class="well shart-well" ng-include="'shart-series-4.html'"></figure>
-<script class="code-block" type="text/ng-template" id="shart-series-4.html">
-<shart-series
+<figure class="well sonic-well" ng-include="'sonic-series-4.html'"></figure>
+<script class="code-block" type="text/ng-template" id="sonic-series-4.html">
+<sonic-series
   start-time="'21 Feb 2014'"
   end-time="'22 Mar 2014'"
   date-axis="'daily'"
@@ -150,14 +150,14 @@ angular.module('app')
     sequence: [765,280,344,930,989,852,814,734,330,305,893,826,808,820,727,305,286,913,868,758,833,577,253,266,724,752,698,727,648,292],
     type: 'column',
     color: '#6ea6df'
-  }]"></shart-series>
+  }]"></sonic-series>
 </script>
 
 <hr>
 
-<figure class="well shart-well" ng-include="'shart-series-5.html'"></figure>
-<script class="code-block" type="text/ng-template" id="shart-series-5.html">
-<shart-series
+<figure class="well sonic-well" ng-include="'sonic-series-5.html'"></figure>
+<script class="code-block" type="text/ng-template" id="sonic-series-5.html">
+<sonic-series
   start-time="'1 July 2015'"
   end-time="'31 July 2015'"
   date-axis="'daily'"
@@ -173,7 +173,7 @@ angular.module('app')
       {label: 'Okay', color: '#f5e14d', sequence: [0,14,29,24,30,29,5,0,8,32,22,23,37,6,0,15,39,48,27,28,15,0,4,23,21,33,25,8,0,2,4]},
       {label: 'Slow', color: '#e56244', sequence: [3,3,2,0,1,3,16,6,3,3,3,1,4,17,6,1,1,1,5,7,11,6,7,5,1,2,2,5,6,3,0]}
     ]
-  }]"></shart-series>
+  }]"></sonic-series>
 </script>
 
 

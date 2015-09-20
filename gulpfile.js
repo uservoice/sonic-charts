@@ -34,7 +34,7 @@ function preamble(addVersion) {
     '!function(undefined) {'
   ];
   if (addVersion) {
-    result.push('"use strict"; var Shart = {version: "<%= pkg.version %>"};');
+    result.push('"use strict"; var Sonic = {version: "<%= pkg.version %>"};');
   }
   result = result.concat([
     '',
@@ -43,16 +43,16 @@ function preamble(addVersion) {
   return result.join('\n');
 }
 
-function postamble(defineShart) {
+function postamble(defineSonic) {
   var result = [
     '',
     '',
   ];
-  if (defineShart) {
+  if (defineSonic) {
     result = result.concat([
-      'if (typeof define === "function" && define.amd) { define(Shart); }',
-      'else if (typeof module === "object" && module.exports) { module.exports = Shart; }',
-      'else if (window) { window.Shart = Shart; }'
+      'if (typeof define === "function" && define.amd) { define(Sonic); }',
+      'else if (typeof module === "object" && module.exports) { module.exports = Sonic; }',
+      'else if (window) { window.Sonic = Sonic; }'
     ]);
   }
   result.push('}();');
@@ -72,33 +72,33 @@ gulp.task('scripts:lint', function() {
 });
 
 gulp.task('scripts:core', function () {
-  var sharts = _.clone(pkg);
+  var sonic = _.clone(pkg);
   return gulp.src([
-      'src/scripts/shart.js',
+      'src/scripts/sonic-charts.js',
     ])
-    .pipe(concat('shart.js'))
+    .pipe(concat('sonic-charts.js'))
       .pipe(babel(options.babel))
-      .pipe(header(preamble(true), {pkg: sharts}))
+      .pipe(header(preamble(true), {pkg: sonic}))
       .pipe(footer(postamble(true)))
       .pipe(gulp.dest('dist'))
-    .pipe(concat('shart.min.js'))
+    .pipe(concat('sonic-charts.min.js'))
       .pipe(uglify({preserveComments: 'some'}))
       .pipe(gulp.dest('dist'))
   ;
 });
 
 gulp.task('scripts:angular', function () {
-  var shartsAngular = _.clone(pkg);
-  shartsAngular.name = 'sharts.angular.js';
+  var sonicAngular = _.clone(pkg);
+  sonicAngular.name = 'sonic-charts.angular.js';
   return gulp.src([
-      'src/scripts/shart.angular.js',
+      'src/scripts/sonic-charts.angular.js',
     ])
-    .pipe(concat('shart.angular.js'))
+    .pipe(concat('sonic-charts.angular.js'))
       .pipe(babel(options.babel))
-      .pipe(header(preamble(false), {pkg: shartsAngular}))
+      .pipe(header(preamble(false), {pkg: sonicAngular}))
       .pipe(footer(postamble(false)))
       .pipe(gulp.dest('dist'))
-    .pipe(concat('shart.angular.min.js'))
+    .pipe(concat('sonic-charts.angular.min.js'))
       .pipe(uglify({preserveComments: 'some'}))
       .pipe(gulp.dest('dist'))
   ;

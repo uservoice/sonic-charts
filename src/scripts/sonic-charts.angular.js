@@ -1,9 +1,9 @@
 if (angular) {
-/* globals angular, Shart */
+/* globals angular, Sonic */
 
-angular.module('shart', [])
+angular.module('sonic', [])
 
-.directive('shartLegend', function() {
+.directive('sonicLegend', function() {
   return {
     restrict: 'E',
 
@@ -12,14 +12,14 @@ angular.module('shart', [])
     },
 
     link: function($scope, $element) {
-      $scope.$shart = Shart.Legend($element[0], $scope.data, {});
-      $scope.$watch('data', data => $scope.$shart.update(data, true));
-      $scope.$on('$destroy', () => $scope.$shart.destroy());
+      $scope.$chart = Sonic.Legend($element[0], $scope.data, {});
+      $scope.$watch('data', data => $scope.$chart.update(data, true));
+      $scope.$on('$destroy', () => $scope.$chart.destroy());
     }
   };
 })
 
-.directive('shartSeries', function() {
+.directive('sonicSeries', function() {
   return {
     restrict: 'E',
 
@@ -59,13 +59,13 @@ angular.module('shart', [])
         };
       }
 
-      $scope.$shart = Shart.Series($element[0], $scope.data, options);
+      $scope.$chart = Sonic.Series($element[0], $scope.data, options);
 
       function update() {
-        return (data, old) => { if (data !== old) { $scope.$shart.update(data, true) } };
+        return (data, old) => { if (data !== old) { $scope.$chart.update(data, true) } };
       }
       function setOption(key) {
-        return (value, old) => { if (value !== old) { $scope.$shart.setOption(key, value, true) } };
+        return (value, old) => { if (value !== old) { $scope.$chart.setOption(key, value, true) } };
       }
 
       $scope.$watchCollection('data', update());
@@ -82,18 +82,18 @@ angular.module('shart', [])
       $scope.$watch('tickFormat', setOption('tickFormat'));
       $scope.$watch('formatValue', (formatValue, old) => {
         if (formatValue !== old) {
-          $scope.$shart.setOption('formatter', function(value) {
+          $scope.$chart.setOption('formatter', function(value) {
             return formatValue({value: value});
           });
         }
       });
 
-      $scope.$on('$destroy', () => $scope.$shart.destroy());
+      $scope.$on('$destroy', () => $scope.$chart.destroy());
     }
   };
 })
 
-.directive('shartSparkline', function() {
+.directive('sonicSparkline', function() {
   return {
     restrict: 'E',
 
@@ -109,7 +109,7 @@ angular.module('shart', [])
     },
 
     link: function($scope, $element) {
-      $scope.$shart = Shart.Sparkline($element[0], $scope.data, {
+      $scope.$chart = Sonic.Sparkline($element[0], $scope.data, {
         width: $scope.width,
         height: $scope.height,
         color: $scope.color,
@@ -118,12 +118,12 @@ angular.module('shart', [])
         y_guide: $scope.yGuide,
         y_guides: $scope.yGuides
       });
-      $scope.$on('$destroy', () => $scope.$shart.destroy());
+      $scope.$on('$destroy', () => $scope.$chart.destroy());
     }
   };
 })
 
-.directive('shartPie', function() {
+.directive('sonicPie', function() {
   return {
     restrict: 'E',
 
@@ -133,15 +133,15 @@ angular.module('shart', [])
     },
 
     link: function($scope, $element) {
-      $scope.$shart = Shart.Pie($element[0], $scope.data, {
+      $scope.$chart = Sonic.Pie($element[0], $scope.data, {
         size: $scope.size
       });
-      $scope.$on('$destroy', () => $scope.$shart.destroy());
+      $scope.$on('$destroy', () => $scope.$chart.destroy());
     }
   };
 })
 
-.directive('shartDonut', function() {
+.directive('sonicDonut', function() {
   return {
     restrict: 'E',
 
@@ -155,19 +155,19 @@ angular.module('shart', [])
     },
 
     link: function($scope, $element) {
-      $scope.$shart = Shart.Donut($element[0], $scope.data, {
+      $scope.$chart = Sonic.Donut($element[0], $scope.data, {
         type: $scope.type || false,
         label: $scope.label,
         label_position: $scope.labelPosition,
         value: $scope.value,
         size: $scope.size
       });
-      $scope.$on('$destroy', () => $scope.$shart.destroy());
+      $scope.$on('$destroy', () => $scope.$chart.destroy());
     }
   };
 })
 
-.directive('shartDonutStack', function() {
+.directive('sonicDonutStack', function() {
   return {
     restrict: 'E',
 
@@ -179,17 +179,17 @@ angular.module('shart', [])
     },
 
     link: function($scope, $element) {
-      $scope.$shart = Shart.DonutStack($element[0], $scope.data, {
+      $scope.$chart = Sonic.DonutStack($element[0], $scope.data, {
         total: $scope.total,
         label_subtext: $scope.labelSubtext,
         thickness: $scope.thickness
       });
-      $scope.$on('$destroy', () => $scope.$shart.destroy());
+      $scope.$on('$destroy', () => $scope.$chart.destroy());
     }
   };
 })
 
-.directive('shartHorizontalBar', function() {
+.directive('sonicHorizontalBar', function() {
   return {
     restrict: 'E',
 
@@ -199,15 +199,15 @@ angular.module('shart', [])
     },
 
     link: function($scope, $element) {
-      $scope.$shart = Shart.HorizontalBar($element[0], $scope.data, {
+      $scope.$chart = Sonic.HorizontalBar($element[0], $scope.data, {
         percentages: $scope.percentages
       });
-      $scope.$on('$destroy', () => $scope.$shart.destroy());
+      $scope.$on('$destroy', () => $scope.$chart.destroy());
     }
   };
 })
 
-.directive('shartPipeline', function() {
+.directive('sonicPipeline', function() {
   return {
     restrict: 'E',
 
@@ -217,8 +217,8 @@ angular.module('shart', [])
 
     link: function($scope, $element) {
       // TODO: opts { colors, tooltip, formatter }
-      $scope.shart = Shart.Pipeline($element[0], $scope.data, {});
-      $scope.$on('$destroy', () => $scope.$shart.destroy());
+      $scope.$chart = Sonic.Pipeline($element[0], $scope.data, {});
+      $scope.$on('$destroy', () => $scope.$chart.destroy());
     }
   };
 })

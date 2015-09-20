@@ -15,10 +15,10 @@
 <script src="//code.jquery.com/jquery-2.1.4.min.js"></script>
 <script src="//cdnjs.cloudflare.com/ajax/libs/qtip2/2.2.1/jquery.qtip.min.js"></script>
 <script src="//cdn.jsdelivr.net/highlight.js/8.6/highlight.min.js"></script>
-<script src="../shart.js"></script>
+<script src="../sonic-charts.js"></script>
 
 <script>
-Shart.configure(function(opts) {
+Sonic.configure(function(opts) {
 
   opts.showTooltip = function(tip) {
     $(tip.target).qtip({
@@ -58,9 +58,9 @@ Shart.configure(function(opts) {
 
 <p>One of the simplest graphs to create, the pie graph is a great way to illustrate percentage breakdowns.</p>
 
-<figure class="well shart-well"><div id="pie-graph"></div></figure>
+<figure class="well sonic-well"><div id="pie-graph"></div></figure>
 <script class="code-block">
-Shart.Pie('#pie-graph', [
+Sonic.Pie('#pie-graph', [
   {value: 1167, color: "#6ea6df" },
   {value: 543,  color: "#84c26d" },
   {value: 224,  color: "#e17a69" }

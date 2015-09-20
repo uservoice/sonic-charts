@@ -2,7 +2,7 @@
 <html>
 <head>
 
-<title>Shart playground</title>
+<title>Sonic Charts playground</title>
 <link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.5/css/bootstrap.min.css">
 <link rel="stylesheet" href="//cdnjs.cloudflare.com/ajax/libs/qtip2/2.2.1/jquery.qtip.min.css">
 <link rel="stylesheet" href="./example.css">
@@ -11,10 +11,10 @@
 <script src="//code.jquery.com/jquery-2.1.4.min.js"></script>
 <script src="//cdnjs.cloudflare.com/ajax/libs/qtip2/2.2.1/jquery.qtip.min.js"></script>
 <script src="//ajax.googleapis.com/ajax/libs/angularjs/1.3.15/angular.min.js"></script>
-<script src="../../shart.js"></script>
-<script src="../../shart.angular.js"></script>
+<script src="../../sonic-charts.js"></script>
+<script src="../../sonic-charts.angular.js"></script>
 <script>
-Shart.configure(function(opts) {
+Sonic.configure(function(opts) {
   opts.showTooltip = function(tip) {
     $(tip.target).qtip({
       style: 'qtip-light qtip-shadow qtip-rounded',
@@ -43,7 +43,7 @@ Shart.configure(function(opts) {
 });
 </script>
 <script>
-angular.module('app', ['shart']);
+angular.module('app', ['sonic']);
 </script>
 
 </head>
@@ -53,7 +53,7 @@ angular.module('app', ['shart']);
 
 <div class="page-header">
   <a href="./index.html">Back to index</a> 
-  <h1>Shart playground</h1>
+  <h1>Sonic Charts playground</h1>
 </div>
 
 
@@ -63,11 +63,11 @@ angular.module('app', ['shart']);
   </div>
 
   <div class="well" ng-show="key === 'legend'">
-    <shart-legend data="fields.legend.data"></shart-legend>
+    <sonic-legend data="fields.legend.data"></sonic-legend>
   </div>
 
   <div class="well" ng-show="key === 'series'">
-    <shart-series
+    <sonic-series
       width="fields.series.options.width || 'auto'"
       height="fields.series.options.height || 'auto'"
       start-time="fields.series.options.start_time"
@@ -75,7 +75,7 @@ angular.module('app', ['shart']);
       date-axis="fields.series.options.date_axis"
       axis="fields.series.options.axis"
       y-axis="fields.series.options.y_axis"
-      data="fields.series.data"></shart-series>
+      data="fields.series.data"></sonic-series>
   </div>
 
   <div ng-if="initial[key].options">

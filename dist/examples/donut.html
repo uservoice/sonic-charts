@@ -15,10 +15,10 @@
 <script src="//code.jquery.com/jquery-2.1.4.min.js"></script>
 <script src="//cdnjs.cloudflare.com/ajax/libs/qtip2/2.2.1/jquery.qtip.min.js"></script>
 <script src="//cdn.jsdelivr.net/highlight.js/8.6/highlight.min.js"></script>
-<script src="../shart.js"></script>
+<script src="../sonic-charts.js"></script>
 
 <script>
-Shart.configure(function(opts) {
+Sonic.configure(function(opts) {
 
   opts.showTooltip = function(tip) {
     $(tip.target).qtip({
@@ -59,9 +59,9 @@ Shart.configure(function(opts) {
 <p>Much like a pie graph, donut graphs allow you to easily display percentage breakdowns, but they add the
   ability to display a total in the center of the graph.</p>
 
-<figure class="well shart-well"><div id="large-donut-graph"></div></figure>
+<figure class="well sonic-well"><div id="large-donut-graph"></div></figure>
 <script class="code-block">
-Shart.Donut('#large-donut-graph', [
+Sonic.Donut('#large-donut-graph', [
   {name: 'Detractors', value: 759,  color: '#e25825' },
   {name: 'Passives',   value: 1289, color: '#f5e14d' },
   {name: 'Promoters',  value: 1514, color: '#9fc03f' }
@@ -75,9 +75,9 @@ Shart.Donut('#large-donut-graph', [
 
 <hr>
 
-<figure class="well shart-well"><div id="small-donut-graph"></div></figure>
+<figure class="well sonic-well"><div id="small-donut-graph"></div></figure>
 <script class="code-block">
-Shart.Donut('#small-donut-graph', [
+Sonic.Donut('#small-donut-graph', [
   {name: 'Detractors', value: 759,  color: '#e25825' },
   {name: 'Passives',   value: 1289, color: '#f5e14d' },
   {name: 'Promoters',  value: 1514, color: '#9fc03f' }

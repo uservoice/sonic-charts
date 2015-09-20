@@ -1,5 +1,5 @@
 {
-  "name": "shart",
+  "name": "sonic-charts",
   "version": "1.0.0",
   "description": "D3 charting library made by UserVoice",
   "author": {
@@ -12,12 +12,12 @@
       "url": "http://twitter.com/snorecone"
     }
   ],
-  "homepage": "https://github.com/uservoice/shart",
+  "homepage": "https://github.com/uservoice/sonic-charts",
   "license": "MIT",
   "private": true,
   "repository": {
     "type": "git",
-    "url": "https://github.com/uservoice/shart"
+    "url": "https://github.com/uservoice/sonic-charts"
   },
   "keywords": [
     "d3",

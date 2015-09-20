@@ -1,11 +1,11 @@
-# Shart
+# Sonic Charts
 
 D3 charting library by UserVoice
 
 
 ## Examples
 
-See examples at <http://shart.divshot.io>.
+See examples at <http://sonic-charts.divshot.io>.
 
 
 ## Building

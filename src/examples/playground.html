@@ -1,5 +1,5 @@
 ---
-title: "Shart playground"
+title: "Sonic Charts playground"
 layout: "playground"
 ---
 
@@ -9,11 +9,11 @@ layout: "playground"
   </div>
 
   <div class="well" ng-show="key === 'legend'">
-    <shart-legend data="fields.legend.data"></shart-legend>
+    <sonic-legend data="fields.legend.data"></sonic-legend>
   </div>
 
   <div class="well" ng-show="key === 'series'">
-    <shart-series
+    <sonic-series
       width="fields.series.options.width || 'auto'"
       height="fields.series.options.height || 'auto'"
       start-time="fields.series.options.start_time"
@@ -21,7 +21,7 @@ layout: "playground"
       date-axis="fields.series.options.date_axis"
       axis="fields.series.options.axis"
       y-axis="fields.series.options.y_axis"
-      data="fields.series.data"></shart-series>
+      data="fields.series.data"></sonic-series>
   </div>
 
   <div ng-if="initial[key].options">

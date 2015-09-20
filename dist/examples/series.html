@@ -15,10 +15,10 @@
 <script src="//code.jquery.com/jquery-2.1.4.min.js"></script>
 <script src="//cdnjs.cloudflare.com/ajax/libs/qtip2/2.2.1/jquery.qtip.min.js"></script>
 <script src="//cdn.jsdelivr.net/highlight.js/8.6/highlight.min.js"></script>
-<script src="../shart.js"></script>
+<script src="../sonic-charts.js"></script>
 
 <script>
-Shart.configure(function(opts) {
+Sonic.configure(function(opts) {
 
   opts.showTooltip = function(tip) {
     $(tip.target).qtip({
@@ -56,14 +56,14 @@ Shart.configure(function(opts) {
 </div>
 
 
-<p>Shart currently supports 3 different types of series graphs: <code>line</code>, <code>area</code>, and
+<p>Sonic currently supports 3 different types of series graphs: <code>line</code>, <code>area</code>, and
   <code>column</code>.</p>
 
 <h2>Line</h2>
 
-<figure class="well shart-well"><div id="line-graph"></div></figure>
+<figure class="well sonic-well"><div id="line-graph"></div></figure>
 <script class="code-block">
-Shart.Series("#line-graph", [{
+Sonic.Series("#line-graph", [{
   label: 'Instant answers',
   sequence: [0.76599,0.280,0.344232,0.930,0.98922,0.852,1.142323,0.734,0.330222,0.3059080,0.893,0.8260293432,0.808,0.82023234,0.727,0.305,0.286,0.913,0.868,0.758,0.833,0.577,0.253,0.266,0.724,0.752,0.698,0.727,0.648,0.292],
   type: 'line',
@@ -82,9 +82,9 @@ Shart.Series("#line-graph", [{
 
 <hr>
 
-<figure class="well shart-well"><div id="line-segments-graph"></div></figure>
+<figure class="well sonic-well"><div id="line-segments-graph"></div></figure>
 <script class="code-block">
-Shart.Series('#line-segments-graph', [{
+Sonic.Series('#line-segments-graph', [{
   label: "Overall",
   sequence: [765,280,344,930,989,852,814,734,330,305,893,826,808,820,727,305,286,913,868,758,833,577,253,266,724,752,698,727,648,292],
   segments: [
@@ -107,9 +107,9 @@ Shart.Series('#line-segments-graph', [{
 
 <h2>Area</h2>
 
-<figure class="well shart-well"><div id="area-graph"></div></figure>
+<figure class="well sonic-well"><div id="area-graph"></div></figure>
 <script class="code-block">
-Shart.Series('#area-graph', [{
+Sonic.Series('#area-graph', [{
   label: "Unique visitors",
   sequence: [765,280,344,930,989,852,814,734,330,305,893,826,808,820,727,305,286,913,868,758,833,577,253,266,724,752,698,727,648,292],
   type: "area",
@@ -126,9 +126,9 @@ Shart.Series('#area-graph', [{
 
 <h2>Column</h2>
 
-<figure class="well shart-well"><div id="column-graph-1"></div></figure>
+<figure class="well sonic-well"><div id="column-graph-1"></div></figure>
 <script class="code-block">
-Shart.Series('#column-graph-1', [
+Sonic.Series('#column-graph-1', [
   {
     label: "Unique visitors",
     sequence: [765,280,344,930,989,852,814,734,330,305,893,826,808,820,727,305,286,913,868,758,833,577,253,266,724,752,698,727,648,292],
@@ -145,9 +145,9 @@ Shart.Series('#column-graph-1', [
 
 <hr>
 
-<figure class="well shart-well"><div id="column-graph-2"></div></figure>
+<figure class="well sonic-well"><div id="column-graph-2"></div></figure>
 <script class="code-block">
-Shart.Series('#column-graph-2', [
+Sonic.Series('#column-graph-2', [
   {
     label: "Messages",
     type: "column",
